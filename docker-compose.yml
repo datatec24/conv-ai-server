@@ -1,0 +1,29 @@
+version: '2'
+services:
+  app:
+    image: node:6
+    stdin_open: true
+    ports:
+     - 3000:3000
+    volumes:
+     - .:/opt/conv.ai
+     - ./docker/yarn:/opt/yarn
+    links:
+     - elasticsearch
+    depends_on:
+     - elasticsearch
+    environment:
+     - TERM=xterm
+     - NODE_ENV=development
+    working_dir: /opt/conv.ai
+    command: ["./docker-entrypoint.sh"]
+  elasticsearch:
+    image: elasticsearch
+    volumes:
+     - ./docker/elasticsearch/data:/usr/share/elasticsearch/data
+  kibana:
+    image: kibana
+    ports:
+     - 5601:5601
+    depends_on:
+     - elasticsearch
