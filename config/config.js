@@ -9,6 +9,15 @@ module.exports = {
     port: 3000,
     timeout: 2000
   },
+  mongo: {
+    server: {
+      protocol: 'mongodb',
+      slashes: true,
+      hostname: DOT_ENV,
+      port: DOT_ENV,
+      pathname: 'convai'
+    }
+  },
   elasticsearch: {
     server: {
       hostname: DOT_ENV,
