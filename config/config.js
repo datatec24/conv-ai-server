@@ -18,5 +18,12 @@ module.exports = {
   },
   logger: {
     transports: {}
+  },
+  messenger: {
+    bot: {
+      token: DOT_ENV,
+      verify: DOT_ENV,
+      app_secret: DOT_ENV
+    }
   }
 }
