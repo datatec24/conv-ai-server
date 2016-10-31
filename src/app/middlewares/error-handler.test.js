@@ -1,10 +1,10 @@
-const request = require('supertest-as-promised');
-const express = require('express');
+const request = require('supertest-as-promised')
+const express = require('express')
 const errorHandler = require('./error-handler')
 
 let app
 beforeEach(() => {
-  app = express();
+  app = express()
 })
 
 it('should send error', () => {
