@@ -8,6 +8,7 @@ dependencies:
     - yarn
 test:
   override:
+    - npm run lint
     - npm test -- --coverage
   post:
     - codecov

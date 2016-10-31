@@ -16,7 +16,7 @@ jest.mock('../services/logger')
 jest.mock('./middlewares/error-handler', () => jest.fn())
 
 it('should export an express instance', () => {
-  const app = require('./index')
+  require('./index')
   const express = require('express')
 
   expect(express).toHaveBeenCalled()
