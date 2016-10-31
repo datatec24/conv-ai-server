@@ -44,7 +44,7 @@ if (cluster.isMaster) {
   })
 } else {
   const app = require('./app')
-  const serverPort = config.get('server:port')
+  const serverPort = process.env.PORT || config.get('server:port')
   const server = app.listen(serverPort, () => logger.info('Web worker server started on port %d.', serverPort))
 
   process.on('uncaughtException', (err) => {
