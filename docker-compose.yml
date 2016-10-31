@@ -9,14 +9,22 @@ services:
      - .:/opt/conv.ai
      - ./docker/yarn:/opt/yarn
     links:
+     - mongo
      - elasticsearch
     depends_on:
+     - mongo
      - elasticsearch
     environment:
      - TERM=xterm
      - NODE_ENV=development
     working_dir: /opt/conv.ai
     command: ["./docker-entrypoint.sh"]
+  mongo:
+    image: mongo
+    volumes:
+      - ./docker/mongodb:/data/db
+    expose:
+      - 27017
   elasticsearch:
     image: elasticsearch
     volumes:

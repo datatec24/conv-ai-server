@@ -23,6 +23,7 @@ function wait_for_it {
   done
 }
 
+wait_for_it $mongo__server__hostname $mongo__server__port
 wait_for_it $elasticsearch__server__hostname $elasticsearch__server__port
 
 PATH=$PATH:./node_modules/.bin
