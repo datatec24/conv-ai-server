@@ -1,7 +1,5 @@
 #!/bin/bash
 
-PATH=$PATH:/opt/yarn/bin
-
 if !(which yarn) >/dev/null 2>&1; then
   set -e
   wget -qO- https://yarnpkg.com/latest.tar.gz | tar xz -C /opt/yarn --strip-components=1
@@ -25,7 +23,5 @@ function wait_for_it {
 
 wait_for_it $mongo__server__hostname $mongo__server__port
 wait_for_it $elasticsearch__server__hostname $elasticsearch__server__port
-
-PATH=$PATH:./node_modules/.bin
 
 exec nodemon ./src/index.js
