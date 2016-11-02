@@ -1,18 +1,39 @@
-const Bot = require('messenger-bot')
-const config = require('./config')
+const MessengerBot = require('messenger-bot')
 const logger = require('./logger')
 
-/**
- * Expose module
- */
+const messengerBots = []
 
-const bot = module.exports = new Bot(config.get('messenger:bot'))
+function getMessengerBot (bot) {
+  if (messengerBots[bot.id]) return messengerBots[bot.id]
 
-bot.on('error', logger.error)
+  const messengerBot = messengerBots[bot.id] = new MessengerBot(bot.messenger)
 
-bot.on('message', (payload, reply, actions) => {
-  reply({ text: 'hey!' }, (err, info) => {
-    if (err) logger.error(err)
-    logger.debug('[messenger] Message sent', info)
+  /**
+   * Log all events
+   */
+
+  ;[
+    'message',
+    'postback',
+    'delivery',
+    'authentication'
+  ].forEach(eventName => {
+    messengerBot.on(eventName, payload => {
+      logger.info(`[messenger#${eventName}] Received ${eventName}`, { botId: bot.id }, payload)
+    })
   })
-})
+
+  /**
+   * Handle events
+   */
+
+  messengerBot.on('message', (payload, reply, actions) => {
+    reply({ text: 'hey!' })
+  })
+
+  return messengerBot
+}
+
+module.exports = {
+  getMessengerBot
+}

@@ -1,5 +1,6 @@
-const nconf = require('nconf')
+require('dotenv').config({ silent: true })
 
+const nconf = require('nconf')
 nconf.overrides()
 
 /**
