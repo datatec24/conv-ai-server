@@ -6,16 +6,14 @@ dependencies:
     - ~/.yarn-cache
   pre:
     - curl -s -o- -L https://yarnpkg.com/install.sh | bash
-    # https://github.com/yarnpkg/yarn/issues/1151
-    # - yarn global add codecov
   override:
     - yarn
 test:
   override:
     - yarn run lint
     - yarn test -- --coverage
-  # post:
-  #   - codecov
+  post:
+    - bash <(curl -s https://codecov.io/bash) -t $CODECOV_TOKEN
 general:
   artifacts:
     - coverage
