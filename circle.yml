@@ -13,7 +13,7 @@ test:
     - yarn run lint
     - yarn test -- --coverage
   post:
-    - bash <(curl -s https://codecov.io/bash) -t $CODECOV_TOKEN
+    - bash <(curl -s https://codecov.io/bash)
 general:
   artifacts:
     - coverage
