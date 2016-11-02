@@ -17,11 +17,10 @@ Useful URLs:
 
 Useful commands:
 ```sh
-docker-compose exec api npm test
-docker-compose exec api npm test -- --watch
-docker-compose exec api npm test -- --coverage
-docker-compose exec api npm run lint
-docker-compose exec api npm run lint -- --fix
+docker-compose exec app yarn test
+docker-compose exec app yarn test -- --watch --coverage
+docker-compose exec app yarn run lint
+docker-compose exec app yarn run lint -- --fix
 ```
 
 When you're done:

@@ -10,10 +10,12 @@ const argv = require('yargs')
 
 const co = require('co')
 const uuid = require('uuid')
+const chalk = require('chalk')
 const request = require('request-promise')
 const Bot = require('../src/models/bot')
 
 co(function* () {
+  // Get page infos
   const { name } = yield request({
     uri: 'https://graph.facebook.com/v2.6/me',
     qs: {
@@ -22,6 +24,7 @@ co(function* () {
     json: true
   })
 
+  // Save bot config
   const bot = yield new Bot({
     name,
     messenger: {
@@ -30,13 +33,30 @@ co(function* () {
     }
   }).save()
 
-  console.log('Bot created!')
-  console.log('Webhook URL:', `/messenger/${bot.id}`)
-  console.log('Verify token:', bot.messenger.verify)
+  // Create bot start button
+  yield request({
+    method: 'POST',
+    uri: 'https://graph.facebook.com/v2.6/me/thread_settings',
+    qs: {
+      access_token: argv.token
+    },
+    json: {
+      setting_type: 'call_to_actions',
+      thread_state: 'new_thread',
+      call_to_actions: [{
+        payload: 'start'
+      }]
+    }
+  })
+
+  // Output useful infos
+  console.log(chalk.green('Bot created!'))
+  console.log(chalk.blue('Webhook URL:'), chalk.bold(`/messenger/${bot.id}`))
+  console.log(chalk.blue('Verify token:'), chalk.bold(bot.messenger.verify))
 })
 .then(() => process.exit())
 .catch(err => {
-  console.error(err)
+  console.error(chalk.red(err))
   process.exit(1)
 })
 

@@ -44,7 +44,7 @@ module.exports = router => {
    */
 
   router.post('/:botId', bodyParser.json(), ({ bot, body }, res) => {
-    messenger.getMessengerBot(bot)._handleMessage(body)
+    messenger(bot)._handleMessage(body)
     res.send({ status: 'ok' })
   })
 }
