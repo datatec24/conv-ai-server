@@ -34,7 +34,7 @@ it('should set default status code', () => {
     .toPromise()
 })
 
-it('should set default status code', () => {
+it('should use error code', () => {
   app.get('/error', (req, res, next) => next({ status: 404 }))
   app.use(errorHandler())
 
