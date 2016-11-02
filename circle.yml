@@ -2,16 +2,20 @@ machine:
   node:
     version: 6
 dependencies:
+  cache_directories:
+    - ~/.yarn-cache
   pre:
-    - npm install -g yarn codecov
+    - curl -s -o- -L https://yarnpkg.com/install.sh | bash
+    # https://github.com/yarnpkg/yarn/issues/1151
+    # - yarn global add codecov
   override:
     - yarn
 test:
   override:
-    - npm run lint
-    - npm test -- --coverage
-  post:
-    - codecov
+    - yarn run lint
+    - yarn test -- --coverage
+  # post:
+  #   - codecov
 general:
   artifacts:
     - coverage
