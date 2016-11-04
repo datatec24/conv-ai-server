@@ -9,7 +9,7 @@ module.exports = {
     port: 3000,
     timeout: 2000
   },
-  mongo: {
+  mongodb: {
     server: {
       protocol: 'mongodb',
       slashes: true,

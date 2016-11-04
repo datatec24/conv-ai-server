@@ -1,7 +1,7 @@
-const path = require('path')
 const express = require('express')
 const expressWinston = require('express-winston')
-const enrouten = require('express-enrouten')
+
+const router = require('./router')
 const logger = require('../services/logger')
 const errorHandler = require('./middlewares/error-handler')
 
@@ -14,9 +14,7 @@ const app = module.exports = express()
 app.use(expressWinston.logger({ winstonInstance: logger }))
 
 // Mount `routes` folder.
-app.use(enrouten({
-  directory: path.resolve(__dirname, 'routes')
-}))
+app.use(router)
 
 app.use(expressWinston.errorLogger({
   winstonInstance: logger,
