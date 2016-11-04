@@ -1,6 +1,9 @@
 machine:
   node:
     version: 6
+  environment:
+    mongodb__server__hostname: localhost
+    mongodb__server__port: 27017
 dependencies:
   cache_directories:
     - ~/.yarn-cache

@@ -1,13 +1,7 @@
 const request = require('supertest-as-promised')
-const express = require('express')
+const app = require('../index')
 
-let app
-const route = require('./index')
-
-beforeEach(() => {
-  app = express()
-  route(app)
-})
+jest.mock('../../services/logger')
 
 it('should render "Hello World!"', () =>
   request(app)
@@ -15,3 +9,7 @@ it('should render "Hello World!"', () =>
     .expect(200, 'Hello World!')
     .toPromise()
 )
+
+it('should ok', () => {
+
+})
