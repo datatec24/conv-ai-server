@@ -1,3 +1,5 @@
+const fs = require('fs')
+const path = require('path')
 const cluster = require('cluster')
 const numCPUs = require('os').cpus().length
 
@@ -12,15 +14,25 @@ if (cluster.isMaster) {
     process.nextTick(() => process.exit(1))
   })
 
-  // Fork workers.
-  for (let i = 0; i < (config.get('server:webWorkers') || numCPUs); i++) {
-    cluster.fork()
+  const workerTypes = {}
+  const addWorker = workerType => {
+    Object.assign(workerTypes, {
+      [cluster.fork({ workerType }).id]: workerType
+    })
   }
 
+  // Fork web workers.
+  for (let i = 0; i < (config.get('server:webWorkers') || numCPUs); i++) {
+    addWorker('web')
+  }
+
+  // Fork jobs worker
+  fs.readdirSync(path.join(__dirname, 'jobs')).map(addWorker)
+
   // When a worker unexpectedly die, restart it.
-  const respawnWorker = (/* worker, code, signal */) => {
+  const respawnWorker = ({ id }/*, code, signal */) => {
     logger.error('Worker died, restarting it.')
-    cluster.fork()
+    addWorker(workerTypes[id])
   }
   cluster.on('exit', respawnWorker)
 
@@ -43,25 +55,14 @@ if (cluster.isMaster) {
     .catch(() => process.exit(1))
   })
 } else {
-  const app = require('./app')
-  const serverPort = process.env.PORT || config.get('server:port')
-  const server = app.listen(serverPort, () => logger.info('Web worker server started on port %d.', serverPort))
-
   process.on('uncaughtException', (err) => {
     logger.error(err)
     process.nextTick(() => process.exit(1))
   })
 
-  // Server graceful shutown.
-  process.once('SIGTERM', () => {
-    logger.info('Worker exited')
-    // Waiting for all connections to be properly closed.
-    server.close(() => process.exit())
-
-    // Exit anyways after a timeout.
-    setTimeout(() => {
-      logger.error('Forcing shutdown, all connections haven’t been properly closed.')
-      process.exit(1)
-    }, config.get('server:timeout'))
-  })
+  if (process.env.workerType === 'web') {
+    require('./server')
+  } else {
+    require(`./jobs/${process.env.workerType}`)
+  }
 }

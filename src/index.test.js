@@ -1,7 +1,6 @@
 const EventEmitter = require('events')
+const uuid = require('uuid')
 const { wrap } = require('co')
-
-jest.mock('./services/logger')
 
 jest.mock('os', () => ({
   cpus: () => ({
@@ -9,33 +8,30 @@ jest.mock('os', () => ({
   })
 }))
 
+jest.mock('./services/logger')
+
+jest.mock('./server', () => jest.fn())
+
 jest.mock('cluster', () => {
   const clusterMock = Object.assign(new EventEmitter(), {
     fork: jest.fn(() => {
+      const id = uuid.v4()
+
       const workerMock = Object.assign(new EventEmitter(), {
+        id,
         process: {
           kill: jest.fn(() => workerMock.emit('exit'))
         }
       })
 
       clusterMock.workers.push(workerMock)
+
+      return workerMock
     }),
     workers: []
   })
 
   return clusterMock
-})
-
-jest.mock('./app', () => {
-  const serverMock = { close: jest.fn() }
-
-  return {
-    listen: jest.fn((port, cb) => {
-      cb()
-      return serverMock
-    }),
-    server: serverMock
-  }
 })
 
 beforeEach(() => {
@@ -89,7 +85,7 @@ describe('#master', () => {
   it('should spawn workers', () => {
     require('./index')
 
-    expect(require('cluster').fork).toHaveBeenCalledTimes(4)
+    expect(require('cluster').fork).toHaveBeenCalledTimes(5)
   })
 
   it('should re-spawn workers on exit', () => {
@@ -98,7 +94,7 @@ describe('#master', () => {
     const logger = require('./services/logger')
 
     cluster.fork.mockClear()
-    cluster.emit('exit')
+    cluster.emit('exit', cluster.workers[0])
 
     expect(logger.error).toHaveBeenCalledWith('Worker died, restarting it.')
     expect(cluster.fork).toHaveBeenCalledTimes(1)
@@ -149,20 +145,11 @@ describe('#master', () => {
 describe('#slave', () => {
   beforeEach(() => {
     require('cluster').isMaster = false
+    process.env.workerType = 'web'
   })
 
-  it('should run app', () => {
-    require('./index')
-    const app = require('./app')
-    const config = require('./services/config')
-    const logger = require('./services/logger')
-
-    const serverPort = config.get('server:port')
-
-    expect(app.listen).toHaveBeenCalledTimes(1)
-    expect(app.listen.mock.calls[0][0]).toBe(serverPort)
-
-    expect(logger.info).toHaveBeenCalledWith('Web worker server started on port %d.', serverPort)
+  afterEach(() => {
+    delete process.env.workerType
   })
 
   it('should handle uncaugth exceptions', () => {
@@ -181,34 +168,6 @@ describe('#slave', () => {
 
     jest.runAllTicks()
 
-    expect(process.exit).toHaveBeenCalled()
-    expect(process.exit.mock.calls[0][0]).toBeTruthy()
-  })
-
-  it('should exit gracefully on SIGTERM', () => {
-    require('./index')
-    const app = require('./app')
-    const logger = require('./services/logger')
-
-    app.server.close.mockImplementation(cb => cb())
-
-    process.emit('SIGTERM')
-
-    expect(logger.error).not.toHaveBeenCalled()
-    expect(process.exit).toHaveBeenCalled()
-  })
-
-  it('should exit after a timeout on SIGTERM', () => {
-    require('./index')
-    const logger = require('./services/logger')
-    const config = require('./services/config')
-
-    process.emit('SIGTERM')
-    expect(logger.error).not.toHaveBeenCalled()
-    expect(process.exit).not.toHaveBeenCalled()
-
-    jest.runTimersToTime(config.get('server:timeout'))
-    expect(logger.error).toHaveBeenCalledWith('Forcing shutdown, all connections haven’t been properly closed.')
     expect(process.exit).toHaveBeenCalled()
     expect(process.exit.mock.calls[0][0]).toBeTruthy()
   })
