@@ -24,7 +24,19 @@ jobs().then(agenda => {
           }, {
             importId: product.id,
             title: product.title,
-            description: product.description
+            brand: product.brand,
+            price: product.sale_price,
+            quantity: isNaN(product.custom_label_0) ? 0 : parseInt(product.custom_label_0, 10),
+            link: product.link,
+            imageUrl: product.image_link,
+            gender: {
+              'Homme': 'male',
+              'Femme': 'female',
+              'Unisexe': null
+            }[product.gender] || null,
+            age: isNaN(product.age_group) ? 0 : parseInt(product.age_group, 10),
+            style: product.pattern,
+            category: product.custom_label_3
           }, {
             upsert: true
           }).exec().catch(logger.error)
@@ -39,7 +51,7 @@ jobs().then(agenda => {
     })
   })
 
-  agenda.every('1 day', 'menlookImport')
+  agenda.every('2 hours', 'menlookImport')
   // agenda.now('menlookImport')
 })
 .catch(logger.error)
