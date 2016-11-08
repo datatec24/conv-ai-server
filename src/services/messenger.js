@@ -15,19 +15,6 @@ module.exports = bot => {
   const messenger = messengerBots[bot.id] = new MessengerBot(bot.messenger)
 
   /**
-   * Helper to promisify a bot method
-   */
-
-  function promisify (fn) {
-    return (...args) => new Promise((resolve, reject) => {
-      fn.call(messenger, ...args, (err, res) => {
-        if (err) return reject(err)
-        resolve(res)
-      })
-    })
-  }
-
-  /**
    * Get a single user based on his messenger id
    */
 
@@ -39,7 +26,7 @@ module.exports = bot => {
         first_name: firstName,
         last_name: lastName,
         gender
-      } = yield promisify(messenger.getProfile)(messengerId)
+      } = yield messenger.getProfile(messengerId)
 
       user = yield new User({
         profile: {
@@ -111,16 +98,16 @@ module.exports = bot => {
     }
 
     const context = yield applyAction(sender.id, action)
-    const response = yield getMessage(context)
+    const responses = yield getMessage(context)
 
-    yield promisify(reply)(response)
+    while (responses.length) yield reply(responses.pop())
   }).catch(logger.error))
 
   messenger.on('postback', ({ sender, postback }, reply, actions) => co(function* () {
     const context = yield applyAction(sender.id, JSON.parse(postback.payload))
-    const response = yield getMessage(context)
+    const responses = yield getMessage(context)
 
-    yield promisify(reply)(response)
+    while (responses.length) yield reply(responses.pop())
   }).catch(logger.error))
 
   return messenger

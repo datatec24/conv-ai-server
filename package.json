@@ -51,7 +51,7 @@
     "express": "^4.14.0",
     "express-winston": "^2.0.0",
     "http-errors": "^1.5.0",
-    "messenger-bot": "^2.4.0",
+    "messenger-bot": "git://github.com/IcanDivideBy0/messenger-bot.git#promise_api",
     "mongoose": "^4.6.5",
     "nconf": "^0.8.4",
     "ramda": "^0.22.1",

@@ -157,19 +157,21 @@ module.exports = R.curry((bot, context) => co(function* () {
 
   switch (true) {
     case !personType:
-      return createButtons('À qui souhaitez vous offrir un cadeau ?', personTypes)
+      return [createButtons('À qui souhaitez vous offrir un cadeau ?', personTypes)]
 
     case !priceRange:
-      return createButtons('Quel est votre budget ?', priceRanges)
+      return [createButtons('Quel est votre budget ?', priceRanges)]
 
     case !ageRange:
-      return createButtons(`Dans quelle tranche d'âge se situe votre ${t('personType')} ?`, ageRanges)
+      return [createButtons(`Dans quelle tranche d'âge se situe votre ${t('personType')} ?`, ageRanges)]
 
     case !style:
-      return createButtons('Quel style lui convient le mieux ?', styles)
+      return [createButtons('Quel style lui convient le mieux ?', styles)]
   }
 
-  return { text: `Ok, je recherche des cadeaux pour votre ${t('personType')}, ${t('priceRange')}, dans un style ${t('style')}` }
+  return [{
+    text: `Ok, je recherche des cadeaux pour votre ${t('personType')}, ${t('priceRange')}, dans un style ${t('style')}`
+  }]
 }))
 
 /**
