@@ -482,10 +482,12 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
         text: `Si tu veux lancer une nouvelle recherche , il te suffit de taper "Recherche" ou de cliquer sur (picto menu persistant) puis "Nouvelle recherche" en bas à gauche de la conversation.`
       })
 
-      yield reply(yield listProducts(context))
-      return Object.assign({}, context, action.data, {
+      const newContext = Object.assign({}, context, action.data, {
         page: 0
       })
+
+      yield reply(yield listProducts(newContext))
+      return newContext
     }
 
     case 'NEXT_PAGE': {
@@ -511,10 +513,11 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
 })
 
 function* listProducts (context) {
-  context.age = 45
   const products = yield Product
     .find({
       $and: [{
+        quantity: { $gt: 0 }
+      }, {
         $or: [
           { gender: { $eq: context.gender } },
           { gender: { $eq: null } }
@@ -543,14 +546,14 @@ function* listProducts (context) {
             luxury: 'Luxe'
           }[context.style]
         }
-      }, {
-        price: {
-          $gte: context.priceRange[0],
-          $lte: context.priceRange[1]
-        }
+      // }, {
+      //   price: {
+      //     $gte: context.priceRange[0],
+      //     $lte: context.priceRange[1]
+      //   }
       }]
     })
-    // .skip((context.page || 0) * 9)
+    .skip((context.page || 0) * 9)
     .limit(9)
     .exec()
 
@@ -560,7 +563,7 @@ function* listProducts (context) {
       payload: {
         template_type: 'generic',
         elements: products.map(product => ({
-          title: product.age + ' - ' + product.title,
+          title: product.title,
           item_url: product.link,
           image_url: product.imageUrl,
           subtitle: `${parseFloat(product.price, 10).toFixed(2)} € - ${product.brand}`
