@@ -15,7 +15,7 @@ module.exports = mongoose.model('Product', {
     type: String
   },
   price: {
-    type: String
+    type: Number
   },
   quantity: {
     type: Number

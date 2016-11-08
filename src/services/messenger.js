@@ -5,7 +5,6 @@ const MessengerBot = require('messenger-bot')
 const logger = require('./logger')
 const User = require('../models/user')
 const contextReducer = require('../lib/context-reducer')
-const conversation = require('../lib/conversation')
 
 const messengerBots = []
 
@@ -45,29 +44,6 @@ module.exports = bot => {
   })
 
   /**
-   * Apply an action to user's context
-   */
-
-  const applyAction = co.wrap(function* (messengerId, action) {
-    const user = yield getUser(messengerId)
-    const context = yield contextReducer(R.propOr({}, bot.id, user.context || {}), action)
-
-    yield User.update({ _id: user.id }, {
-      $set: {
-        [`context.${bot.id}`]: context
-      }
-    })
-
-    return context
-  })
-
-  /**
-   * Get the message to send to user based on it's current context
-   */
-
-  const getMessage = conversation(bot)
-
-  /**
    * Log all events
    */
 
@@ -93,21 +69,51 @@ module.exports = bot => {
    */
 
   messenger.on('message', ({ sender, message }, reply, actions) => co(function* () {
-    const action = {
-      type: message.text.toLowerCase() === 'reset' ? 'RESET' : 'NOOP'
+    const user = yield getUser(sender.id)
+    const context = R.propOr({}, bot.id, user.context || {})
+
+    let action
+
+    if (context._expect) {
+      switch (context._expect.dataType) {
+        case 'number':
+          let matches = message.text.match(/[0-9]+/)
+
+          if (matches) {
+            action = {
+              type: context._expect.actionType,
+              data: {
+                [context._expect.dataKey]: parseInt(matches[0], 10)
+              }
+            }
+          }
+          break
+      }
     }
 
-    const context = yield applyAction(sender.id, action)
-    const responses = yield getMessage(context)
+    if (!action) {
+      action = {
+        type: message.text.match(/reset/i) ? 'RESET' : 'UNKNOWN'
+      }
+    }
 
-    while (responses.length) yield reply(responses.pop())
+    yield User.update({ _id: user.id }, {
+      $set: {
+        [`context.${bot.id}`]: yield contextReducer(messenger, user, context, action)
+      }
+    })
   }).catch(logger.error))
 
   messenger.on('postback', ({ sender, postback }, reply, actions) => co(function* () {
-    const context = yield applyAction(sender.id, JSON.parse(postback.payload))
-    const responses = yield getMessage(context)
+    const user = yield getUser(sender.id)
+    const action = JSON.parse(postback.payload)
+    const context = R.propOr({}, bot.id, user.context || {})
 
-    while (responses.length) yield reply(responses.pop())
+    yield User.update({ _id: user.id }, {
+      $set: {
+        [`context.${bot.id}`]: yield contextReducer(messenger, user, context, action)
+      }
+    })
   }).catch(logger.error))
 
   return messenger
