@@ -505,7 +505,18 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
     case 'UNKNOWN':
     default:
       yield reply({
-        text: `Je suis désolé, je suis encore trop jeune pour comprendre ce que tu me demandes. Je propose de suivre pas à pas mes questions. Si tu veux réinitilaiser la conversation clique sur le bouton ci-apres. Merci de ta compréhension.`
+        attachment: {
+          type: 'template',
+          payload: {
+            template_type: 'button',
+            text: `Je suis désolé, je suis encore trop jeune pour comprendre ce que tu me demandes. Je propose de suivre pas à pas mes questions. Si tu veux réinitilaiser la conversation clique sur le bouton ci-apres. Merci de ta compréhension.`,
+            buttons: [{
+              type: 'postback',
+              title: 'Réinitilaiser',
+              payload: JSON.stringify({ type: 'RESET' })
+            }]
+          }
+        }
       })
 
       return context
@@ -553,31 +564,33 @@ function* listProducts (context) {
       //   }
       }]
     })
-    .skip((context.page || 0) * 9)
-    .limit(9)
+    .skip((context.page || 0) * 4)
+    .limit(4)
     .exec()
 
   return {
     attachment: {
       type: 'template',
       payload: {
-        template_type: 'generic',
+        template_type: 'list',
         elements: products.map(product => ({
           title: product.title,
-          item_url: product.link,
           image_url: product.imageUrl,
-          subtitle: `${parseFloat(product.price, 10).toFixed(2)} € - ${product.brand}`
-        })).concat({
-          title: 'Pas assez de choix ?',
-          image_url: 'http://downloadicons.net/sites/default/files/plus-icon-27951.png',
-          buttons: [{
-            type: 'postback',
-            title: 'Voir plus',
-            payload: JSON.stringify({
-              type: 'NEXT_PAGE'
-            })
-          }]
-        })
+          subtitle: `${parseFloat(product.price, 10).toFixed(2)} € - ${product.brand}`,
+          default_action: {
+            type: 'web_url',
+            url: product.link.replace(/^http:/i, 'https:'),
+            messenger_extensions: true,
+            webview_height_ratio: 'tall'
+          }
+        })),
+        buttons: [{
+          type: 'postback',
+          title: 'Voir plus',
+          payload: JSON.stringify({
+            type: 'NEXT_PAGE'
+          })
+        }]
       }
     }
   }
