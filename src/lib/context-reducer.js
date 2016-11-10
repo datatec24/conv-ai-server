@@ -613,10 +613,7 @@ function* listProducts (context) {
       }, {
         $or: [{
           age: {
-            // Get closest age
-            $eq: [25, 40, 60, 80].reduce((acc, age) => {
-              return Math.abs(age - context.age) < Math.abs(acc - context.age) ? age : acc
-            }, 0)
+            $eq: [25, 40, 60, 80].reverse().reduce((acc, age) => age >= context.age ? age : acc)
           }
         }, {
           age: { $eq: 0 }
