@@ -283,7 +283,7 @@ module.exports = wrap(function* (messenger, user, context = defaultContext, acti
         })
       }
 
-      if (action.data.personType === 'friend') {
+      if (action.data.personType === 'friend_male') {
         yield reply({
           text: `J'aimerais bien avoir des amis comme toi :). Il a quel âge ce pote ?`
         })
