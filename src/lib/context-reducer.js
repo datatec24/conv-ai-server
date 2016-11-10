@@ -557,11 +557,11 @@ function* listProducts (context) {
             luxury: 'Luxe'
           }[context.style]
         }
-      // }, {
-      //   price: {
-      //     $gte: context.priceRange[0],
-      //     $lte: context.priceRange[1]
-      //   }
+      }, {
+        price: {
+          $gte: context.priceRange[0] * 100,
+          $lte: context.priceRange[1] * 100
+        }
       }]
     })
     .skip((context.page || 0) * 4)
@@ -576,12 +576,11 @@ function* listProducts (context) {
         elements: products.map(product => ({
           title: product.title,
           image_url: product.imageUrl,
-          subtitle: `${parseFloat(product.price, 10).toFixed(2)} € - ${product.brand}`,
+          subtitle: `${(product.price / 100).toFixed(2)} € - ${product.brand}`,
           default_action: {
             type: 'web_url',
             url: product.link.replace(/^http:/i, 'https:'),
-            messenger_extensions: true,
-            webview_height_ratio: 'tall'
+            messenger_extensions: false
           }
         })),
         buttons: [{
