@@ -580,8 +580,7 @@ function* listProducts (context) {
           default_action: {
             type: 'web_url',
             url: product.link.replace(/^http:/i, 'https:'),
-            messenger_extensions: true,
-            webview_height_ratio: 'tall'
+            messenger_extensions: false
           }
         })),
         buttons: [{
