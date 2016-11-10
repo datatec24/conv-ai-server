@@ -6,7 +6,8 @@ const defaultContext = {
     actionType: 'RESET',
     dataType: 'string',
     matches: [
-      'reset'
+      'reset',
+      'recherche'
     ]
   }, {
     actionType: 'GREETINGS',
@@ -563,7 +564,7 @@ module.exports = wrap(function* (messenger, user, context = defaultContext, acti
         page: 0
       })
 
-      yield reply(yield listProducts(newContext))
+      yield (yield listProducts(newContext)).reduce((p, m) => p.then(() => reply(m)), Promise.resolve())
       return newContext
     }
 
@@ -572,7 +573,7 @@ module.exports = wrap(function* (messenger, user, context = defaultContext, acti
         page: context.page + 1
       })
 
-      yield reply(yield listProducts(newContext))
+      yield (yield listProducts(newContext)).reduce((p, m) => p.then(() => reply(m)), Promise.resolve())
       return newContext
     }
 
@@ -642,7 +643,61 @@ function* listProducts (context) {
     .limit(4)
     .exec()
 
-  return {
+  console.log(products)
+
+  if (!products.length) {
+    return [{
+      attachment: {
+        type: 'template',
+        payload: {
+          template_type: 'button',
+          text: `Je suis désolé, je n'ai plus aucun produit à te proposer. Si tu veux réinitilaiser la conversation clique sur le bouton ci-apres. Merci de ta compréhension.`,
+          buttons: [{
+            type: 'postback',
+            title: 'Réinitilaiser',
+            payload: JSON.stringify({ type: 'RESET' })
+          }]
+        }
+      }
+    }]
+  }
+
+  if (products.length === 1) {
+    return [{
+      attachment: {
+        type: 'template',
+        payload: {
+          template_type: 'generic',
+          elements: [{
+            title: products[0].title,
+            image_url: products[0].imageUrl,
+            subtitle: `${(products[0].price / 100).toFixed(2)} € - ${products[0].brand}`,
+            buttons: [{
+              type: 'web_url',
+              title: 'Acheter',
+              url: products[0].link.replace(/^http:/i, 'https:'),
+              messenger_extensions: false
+            }]
+          }]
+        }
+      }
+    }, {
+      attachment: {
+        type: 'template',
+        payload: {
+          template_type: 'button',
+          text: `C'est tout ce que j'ai à te proposer. Si tu veux réinitilaiser la conversation clique sur le bouton ci-apres. Merci de ta compréhension.`,
+          buttons: [{
+            type: 'postback',
+            title: 'Réinitilaiser',
+            payload: JSON.stringify({ type: 'RESET' })
+          }]
+        }
+      }
+    }]
+  }
+
+  return [{
     attachment: {
       type: 'template',
       payload: {
@@ -651,11 +706,12 @@ function* listProducts (context) {
           title: product.title,
           image_url: product.imageUrl,
           subtitle: `${(product.price / 100).toFixed(2)} € - ${product.brand}`,
-          default_action: {
+          buttons: [{
             type: 'web_url',
+            title: 'Acheter',
             url: product.link.replace(/^http:/i, 'https:'),
             messenger_extensions: false
-          }
+          }]
         })),
         buttons: [{
           type: 'postback',
@@ -666,5 +722,5 @@ function* listProducts (context) {
         }]
       }
     }
-  }
+  }]
 }
