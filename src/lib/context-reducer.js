@@ -1,7 +1,49 @@
 const { wrap } = require('co')
 const Product = require('../models/product')
 
-module.exports = wrap(function* (messenger, user, context = {}, action = { type: 'NOOP' }) {
+const defaultContext = {
+  _expect: [{
+    actionType: 'RESET',
+    dataType: 'string',
+    matches: [
+      'reset'
+    ]
+  }, {
+    actionType: 'GREETINGS',
+    dataType: 'string',
+    matches: [
+      'hello',
+      'salut',
+      'bonjour'
+    ]
+  }, {
+    actionType: 'INSULT',
+    dataType: 'string',
+    matches: [
+      'con'
+    ]
+  }, {
+    actionType: 'THANKS',
+    dataType: 'string',
+    matches: [
+      'merci'
+    ]
+  }, {
+    actionType: 'COMPLIMENT',
+    dataType: 'string',
+    matches: [
+      'beau'
+    ]
+  }, {
+    actionType: 'SECRET',
+    dataType: 'string',
+    matches: [
+      'secret'
+    ]
+  }]
+}
+
+module.exports = wrap(function* (messenger, user, context = defaultContext, action = { type: 'NOOP' }) {
   const reply = messenger.sendMessage.bind(messenger, user.messenger.id)
 
   switch (action.type) {
@@ -57,7 +99,42 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
         }
       })
 
-      return {}
+      return defaultContext
+    }
+
+    case 'GREETINGS': {
+      yield reply({
+        text: `Bonjour :)`
+      })
+      return context
+    }
+
+    case 'INSULT': {
+      yield reply({
+        text: `Eh oh ! pas d'insultes !`
+      })
+      return context
+    }
+
+    case 'THANKS': {
+      yield reply({
+        text: `De rien :)`
+      })
+      return context
+    }
+
+    case 'COMPLIMENT': {
+      yield reply({
+        text: `Tu vas me faire rougir :)`
+      })
+      return context
+    }
+
+    case 'SECRET': {
+      yield reply({
+        text: `Tu ne trouvera jamais mon secret`
+      })
+      return context
     }
 
     case 'SELECT_GENDER': {
@@ -242,11 +319,11 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
       }
 
       return Object.assign({}, context, {
-        _expect: {
+        _expect: context._expect.concat({
           actionType: 'SELECT_AGE',
           dataKey: 'age',
           dataType: 'number'
-        }
+        })
       }, action.data)
     }
 
@@ -309,11 +386,11 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
       })
 
       return Object.assign({}, context, {
-        _expect: {
+        _expect: context._expect.concat({
           actionType: 'SELECT_PRICE_RANGE',
           dataKey: 'priceRange',
           dataType: 'number'
-        }
+        }).filter(expectation => expectation.actionType !== 'SELECT_AGE')
       }, action.data)
     }
 
@@ -465,7 +542,7 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
 
       return Object.assign({}, context, {
         priceRange: Array.isArray(action.data.priceRange) ? action.data.priceRange : [0, action.data.priceRange],
-        _expect: null
+        _expect: context._expect.filter(expectation => expectation.actionType !== 'SELECT_PRICE_RANGE')
       })
     }
 
