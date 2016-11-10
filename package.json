@@ -54,6 +54,7 @@
     "messenger-bot": "git://github.com/IcanDivideBy0/messenger-bot.git#promise_api",
     "mongoose": "^4.6.5",
     "nconf": "^0.8.4",
+    "node-schedule": "^1.2.0",
     "ramda": "^0.22.1",
     "request": "^2.76.0",
     "request-promise": "^4.1.1",
