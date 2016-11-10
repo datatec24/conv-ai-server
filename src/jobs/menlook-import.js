@@ -25,7 +25,7 @@ jobs().then(agenda => {
             importId: product.id,
             title: product.title,
             brand: product.brand,
-            price: product.sale_price,
+            price: parseInt(parseFloat(product.sale_price, 10) * 100, 10),
             quantity: isNaN(product.custom_label_0) ? 0 : parseInt(product.custom_label_0, 10),
             link: product.link,
             imageUrl: product.image_link,
