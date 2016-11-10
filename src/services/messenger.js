@@ -44,6 +44,15 @@ module.exports = bot => {
   })
 
   /**
+   *
+   */
+
+  const getContext = co.wrap(function* (user) {
+    const defaultContext = yield contextReducer(messenger, user)
+    return R.propOr(defaultContext, bot.id, user.context || {})
+  })
+
+  /**
    * Log all events
    */
 
@@ -70,30 +79,39 @@ module.exports = bot => {
 
   messenger.on('message', ({ sender, message }, reply, actions) => co(function* () {
     const user = yield getUser(sender.id)
-    const context = R.propOr({}, bot.id, user.context || {})
+    const context = yield getContext(user)
 
     let action
 
-    if (context._expect) {
-      switch (context._expect.dataType) {
+    context._expect.forEach(expectation => {
+      switch (expectation.dataType) {
         case 'number':
           let matches = message.text.match(/[0-9]+/)
 
           if (matches) {
             action = {
-              type: context._expect.actionType,
+              type: expectation.actionType,
               data: {
-                [context._expect.dataKey]: parseInt(matches[0], 10)
+                [expectation.dataKey]: parseInt(matches[0], 10)
               }
             }
           }
           break
+
+        case 'string':
+          expectation.matches.forEach(match => {
+            if (!~message.text.indexOf(match)) return
+            action = {
+              type: expectation.actionType
+            }
+          })
+          break
       }
-    }
+    })
 
     if (!action) {
       action = {
-        type: message.text.match(/reset/i) ? 'RESET' : 'UNKNOWN'
+        type: 'UNKNOWN'
       }
     }
 
@@ -107,7 +125,7 @@ module.exports = bot => {
   messenger.on('postback', ({ sender, postback }, reply, actions) => co(function* () {
     const user = yield getUser(sender.id)
     const action = JSON.parse(postback.payload)
-    const context = R.propOr({}, bot.id, user.context || {})
+    const context = yield getContext(user)
 
     yield User.update({ _id: user.id }, {
       $set: {
