@@ -106,6 +106,18 @@ module.exports = bot => {
             }
           })
           break
+
+        case 'regex': {
+          const matches = message.text.match(expectation.regex)
+          if (matches) {
+            action = {
+              type: expectation.actionType,
+              data: Object.assign({}, expectation.data)
+            }
+          }
+          break
+        }
+
       }
     })
 
