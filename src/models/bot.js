@@ -5,6 +5,10 @@ module.exports = mongoose.model('Bot', {
     type: String,
     required: true
   },
+  script: {
+    type: String,
+    required: true
+  },
   messenger: {
     token: {
       type: String,
