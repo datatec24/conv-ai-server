@@ -2,9 +2,11 @@
 
 const argv = require('yargs')
   .demand([
-    'token'
+    'token',
+    'script'
   ])
   .describe('token', 'The Page Access Token, found in App settings.')
+  .describe('script', 'The context reducer script to use.')
   .describe('verify', 'A verification token for the first-time setup of your webhook.')
   .argv
 
@@ -27,6 +29,7 @@ co(function* () {
   // Save bot config
   const bot = yield new Bot({
     name,
+    script: argv.script,
     messenger: {
       token: argv.token,
       verify: argv.verify || uuid.v4()

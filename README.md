@@ -21,6 +21,7 @@ docker-compose exec app yarn test
 docker-compose exec app yarn test -- --watch --coverage
 docker-compose exec app yarn run lint
 docker-compose exec app yarn run lint -- --fix
+docker-compose exec app ./scripts/create-bot --token FACEBOOK_PAGE_TOKEN --script my-context-reducer
 ```
 
 When you're done:

@@ -1,5 +1,5 @@
 const { wrap } = require('co')
-const Product = require('../models/product')
+const Product = require('../../models/product')
 
 const defaultContext = {
   _expect: [{

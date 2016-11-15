@@ -48,7 +48,7 @@ module.exports = bot => {
    */
 
   const getContext = co.wrap(function* (user) {
-    const defaultContext = yield contextReducer(messenger, user)
+    const defaultContext = yield contextReducer[bot.script](messenger, user)
     return R.propOr(defaultContext, bot.id, user.context || {})
   })
 
@@ -129,7 +129,7 @@ module.exports = bot => {
 
     yield User.update({ _id: user.id }, {
       $set: {
-        [`context.${bot.id}`]: yield contextReducer(messenger, user, context, action)
+        [`context.${bot.id}`]: yield contextReducer[bot.script](messenger, user, context, action)
       }
     })
   }).catch(logger.error))
@@ -141,7 +141,7 @@ module.exports = bot => {
 
     yield User.update({ _id: user.id }, {
       $set: {
-        [`context.${bot.id}`]: yield contextReducer(messenger, user, context, action)
+        [`context.${bot.id}`]: yield contextReducer[bot.script](messenger, user, context, action)
       }
     })
   }).catch(logger.error))
