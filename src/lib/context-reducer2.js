@@ -1,7 +1,8 @@
 const { wrap } = require('co')
 const Product = require('../models/product')
 const Mobile = require('../models/mobile')
-const cron = require('node-cron')
+const cron = require('node-cron');
+
 
 module.exports = wrap(function* (messenger, user, context = {}, action = { type: 'NOOP' }) {
   const reply = messenger.sendMessage.bind(messenger, user.messenger.id)
@@ -9,12 +10,19 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
   switch (action.type) {
     case 'START':
     case 'RESET': {
-      const newContext = Object.assign({}, context, action.data, {
-        page_brand: 0
+
+      const newContext = Object.assign({}, {
+        page_brand: 0,
+        page_phone:0,
+        _expect: {
+          actionType: 'WRITE_PHONE',
+          // dataKey: 'age',
+          dataType: 'pick_phones'
+        }
       })
 
       yield reply({
-        text: `Hello ${user.profile.firstName}, I'm Kunle, your phone hunter. I can propose you some phone 📱 and set alert ⏰  when there is promotion 🚀🚀 :) Of course my work is totally free ;)`
+        text: `Hello ${user.profile.firstName}, I'm Kunle, your phone hunter.\nI can propose you some phone 📱 and set alert ⏰  when there is promotion 🚀🚀 :)\nOf course my work is totally free ;)`
       })
 
       yield reply({
@@ -22,48 +30,10 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
       })
 
       yield reply({
-        text: `If not you can choose one of your favorite brand below`
+        text: `If you don't, you can choose one of your favorite brand below`
       })
 
       yield reply(yield brandCarousel(context))
-
-      // yield reply({
-      //   attachment: {
-      //     type: 'template',
-      //     payload: {
-      //       template_type: 'list',
-      //       top_element_style: "compact",
-      //       elements: [{
-      //         title: 'Apple',
-      //         image_url:'http://storage-cube.quebecormedia.com/v1/dynamic_resize?quality=75&size=1500x1500&src=http%3A%2F%2Fstorage-cube.quebecormedia.com%2Fv1%2Fellequebec_prod%2Felle_quebec%2F1027d33e-ced8-430d-a558-256d439a899a%2Fpere-enfant.jpg' ,
-      //         default_action: {
-      //           type: 'web_url',
-      //           url: 'https://menlook.com',
-      //           messenger_extensions: true,
-      //           webview_height_ratio: 'tall'
-      //           }
-      //         },
-      //         {
-      //           title: 'Apple',
-      //           image_url:'http://storage-cube.quebecormedia.com/v1/dynamic_resize?quality=75&size=1500x1500&src=http%3A%2F%2Fstorage-cube.quebecormedia.com%2Fv1%2Fellequebec_prod%2Felle_quebec%2F1027d33e-ced8-430d-a558-256d439a899a%2Fpere-enfant.jpg' ,
-      //           default_action: {
-      //             type: 'web_url',
-      //             url: 'https://menlook.com',
-      //             messenger_extensions: true,
-      //             webview_height_ratio: 'tall'
-      //             }
-      //         }
-      //       ],
-      //       buttons: [{
-      //         type: 'postback',
-      //         title: 'Voir plus',
-      //         payload: JSON.stringify({
-      //           type: 'NEXT_PAGE'
-      //         })
-      //       }]
-      //     }
-      //   }
-      // })
 
       return newContext
     }
@@ -77,7 +47,42 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
       return newContext
     }
 
-    case 'SELECT_BRAND': {
+    case 'WRITE_PHONE':{
+      const text = action.text
+
+      yield result = Mobile.find({})
+      .exec()
+      .then(function(data){
+        return data.filter((element) => {
+        let pattern = element.pattern
+        return 'iphone'.match(RegExp(pattern,'ig'))
+        })},function(){console.log("rejected")})
+      .then(function(data){
+        context.product_to_propose = data
+        return data
+      })
+
+      console.log('contexte',context.product_to_propose)
+      yield reply (yield sendSelection(context))
+
+      return Object.assign({}, context, {
+        _expect: null
+      })
+
+    }
+
+    case 'NEXT_PHONE':{
+      newContext = Object.assign({}, context, action.data, {
+        page_phone: context.page_phone + 1
+      })
+      console.log('------ICIIIII',newContext)
+      yield reply (yield sendSelection(newContext))
+
+      return newContext
+    }
+
+    case 'SELECT_BRAND':{
+
       yield reply({
         text: `Ok ${action.data.brand} is nice :) and what is your budget ?`,
         quick_replies: [{
@@ -144,8 +149,8 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
     case 'SET_ALERT_PRICE': {
       console.log('dans set alert', context.set_alert)
 
-      if (!context.set_alert) {
-        yield reply({text: 'Subscribe sucessfull'})
+      if (!context.set_alert){
+        yield reply({text:'Cool :) I will make you new propositions every day at 12 :)'})
 
         cron.schedule('* * 12 * * *', function () {
           reply({text: "Voila les alertes pricing qu'on a"})
@@ -160,6 +165,12 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
         yield reply({text: 'Already subribed to stop send stop'})
         return context
       }
+    }
+
+    case 'INFO':{
+      yield reply({text:`Keys Feature : ${action.data.description}`})
+      return Object.assign({}, context, action.data)
+
     }
 
     case 'NOOP':
@@ -221,15 +232,95 @@ function* brandCarousel (context) {
               type: 'NEXT_BRAND'
             })
           }]
-        }
-
-            ])
+        }])
       }
     }
   }
 }
 
-function* mobileCarousel (context) {
+function* write_phone(context,text){
+
+  const mobiles = yield Mobile
+    .find({})
+    .exec()
+    .then((data) => {
+      console.log('data avant filtre',data)
+      return data.filter((element) => {
+        let pattern = element.pattern
+        return text.match(RegExp(pattern,'ig'))
+    })},function(){
+      console.log("rejected")})
+
+    console.log('write_phone',mobiles)
+
+    if(mobiles){
+      return {
+          attachment: {
+            type: 'template',
+            payload: {
+              template_type: 'generic',
+              elements: mobiles.map(mobile => ({
+                  title:`${mobile.model} - ${mobile.brand}`,
+                  subtitle:`${mobile.price} €`,
+                  image_url: 'http://storage-cube.quebecormedia.com/v1/dynamic_resize?quality=75&size=1500x1500&src=http%3A%2F%2Fstorage-cube.quebecormedia.com%2Fv1%2Fellequebec_prod%2Felle_quebec%2F1027d33e-ced8-430d-a558-256d439a899a%2Fpere-enfant.jpg',
+                  buttons: [{
+                    type: 'postback',
+                    title: 'Acheter',
+                    payload: JSON.stringify({
+                      type: 'NEXT_STEP',
+                      data: { brand: mobile.model }
+                    })
+                  },
+                  {
+                    type: 'postback',
+                    title: "Plus d'infos",
+                    payload: JSON.stringify({
+                      type: 'INFO',
+                      data: { model: mobile.model }
+                    })
+                  },
+                  {
+                    type: 'phone_number',
+                    title: 'Appeler Jumia',
+                    payload: '+33668297514'
+                  }
+                ]
+              })).concat([{
+                  title:'En voir plus',
+                  image_url: 'http://storage-cube.quebecormedia.com/v1/dynamic_resize?quality=75&size=1500x1500&src=http%3A%2F%2Fstorage-cube.quebecormedia.com%2Fv1%2Fellequebec_prod%2Felle_quebec%2F1027d33e-ced8-430d-a558-256d439a899a%2Fpere-enfant.jpg',
+                  buttons: [{
+                    type: 'postback',
+                    title: 'Autres choix',
+                    payload: JSON.stringify({
+                      type: 'NEXT_PHONE'
+                    })
+                  },
+                  {
+                    type:'postback',
+                    title:'Set Alert Price',
+                    payload:JSON.stringify({
+                      type:'SET_ALERT_PRICE'
+                    })
+                  }
+                ]
+              }
+
+              ])
+            }
+          }
+        }
+    }
+
+    else{
+      return {text:'Plus de téléphones qui te correpondent'}
+    }
+
+
+
+}
+
+
+function* mobileCarousel (context){
   const mobiles = yield Mobile
     .find({$and: [
       {
@@ -248,60 +339,92 @@ function* mobileCarousel (context) {
     .limit(2)
     .exec()
 
-  console.log('mobile carousel', mobiles)
-  return {
-    attachment: {
-      type: 'template',
-      payload: {
-        template_type: 'generic',
-        elements: mobiles.map(mobile => ({
-          title: `${mobile.model} - ${mobile.brand}`,
-          subtitle: `${mobile.price} €`,
-          image_url: 'http://storage-cube.quebecormedia.com/v1/dynamic_resize?quality=75&size=1500x1500&src=http%3A%2F%2Fstorage-cube.quebecormedia.com%2Fv1%2Fellequebec_prod%2Felle_quebec%2F1027d33e-ced8-430d-a558-256d439a899a%2Fpere-enfant.jpg',
-          buttons: [{
-            type: 'postback',
-            title: 'Acheter',
-            payload: JSON.stringify({
-              type: 'NEXT_STEP',
-              data: { brand: mobile.model }
-            })
-          },
-          {
-            type: 'postback',
-            title: "Plus d'infos",
-            payload: JSON.stringify({
-              type: 'INFO',
-              data: { brand: mobile.model }
-            })
-          },
-          {
-            type: 'phone_number',
-            title: 'Appeler Jumia',
-            payload: '+33668297514'
-          }
-              ]
-        })).concat([{
-          title: 'En voir plus',
-          image_url: 'http://storage-cube.quebecormedia.com/v1/dynamic_resize?quality=75&size=1500x1500&src=http%3A%2F%2Fstorage-cube.quebecormedia.com%2Fv1%2Fellequebec_prod%2Felle_quebec%2F1027d33e-ced8-430d-a558-256d439a899a%2Fpere-enfant.jpg',
-          buttons: [{
-            type: 'postback',
-            title: 'Autres choix',
-            payload: JSON.stringify({
-              type: 'NEXT_MOBILE'
-            })
-          },
-          {
-            type: 'postback',
-            title: 'Set Alert Price',
-            payload: JSON.stringify({
-              type: 'SET_ALERT_PRICE'
-            })
-          }
-              ]
-        }
+    console.log('mobile carousel',typeof(mobiles))
+    yield sendSelection (context)
+}
 
-            ])
+function* sendSelection (context){
+  console.log('page',context.page_phone)
+  let mobiles = context.product_to_propose.slice((context.page_phone * 2  || 0))
+  console.log('mobiles of SendSelection',mobiles)
+  if(mobiles.length > 0){
+    return {
+      attachment: {
+        type: 'template',
+        payload: {
+          template_type: 'generic',
+          elements: mobiles.map(mobile => ({
+              title:`${mobile.model} - ${mobile.brand}`,
+              subtitle:`₦ ${mobile.price}`,
+              image_url: `${mobile.image}`,
+              buttons: [{
+                type: 'web_url',
+                title: 'Acheter',
+                url:`${mobile.link}`
+              },
+              {
+                type: 'postback',
+                title: "Plus d'infos",
+                payload: JSON.stringify({
+                  type: 'INFO',
+                  data: {
+                    model: mobile.model,
+                    description: mobile.description
+                  }
+                })
+              },
+              {
+                type: 'phone_number',
+                title: 'Appeler Jumia',
+                payload: '+33668297514'
+              }
+            ]
+          })).concat([{
+              title:'En voir plus',
+              image_url: 'http://storage-cube.quebecormedia.com/v1/dynamic_resize?quality=75&size=1500x1500&src=http%3A%2F%2Fstorage-cube.quebecormedia.com%2Fv1%2Fellequebec_prod%2Felle_quebec%2F1027d33e-ced8-430d-a558-256d439a899a%2Fpere-enfant.jpg',
+              buttons: [{
+                type: 'postback',
+                title: 'Autres choix',
+                payload: JSON.stringify({
+                  type: 'NEXT_PHONE'
+                })
+              },
+              {
+                type:'postback',
+                title:'Set Alert Price',
+                payload:JSON.stringify({
+                  type:'SET_ALERT_PRICE'
+                })
+              }
+            ]
+          }])
+        }
       }
     }
   }
+  else{
+    return {
+      text: `I don't have any more mobile to propose :( but do you want to be alerted as soon as i have more?`,
+      quick_replies: [{
+        content_type: 'text',
+        title: 'oui',
+        payload: JSON.stringify({
+          type: 'SET_ALERT_PRICE',
+          data: {
+            priceRange: [0, 50]
+          }
+        })
+      }, {
+        content_type: 'text',
+        title: 'non',
+        payload: JSON.stringify({
+          type: 'NOT_SET_PRICE',
+          data: {
+            priceRange: [50, 100]
+          }
+        })
+      }]
+    }
+
+}
 }
