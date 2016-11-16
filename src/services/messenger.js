@@ -83,7 +83,7 @@ module.exports = bot => {
 
     let action
 
-    context._expect.forEach(expectation => {
+    (context._expect || []).forEach(expectation => {
       switch (expectation.dataType) {
         case 'number':
           let matches = message.text.match(/[0-9]+/)
@@ -102,7 +102,10 @@ module.exports = bot => {
           expectation.matches.forEach(match => {
             if (!~message.text.indexOf(match)) return
             action = {
-              type: expectation.actionType
+              type: expectation.actionType,
+              data: {
+                [expectation.dataKey]: message.text
+              }
             }
           })
           break
