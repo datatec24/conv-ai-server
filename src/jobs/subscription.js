@@ -75,7 +75,7 @@ jobs().then(agenda => {
     console.log('------------envoie de message en masse!!!-----------------')
     new Promise((resolve, reject) => {
       console.log('1 Bot',Bot)
-      Bot.findById("58234e59bec50a3e10b5208c",(err,bot)=>{
+      Bot.findById("582db377bd84550058ce2308",(err,bot)=>{
         console.log(bot)
         let search =  User.find({ subscription: { $exists: true }}).exec()
         .then((users) =>{
