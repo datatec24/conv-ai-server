@@ -83,46 +83,50 @@ module.exports = bot => {
 
     let action
 
-    (context._expect || []).forEach(expectation => {
-      switch (expectation.dataType) {
-        case 'number':
-          let matches = message.text.match(/[0-9]+/)
+    if (message.quick_reply) {
+      action = JSON.parse(message.quick_reply.payload)
+    } else {
+      ;(context._expect || []).forEach(expectation => {
+        switch (expectation.dataType) {
+          case 'number':
+            let matches = message.text.match(/[0-9]+/)
 
-          if (matches) {
-            action = {
-              type: expectation.actionType,
-              data: {
-                [expectation.dataKey]: parseInt(matches[0], 10)
+            if (matches) {
+              action = {
+                type: expectation.actionType,
+                data: {
+                  [expectation.dataKey]: parseInt(matches[0], 10)
+                }
               }
             }
-          }
-          break
+            break
 
-        case 'string':
-          expectation.matches.forEach(match => {
-            if (!~message.text.indexOf(match)) return
-            action = {
-              type: expectation.actionType,
-              data: {
-                [expectation.dataKey]: message.text
+          case 'string':
+            expectation.matches.forEach(match => {
+              if (!~message.text.indexOf(match)) return
+              action = {
+                type: expectation.actionType,
+                data: {
+                  [expectation.dataKey]: message.text
+                }
+              }
+            })
+            break
+
+          case 'regex': {
+            const matches = message.text.match(expectation.regex)
+            if (matches) {
+              action = {
+                type: expectation.actionType,
+                data: Object.assign({}, expectation.data)
               }
             }
-          })
-          break
-
-        case 'regex': {
-          const matches = message.text.match(expectation.regex)
-          if (matches) {
-            action = {
-              type: expectation.actionType,
-              data: Object.assign({}, expectation.data)
-            }
+            break
           }
-          break
+
         }
-
-      }
-    })
+      })
+    }
 
     if (!action) {
       action = {
