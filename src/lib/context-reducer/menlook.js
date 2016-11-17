@@ -426,6 +426,10 @@ module.exports = wrap(function* (messenger, user, context = defaultContext, acti
                 title: 'Ma pote',
                 subtitle: `Personne avec laquelle on est uni par l'amitié`,
                 image_url: random([
+                  'https://media.giphy.com/media/wjQQeYnTW4cCY/giphy.gif',
+                  'https://media.giphy.com/media/10kFjmefxCQfmg/giphy.gif',
+                  'https://media.giphy.com/media/xT0BKuPe7RolxPv2aQ/giphy.gif',
+                  'https://media.giphy.com/media/ICHNzBhqrkgda/giphy.gif'
                 ]),
                 buttons: [{
                   type: 'postback',
