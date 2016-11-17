@@ -1,4 +1,4 @@
-const { wrap } = require('co')
+const co = require('co')
 const Product = require('../../models/product')
 
 function random (arr) {
@@ -53,7 +53,7 @@ const defaultContext = {
   }]
 }
 
-module.exports = wrap(function* (messenger, user, context = defaultContext, action = { type: 'NOOP' }) {
+module.exports = co.wrap(function* (messenger, user, context = defaultContext, action = { type: 'NOOP' }) {
   const reply = messenger.sendMessage.bind(messenger, user.messenger.id)
   const replyMany = messages => messages.reduce((p, m) => p.then(() => reply(m)), Promise.resolve())
 
@@ -893,15 +893,7 @@ module.exports = wrap(function* (messenger, user, context = defaultContext, acti
 
     case 'SELECT_STYLE': {
       yield reply({
-        text: `Ok, je te propose les produits suivants.`
-      })
-
-      yield reply({
-        text: `Si tu cliques sur "Accèder au produit", tu seras renvoyé directement sur la fiche produit de Menlook (car Facebook ne me permet pas encore de te faire payer directement ici).`
-      })
-
-      yield reply({
-        text: `Si tu veux lancer une nouvelle recherche , il te suffit de taper "Recherche" ou de cliquer sur (picto menu persistant) puis "Nouvelle recherche" en bas à gauche de la conversation.`
+        text: `Ok, je te propose les produits suivants. Si tu cliques sur "Acheter", tu seras renvoyé directement sur la fiche du produit sur Menlook.com.`
       })
 
       const newContext = Object.assign({}, context, action.data, {
@@ -909,6 +901,17 @@ module.exports = wrap(function* (messenger, user, context = defaultContext, acti
       })
 
       yield replyMany(yield listProducts(newContext))
+
+      setTimeout(() => co(function* () {
+        yield reply({
+          text: `J'espère que tu as aimé la sélection que nous t'avons proposé ! Vas-y donnes moi ton adresse mail, comme ça je pourrai t'envoyer des sélections aux petits oignons ;).`
+        })
+
+        yield reply({
+          text: `Si tu veux faire une nouvelle recherche, tu n'as qu'à écrire "Nouvelle Recherche`
+        })
+      }), 3000)
+
       return newContext
     }
 
@@ -1028,7 +1031,7 @@ function* listProducts (context) {
         type: 'template',
         payload: {
           template_type: 'button',
-          text: `C'est tout ce que j'ai à te proposer. Si tu veux réinitilaiser la conversation clique sur le bouton ci-apres. Merci de ta compréhension.`,
+          text: `C'est tout ce que j'ai à te proposer. Si tu veux réinitialiser la conversation clique sur le bouton ci-apres. Merci de ta compréhension.`,
           buttons: [{
             type: 'postback',
             title: 'Réinitilaiser',
