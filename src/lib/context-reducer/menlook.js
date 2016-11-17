@@ -1,9 +1,16 @@
 const co = require('co')
 const Product = require('../../models/product')
 
-function random (arr) {
-  return arr[Math.floor(Math.random() * arr.length)]
-}
+const random = (arr) => arr[Math.floor(Math.random() * arr.length)]
+
+const confirm = () => random([
+  `Yes, let's go`,
+  `Oui, je confirme`,
+  `Ok, je clique`,
+  `Je valide`,
+  `Ok, je continue`,
+  `Oui c'est ça`
+])
 
 const defaultContext = {
   _expect: [{
@@ -11,33 +18,559 @@ const defaultContext = {
     dataType: 'string',
     matches: [
       'reset',
-      'recherche'
+      'est parti',
+      'c parti'
     ]
   }, {
     actionType: 'GREETINGS',
     dataType: 'string',
     matches: [
-      'hello',
       'salut',
-      'bonjour'
+      'bonjour',
+      'hello',
+      'ciao',
+      'hey',
+      'hi',
+      'yo'
     ]
   }, {
     actionType: 'INSULT',
     dataType: 'string',
     matches: [
-      'con'
+      `abruti`,
+      `ahuri`,
+      `aigrefin`,
+      `anachorète`,
+      `analphabète`,
+      `andouille`,
+      `anus de poulpe`,
+      `arsouille`,
+      `aspirateur a muscadet`,
+      `assisté`,
+      `asticot`,
+      `attardé`,
+      `avorton`,
+      `babache`,
+      `bachibouzouk`,
+      `balai de chiottes`,
+      `baltringue`,
+      `banane`,
+      `bandit`,
+      `barjot`,
+      `batârd`,
+      `betterave`,
+      `bigleux`,
+      `blaireau`,
+      `boloss`,
+      `bordel`,
+      `bordel à cul`,
+      `boudin`,
+      `bouffon`,
+      `bougre d’âne`,
+      `bougre d’imbécile`,
+      `bougre de congre`,
+      `bougre de conne`,
+      `boule de pus`,
+      `boulet`,
+      `bouricot`,
+      `bourique`,
+      `bourrin`,
+      `boursemolle`,
+      `boursouflure`,
+      `bouseux`,
+      `boutonneux`,
+      `branleur`,
+      `branlotin`,
+      `branque`,
+      `branquignole`,
+      `brigand`,
+      `brêle`,
+      `brosse à chiottes`,
+      `bubon puant`,
+      `burne`,
+      `butor`,
+      `bécasse`,
+      `bégueule`,
+      `bélitre`,
+      `béotien`,
+      `bête`,
+      `cageot`,
+      `cagole`,
+      `calice`,
+      `canaille`,
+      `canaillou`,
+      `cancrelat`,
+      `caprinophile`,
+      `carburateur à beaujolais`,
+      `caribou`,
+      `casse-pieds`,
+      `cassos (cas social)`,
+      `catin`,
+      `cave`,
+      `cervelle d’huitre`,
+      `chacal`,
+      `chacal puant`,
+      `chafouin,`,
+      `chameau`,
+      `chancreux`,
+      `chancre puant`,
+      `chaoui`,
+      `charogne`,
+      `chenapan`,
+      `chiassard`,
+      `chiasse de caca fondu`,
+      `chieur`,
+      `chiure de pigeon`,
+      `cinglé`,
+      `clampin`,
+      `cloaque`,
+      `cloche`,
+      `clodo`,
+      `cloporte`,
+      `clown`,
+      `cochon`,
+      `cocu`,
+      `con`,
+      `conard`,
+      `conchieur`,
+      `concombre`,
+      `connard`,
+      `connasse`,
+      `conne`,
+      `coprolithe`,
+      `coprophage`,
+      `cornard`,
+      `cornegidouille`,
+      `corniaud`,
+      `cornichon`,
+      `couard`,
+      `couille de tétard`,
+      `couille molle`,
+      `couillon`,
+      `crapaud de pissotière`,
+      `crapule`,
+      `crassard`,
+      `crasseuse`,
+      `crasspouillard!`,
+      `crevard`,
+      `crevure`,
+      `crotte de moineau`,
+      `cryptorchide`,
+      `crâne d’obus`,
+      `crétin`,
+      `crétin des alpes`,
+      `crétin des iles`,
+      `crétin goîtreux`,
+      `cuistre`,
+      `cul de babouin`,
+      `cul terreux`,
+      `dégueulasse`,
+      `don juan de pissotière`,
+      `ducon`,
+      `dugenou`,
+      `dugland`,
+      `dypterosodomite`,
+      `débile`,
+      `décamerde`,
+      `décérébré`,
+      `dégueulis`,
+      `dégénéré chromozomique`,
+      `dégénéré du bulbe`,
+      `dépravé`,
+      `détritus`,
+      `ecervelé`,
+      `ectoplasme`,
+      `emmerdeur`,
+      `empaffé`,
+      `emplâtre`,
+      `empoté`,
+      `enculeur de mouches`,
+      `enculé`,
+      `enflure`,
+      `enfoiré`,
+      `erreur de la nature`,
+      `eunuque`,
+      `face de cul`,
+      `face de pet`,
+      `face de rat`,
+      `faquin`,
+      `faraud`,
+      `faux jeton`,
+      `fesse d’huitre`,
+      `fesse de moule`,
+      `fesses molles`,
+      `fiente`,
+      `filou`,
+      `fini à l’urine`,
+      `fion`,
+      `fiote`,
+      `flaque de pus`,
+      `foireux`,
+      `foldingue`,
+      `fonctionnaire`,
+      `fouille merde`,
+      `four à merde`,
+      `fourbe`,
+      `foutriquet`,
+      `frapadingue`,
+      `frappe`,
+      `freluquet`,
+      `fricoteur`,
+      `frigide`,
+      `fripouille`,
+      `frippon`,
+      `frustré`,
+      `fumier`,
+      `fumiste`,
+      `furoncle`,
+      `félon`,
+      `ganache`,
+      `gangrène`,
+      `garage a bite`,
+      `gibier de potence`,
+      `gland`,
+      `glandeur`,
+      `glandus`,
+      `globicéphale`,
+      `gnome`,
+      `godiche`,
+      `gogol`,
+      `goinfre`,
+      `gommeux`,
+      `gougnafier`,
+      `goujat`,
+      `goulu`,
+      `gourdasse`,
+      `gourgandin/e`,
+      `grand cornichon`,
+      `grand dépandeur d’andouilles`,
+      `gras du bide`,
+      `graveleux`,
+      `gredin`,
+      `grenouille`,
+      `gringalet`,
+      `grognasse`,
+      `gros caca poilu`,
+      `gros con`,
+      `gros lard`,
+      `grosse merde puante`,
+      `grosse truie violette`,
+      `grue`,
+      `gueulard`,
+      `gueule de fion`,
+      `gueule de raie`,
+      `gueux`,
+      `gugus`,
+      `guignol`,
+      `has-been`,
+      `hérétique`,
+      `histrion`,
+      `homoncule`,
+      `hostie d’épais`,
+      `hurluberlu`,
+      `hérétique`,
+      `iconoclaste`,
+      `idiot`,
+      `ignare`,
+      `illettré`,
+      `imbibé`,
+      `imbécile`,
+      `impuissant`,
+      `infâme raie de cul`,
+      `ironie de la création`,
+      `ivrogne`,
+      `jaune`,
+      `jean-foutre`,
+      `jobard`,
+      `jobastre`,
+      `judas`,
+      `kroumir`,
+      `kéké`,
+      `laideron`,
+      `larve`,
+      `lavedu`,
+      `lépreux`,
+      `loboto`,
+      `loutre analphabète`,
+      `lèche-cul`,
+      `malandrin`,
+      `malotru`,
+      `malpropre`,
+      `manant`,
+      `manche à couille`,
+      `mange merde`,
+      `maquereau`,
+      `maquerelle`,
+      `maraud`,
+      `marchand de tapis`,
+      `margoulin`,
+      `merdaillon`,
+      `merdasse`,
+      `merde`,
+      `merde molle`,
+      `merdophile`,
+      `merlan frit`,
+      `microcéphale`,
+      `minable`,
+      `minus`,
+      `miteux`,
+      `moins que rien`,
+      `molasson`,
+      `mongol`,
+      `mononeuronal`,
+      `mont de brin`,
+      `morbleu`,
+      `morfale`,
+      `morille`,
+      `morpion`,
+      `mortecouille`,
+      `morue`,
+      `morveux`,
+      `motherfucker`,
+      `mou du bulbe`,
+      `mou du genou`,
+      `mou du gland`,
+      `moudlabite`,
+      `moule à gauffre`,
+      `mouton de panurge`,
+      `méchant.`,
+      `mécréant`,
+      `mérule`,
+      `nabot`,
+      `nain de jardin`,
+      `nanar`,
+      `naze`,
+      `nazillon`,
+      `necropédophile`,
+      `neuneu`,
+      `nez de boeuf`,
+      `niais, niaiseux`,
+      `nigaud`,
+      `niguedouille`,
+      `noob`,
+      `nounouille`,
+      `nécrophile`,
+      `obsédé`,
+      `oiseau de mauvaise augure`,
+      `olibrius`,
+      `ordure purulente`,
+      `outre à pisse`,
+      `outrecuidant`,
+      `pachyderme`,
+      `paltoquet`,
+      `panaris`,
+      `parasite`,
+      `parbleu`,
+      `parvenu`,
+      `patate`,
+      `paumé`,
+      `pauvre con`,
+      `paysan`,
+      `peau de bite`,
+      `peau de vache`,
+      `pecore`,
+      `peigne-cul`,
+      `peine a jouir`,
+      `peine à jouir`,
+      `pendard`,
+      `pervers`,
+      `pet de moule`,
+      `petite merde`,
+      `petzouille`,
+      `phlegmon`,
+      `pigeon`,
+      `pignolo`,
+      `pignouf`,
+      `pimbêche`,
+      `pinailleur`,
+      `pine d’ours`,
+      `pine d’huitre`,
+      `pintade`,
+      `pipistrelle puante`,
+      `piqueniquedouille`,
+      `pisse froid`,
+      `pisse-vinaigre`,
+      `pisseuse`,
+      `pissure`,
+      `piètre`,
+      `planqué`,
+      `playboy de superette`,
+      `pleutre`,
+      `plouc`,
+      `poire`,
+      `poireau`,
+      `poivrot`,
+      `polisson`,
+      `poltron`,
+      `pompe a merde`,
+      `porc`,
+      `pot de chambre`,
+      `pouacre, pouacreux`,
+      `pouffe`,
+      `pouffiasse`,
+      `poufieux`,
+      `pouilleux`,
+      `pourceau`,
+      `pourriture`,
+      `pousse mégot`,
+      `punaise`,
+      `putassière`,
+      `pute au rabais`,
+      `pute borgne`,
+      `putréfaction`,
+      `pygocéphale`,
+      `pécore`,
+      `pédale`,
+      `péquenot`,
+      `pétasse`,
+      `pétassoïde conassiforme`,
+      `pétochard`,
+      `quadrizomique`,
+      `queutard`,
+      `quiche`,
+      `raclure de bidet`,
+      `raclure de chiotte`,
+      `radasse`,
+      `radin`,
+      `ramassis de chiure de moineau`,
+      `rambo de pacotille`,
+      `rastaquouère`,
+      `renégat`,
+      `roquet`,
+      `roublard`,
+      `rouge`,
+      `roulure`,
+      `résidu de fausse couche`,
+      `résidus de partouze`,
+      `sabraque`,
+      `sac à brin`,
+      `sac à foutre`,
+      `sac à gnole`,
+      `sac à merde`,
+      `sac à viande`,
+      `sac à vin`,
+      `sacrebleu`,
+      `sacrement`,
+      `sacripan`,
+      `sagouin`,
+      `salaud`,
+      `saleté`,
+      `saligaud`,
+      `salopard`,
+      `salope`,
+      `saloperie`,
+      `salopiaud`,
+      `saltinbanque`,
+      `saperlipopette`,
+      `saperlotte`,
+      `sauvage`,
+      `scaphandrier d’eau de vaiselle`,
+      `scatophile`,
+      `scelerat`,
+      `schnock`,
+      `schpountz`,
+      `serpillière à foutre`,
+      `sinistrose ambulante`,
+      `sinoque`,
+      `sodomite`,
+      `sombre conne`,
+      `sombre crétin`,
+      `sot`,
+      `souillon`,
+      `sous merde`,
+      `spermatozoide avarié`,
+      `spermiducte`,
+      `suintance`,
+      `sybarite`,
+      `syphonné`,
+      `tabarnak`,
+      `tabernacle`,
+      `tâcheron`,
+      `tafiole`,
+      `tanche`,
+      `tartignole`,
+      `taré`,
+      `tas de saindoux`,
+      `tasse à foutre`,
+      `thon`,
+      `tire couilles`,
+      `tocard`,
+      `tonnerre de brest`,
+      `toqué`,
+      `trainé`,
+      `traîne savate`,
+      `tricard`,
+      `triple buse`,
+      `tromblon`,
+      `tronche de cake`,
+      `trou de balle`,
+      `trou du cul`,
+      `troubignole`,
+      `truand`,
+      `trumeaux`,
+      `tuberculeux`,
+      `tudieu`,
+      `tétârd`,
+      `tête d’ampoule`,
+      `tête de bite`,
+      `tête de chibre`,
+      `tête de con`,
+      `tête de noeud`,
+      `tête à claques`,
+      `usurpateur`,
+      `va nu pieds`,
+      `va te faire`,
+      `vandale`,
+      `vaurien`,
+      `vautour`,
+      `ventrebleu`,
+      `vermine`,
+      `veule`,
+      `vicelard`,
+      `vieille baderne`,
+      `vieille poule`,
+      `vieille taupe`,
+      `vieux chnoque`,
+      `vieux con`,
+      `vieux fossile`,
+      `vieux tableau`,
+      `vieux tromblon`,
+      `vilain`,
+      `vilain comme une couvée de singe`,
+      `vioque`,
+      `vipère lubrique`,
+      `voleur`,
+      `vorace`,
+      `voyou`,
+      `vérole`,
+      `wisigoth`,
+      `yéti baveux`,
+      `zigomar`,
+      `zigoto`,
+      `zonard`,
+      `zouave`,
+      `zoulou`,
+      `zozo`
     ]
   }, {
     actionType: 'THANKS',
     dataType: 'string',
     matches: [
-      'merci'
+      'merci',
+      'thanks',
+      'thank you'
     ]
   }, {
     actionType: 'COMPLIMENT',
     dataType: 'string',
     matches: [
-      'beau'
+      `cool`,
+      `sympa`,
+      `c'est bien`,
+      `c'est sympa`,
+      `trop cool`,
+      `nice`,
+      `stylé`
     ]
   }, {
     actionType: 'SECRET',
@@ -73,6 +606,10 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
       })
 
       yield reply({
+        text: `Tu peux lancer une nouvelle recherche à tout moment en écrivant "C'est parti".`
+      })
+
+      yield reply({
         text: 'Il est pour qui ce cadeau ?'
       })
 
@@ -92,7 +629,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
               ]),
               buttons: [{
                 type: 'postback',
-                title: `Oui, let's go !`,
+                title: confirm(),
                 payload: JSON.stringify({
                   type: 'SELECT_GENDER',
                   data: { gender: 'female' }
@@ -109,7 +646,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
               ]),
               buttons: [{
                 type: 'postback',
-                title: `Oui, let's go !`,
+                title: confirm(),
                 payload: JSON.stringify({
                   type: 'SELECT_GENDER',
                   data: { gender: 'male' }
@@ -268,7 +805,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
 
     case 'SELECT_MAIL': {
       yield reply({
-        text: `Ok, c'est noté !`
+        text: `Ok, bien noté, je transmets :). N'hésites pas à me demander une nouvelle selection en saisissant "C'est parti" et à parler de mes services autour de toi :).`
       })
 
       return Object.assign({}, context, {
@@ -297,7 +834,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: `Oui, let's go !`,
+                  title: confirm(),
                   payload: JSON.stringify({
                     type: 'SELECT_PERSON_TYPE',
                     data: { personType: 'father' }
@@ -312,7 +849,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: `Oui, let's go !`,
+                  title: confirm(),
                   payload: JSON.stringify({
                     type: 'SELECT_PERSON_TYPE',
                     data: { personType: 'brother' }
@@ -330,7 +867,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: `Oui, let's go !`,
+                  title: confirm(),
                   payload: JSON.stringify({
                     type: 'SELECT_PERSON_TYPE',
                     data: { personType: 'friend_male' }
@@ -347,7 +884,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: `Oui, let's go !`,
+                  title: confirm(),
                   payload: JSON.stringify({
                     type: 'SELECT_PERSON_TYPE',
                     data: { personType: 'husband' }
@@ -367,7 +904,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: `Oui, let's go !`,
+                  title: confirm(),
                   payload: JSON.stringify({
                     type: 'SELECT_PERSON_TYPE',
                     data: { personType: 'other_male' }
@@ -399,7 +936,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: `Oui, let's go !`,
+                  title: confirm(),
                   payload: JSON.stringify({
                     type: 'SELECT_PERSON_TYPE',
                     data: { personType: 'mother' }
@@ -416,7 +953,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: `Oui, let's go !`,
+                  title: confirm(),
                   payload: JSON.stringify({
                     type: 'SELECT_PERSON_TYPE',
                     data: { personType: 'sister' }
@@ -433,7 +970,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: `Oui, let's go !`,
+                  title: confirm(),
                   payload: JSON.stringify({
                     type: 'SELECT_PERSON_TYPE',
                     data: { personType: 'friend_female' }
@@ -451,7 +988,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: `Oui, let's go !`,
+                  title: confirm(),
                   payload: JSON.stringify({
                     type: 'SELECT_PERSON_TYPE',
                     data: { personType: 'wife' }
@@ -467,7 +1004,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: `Oui, let's go !`,
+                  title: confirm(),
                   payload: JSON.stringify({
                     type: 'SELECT_PERSON_TYPE',
                     data: { personType: 'other_female' }
@@ -741,7 +1278,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: `Oui, let's go !`,
+                  title: confirm(),
                   payload: JSON.stringify({
                     type: 'SELECT_STYLE',
                     data: { style: 'geek' }
@@ -756,7 +1293,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: `Oui, let's go !`,
+                  title: confirm(),
                   payload: JSON.stringify({
                     type: 'SELECT_STYLE',
                     data: { style: 'business' }
@@ -771,7 +1308,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: `Oui, let's go !`,
+                  title: confirm(),
                   payload: JSON.stringify({
                     type: 'SELECT_STYLE',
                     data: { style: 'casual' }
@@ -785,7 +1322,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: `Oui, let's go !`,
+                  title: confirm(),
                   payload: JSON.stringify({
                     type: 'SELECT_STYLE',
                     data: { style: 'creator' }
@@ -801,7 +1338,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: `Oui, let's go !`,
+                  title: confirm(),
                   payload: JSON.stringify({
                     type: 'SELECT_STYLE',
                     data: { style: 'streetwear' }
@@ -827,7 +1364,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: `Oui, let's go !`,
+                  title: confirm(),
                   payload: JSON.stringify({
                     type: 'SELECT_STYLE',
                     data: { style: 'geek' }
@@ -844,7 +1381,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: `Oui, let's go !`,
+                  title: confirm(),
                   payload: JSON.stringify({
                     type: 'SELECT_STYLE',
                     data: { style: 'street' }
@@ -860,7 +1397,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: `Oui, let's go !`,
+                  title: confirm(),
                   payload: JSON.stringify({
                     type: 'SELECT_STYLE',
                     data: { style: 'classic' }
@@ -875,7 +1412,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: `Oui, let's go !`,
+                  title: confirm(),
                   payload: JSON.stringify({
                     type: 'SELECT_STYLE',
                     data: { style: 'luxury' }
@@ -902,17 +1439,17 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
         page: 0
       })
 
-      yield replyMany(yield listProducts(newContext))
+      const products = yield getProducts(newContext)
 
-      setTimeout(() => co(function* () {
-        yield reply({
-          text: `J'espère que tu as aimé la sélection que nous t'avons proposé ! Vas-y donnes moi ton adresse mail, comme ça je pourrai t'envoyer des sélections aux petits oignons ;).`
-        })
+      yield replyMany(yield showProducts(yield getProducts(newContext)))
 
-        yield reply({
-          text: `Si tu veux faire une nouvelle recherche, tu n'as qu'à écrire "Nouvelle Recherche`
-        })
-      }), 3000)
+      if (products.length) {
+        setTimeout(() => co(function* () {
+          yield reply({
+            text: `J'espère que tu as aimé la sélection que nous t'avons proposé ! Vas-y donnes moi ton adresse mail, comme ça je pourrai t'envoyer des sélections aux petits oignons ;).`
+          })
+        }), 3000)
+      }
 
       return newContext
     }
@@ -922,7 +1459,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
         page: context.page + 1
       })
 
-      yield replyMany(yield listProducts(newContext))
+      yield replyMany(yield showProducts(yield getProducts(newContext)))
       return newContext
     }
 
@@ -950,8 +1487,8 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
   }
 })
 
-function* listProducts (context) {
-  const products = yield Product
+function* getProducts (context) {
+  return Product
     .find({
       $and: [{
         quantity: { $gt: 0 }
@@ -991,14 +1528,16 @@ function* listProducts (context) {
     .skip((context.page || 0) * 4)
     .limit(4)
     .exec()
+}
 
+function* showProducts (products) {
   if (!products.length) {
     return [{
       attachment: {
         type: 'template',
         payload: {
           template_type: 'button',
-          text: `Je suis désolé, je n'ai plus aucun produit à te proposer. Si tu veux réinitilaiser la conversation clique sur le bouton ci-apres. Merci de ta compréhension.`,
+          text: `Je suis vraiment désolé, je n'ai plus aucun produit à te proposer. Si tu veux bien me donner ton adresse mail, je la transmets à mes équipes qui t'enverront une proposition personnalisée. Sinon, tu peux effectuer une nouvelle recherche avec d'autres critères en saisissant "C'est parti"`,
           buttons: [{
             type: 'postback',
             title: 'Réinitilaiser',
