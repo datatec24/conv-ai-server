@@ -36,7 +36,8 @@ module.exports = bot => {
         messenger: {
           id: messengerId
         },
-        context: {}
+        context: {},
+        subscription: {}
       }).save()
     }
 
@@ -63,7 +64,6 @@ module.exports = bot => {
     'authentication'
   ].forEach(eventName => {
     messenger.on(eventName, data => {
-      console.log('eventname', data)
       logger.info(`[messenger#${eventName}] Received ${eventName}`, {
         bot: {
           id: bot.id,

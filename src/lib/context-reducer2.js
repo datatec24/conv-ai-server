@@ -1,24 +1,29 @@
 const { wrap } = require('co')
 const Product = require('../models/product')
 const Mobile = require('../models/mobile')
-const cron = require('node-cron');
+const User = require('../models/user')
+const cron = require('node-cron')
 
 
 module.exports = wrap(function* (messenger, user, context = {}, action = { type: 'NOOP' }) {
   const reply = messenger.sendMessage.bind(messenger, user.messenger.id)
-  console.log('dans le reducer', action)
   switch (action.type) {
     case 'START':
     case 'RESET': {
 
-      const newContext = Object.assign({}, {
+      const context = Object.assign({}, {
         page_brand: 0,
         page_phone:0,
-        _expect: {
+        _expect: [{
           actionType: 'WRITE_PHONE',
-          // dataKey: 'age',
-          dataType: 'pick_phones'
-        }
+          dataType: 'regex',
+          regex: /./
+        },
+        {
+          actionType: 'STOP',
+          dataType: 'regex',
+          regex: RegExp('sto[p]*', 'ig')
+        }]
       })
 
       yield reply({
@@ -33,40 +38,67 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
         text: `If you don't, you can choose one of your favorite brand below`
       })
 
-      yield reply(yield brandCarousel(context))
+      const mobiles = yield Mobile
+        .aggregate({$group: {_id: '$brand',brand_image: { $first : "$brand_image" }}})
+        // .skip((context.page_brand || 0) * 2)
+        // .limit(2)
+        .exec()
+        .then(function(data){
+          console.log('brand',data)
+          context.brand_to_propose = data
+          return data
+        })
 
-      return newContext
+      console.log(context)
+      yield reply(yield sendBrand(context))
+
+      return context
     }
 
     case 'NEXT_BRAND': {
-      const newContext = Object.assign({}, context, action.data, {
-        page_brand: context.page_brand + 1
+      const newContext = Object.assign({}, context, {
+        page_brand: context.page_brand + 1,
+        _expect: [{
+                  actionType: 'STOP',
+                  dataType: 'regex',
+                  regex: RegExp('sto[p]*', 'ig')
+                }]
       })
+      console.log('contextr brand au debut',newContext)
 
-      yield reply(yield brandCarousel(newContext))
+      yield reply(yield sendBrand(newContext))
       return newContext
     }
 
     case 'WRITE_PHONE':{
       const text = action.text
 
-      yield result = Mobile.find({})
+      yield result = Mobile.find({
+        $where: new Function(`return !!'${action.data.text.replace("'", '')}'.match(RegExp(this.pattern, 'ig'))`)
+      })
+      // .skip(context.page_phone * 2  || 0)
+      // .limit(2)
       .exec()
-      .then(function(data){
-        return data.filter((element) => {
-        let pattern = element.pattern
-        return 'iphone'.match(RegExp(pattern,'ig'))
-        })},function(){console.log("rejected")})
+      // .then(function(data){
+      //   return data.filter((element) => {
+      //   let pattern = element.pattern
+      //   return 'iphone'.match(RegExp(pattern,'ig'))
+      //   })},function(){console.log("rejected")})
       .then(function(data){
         context.product_to_propose = data
         return data
       })
 
-      console.log('contexte',context.product_to_propose)
+
+      console.log('contexte', result)
       yield reply (yield sendSelection(context))
 
       return Object.assign({}, context, {
-        _expect: null
+        _expect: [{
+                  actionType: 'STOP',
+                  dataType: 'regex',
+                  regex: RegExp('sto[p]*', 'ig')
+                }]
       })
 
     }
@@ -87,38 +119,29 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
         text: `Ok ${action.data.brand} is nice :) and what is your budget ?`,
         quick_replies: [{
           content_type: 'text',
-          title: '- de 50€',
+          title: '- de 100 000 ₦',
           payload: JSON.stringify({
             type: 'SELECT_PRICE_RANGE',
             data: {
-              priceRange: [0, 50]
+              priceRange: [0, 100000]
             }
           })
         }, {
           content_type: 'text',
-          title: '50-100€',
+          title: '100 000 - 200 000 ₦',
           payload: JSON.stringify({
             type: 'SELECT_PRICE_RANGE',
             data: {
-              priceRange: [50, 100]
+              priceRange: [100000, 200000]
             }
           })
         }, {
           content_type: 'text',
-          title: '100-200€',
+          title: '+ de 200 000 ₦',
           payload: JSON.stringify({
             type: 'SELECT_PRICE_RANGE',
             data: {
-              priceRange: [100, 1000]
-            }
-          })
-        }, {
-          content_type: 'text',
-          title: 'No limit',
-          payload: JSON.stringify({
-            type: 'SELECT_PRICE_RANGE',
-            data: {
-              priceRange: [0, Number.MAX_SAFE_INTEGER]
+              priceRange: [200000, 100000000000]
             }
           })
         }]
@@ -129,46 +152,147 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
 
     case 'SELECT_PRICE_RANGE': {
       console.log('-----------SELECT_PRICE_RANGE')
-      const newContext = Object.assign({}, context, action.data, {
-        page_mobile: 0
+      context = Object.assign({}, context, action.data, {
+        page_phone: 0
       })
 
-      yield reply(yield mobileCarousel(newContext))
-      return newContext
+      const mobiles = yield Mobile
+        .find({$and: [
+          {
+            brand: {
+              $eq: context.brand
+            }
+          },
+          {
+            price: {
+              $gt: context.priceRange[0],
+              $lt: context.priceRange[1]
+            }
+          }
+        ]})
+        // .skip((context.page_phone || 0) * 2)
+        // .limit(2)
+        .exec()
+        .then(function(data){
+          context.product_to_propose = data
+          return data
+        })
+
+      yield reply(yield sendSelection(context))
+      return context
     }
 
     case 'NEXT_MOBILE': {
       const newContext = Object.assign({}, context, action.data, {
-        page_mobile: context.page_mobile + 1
+        page_phone: context.page_phone + 1
       })
 
-      yield reply(yield mobileCarousel(newContext))
+      yield reply(yield sendSelection(newContext))
       return newContext
     }
 
-    case 'SET_ALERT_PRICE': {
-      console.log('dans set alert', context.set_alert)
+    case 'STOP':{
+      if (!user.subscription){
 
-      if (!context.set_alert){
-        yield reply({text:'Cool :) I will make you new propositions every day at 12 :)'})
+        yield reply({text: "You don't have any subscription"})
 
-        cron.schedule('* * 12 * * *', function () {
-          reply({text: "Voila les alertes pricing qu'on a"})
-        })
-
-        return Object.assign({}, context, {
-          set_alert: true
-        })
-      }
-
-      if (context.set_alert === true) {
-        yield reply({text: 'Already subribed to stop send stop'})
         return context
       }
+
+      else{
+
+        yield User.findOneAndUpdate({ _id: user.id },{
+          $set:{
+            subscription:[]
+          }
+        }).exec()
+
+        yield reply({text: "You have successfully unsubscribed ;)"})
+
+        return context
+      }
+
+      break
+    }
+
+    case 'SET_ALERT_PRICE': {
+
+
+      if (!user.subscription || user.subscription.length===0){
+
+        console.log('hereeeeee',user,user.id)
+        yield User.findOneAndUpdate({ _id: user.id },{
+          $set:{
+            subscription:context.product_to_propose
+          }
+        }).exec()
+
+
+        yield reply({text: "You are now subscribed :)\nYou will receive new selection everyday at 12pm :)\nTo stop send 'Stop'"})
+
+        return context
+      }
+
+
+
+        else{
+          reply({text: "Already subscribed :)\nTo stop send 'Stop'"})
+          return context
+        }
+
+      break
+    }
+
+    case 'NOT_SET_PRICE':{
+      yield reply({
+        attachment: {
+          type: 'template',
+          payload: {
+            template_type: 'button',
+            text: `No problem :) Come back whenever you want :)`,
+            buttons: [{
+              type: 'postback',
+              title: 'New conversation',
+              payload: JSON.stringify({ type: 'RESET' })
+            }]
+          }
+        }
+      })
+
+      return context
     }
 
     case 'INFO':{
-      yield reply({text:`Keys Feature : ${action.data.description}`})
+
+      yield reply({
+        attachment:{
+          type:"template",
+          payload:{
+            template_type:"button",
+            text:`Keys Feature :\n${action.data.mobile.model}`,
+            buttons:[
+              {
+                type: 'web_url',
+                title: 'Acheter',
+                url:`${action.data.mobile.link}`
+              },
+              {
+                type: 'phone_number',
+                title: 'Appeler Jumia',
+                payload: '+33668297514'
+              },
+              {
+                type: 'postback',
+                title: 'More choices',
+                payload: JSON.stringify({
+                  type: 'NEXT_PHONE'
+                })
+              }
+            ]
+          }
+        }
+      })
+
       return Object.assign({}, context, action.data)
 
     }
@@ -183,10 +307,10 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
           type: 'template',
           payload: {
             template_type: 'button',
-            text: `Je suis désolé, je suis encore trop jeune pour comprendre ce que tu me demandes. Je propose de suivre pas à pas mes questions. Si tu veux réinitilaiser la conversation clique sur le bouton ci-apres. Merci de ta compréhension.`,
+            text: `Sorry I don't get it, can you please follow the steps of my questions.\nTo start a new conversation click the button below`,
             buttons: [{
               type: 'postback',
-              title: 'Réinitilaiser',
+              title: 'New conversation',
               payload: JSON.stringify({ type: 'RESET' })
             }]
           }
@@ -199,154 +323,64 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
   }
 })
 
-function* brandCarousel (context) {
-  const mobiles = yield Mobile
-    .aggregate({$group: {_id: '$brand'}})
-    .skip((context.page_brand || 0) * 2)
-    .limit(2)
-    .exec()
+function* sendBrand (context) {
+
+  mobiles = context.brand_to_propose.slice(context.page_brand * 2  || 0,(context.page_brand * 2  || 0)+2)
+  // let mobiles = context.product_to_propose.slice(context.page_phone * 2  || 0)
+  console.log('mobiles of SendSelection',mobiles)
+
+
   console.log('---------------', mobiles)
-  return {
-    attachment: {
-      type: 'template',
-      payload: {
-        template_type: 'generic',
-        elements: mobiles.map(mobile => ({
-          title: mobile._id,
-          image_url: 'http://storage-cube.quebecormedia.com/v1/dynamic_resize?quality=75&size=1500x1500&src=http%3A%2F%2Fstorage-cube.quebecormedia.com%2Fv1%2Fellequebec_prod%2Felle_quebec%2F1027d33e-ced8-430d-a558-256d439a899a%2Fpere-enfant.jpg',
-          buttons: [{
-            type: 'postback',
+  if(mobiles.length > 0){
+    return {
+      attachment: {
+        type: 'template',
+        payload: {
+          template_type: 'generic',
+          elements: mobiles.map(mobile => ({
             title: mobile._id,
-            payload: JSON.stringify({
-              type: 'SELECT_BRAND',
-              data: { brand: mobile._id }
-            })
-          }]
-        })).concat([{
-          title: 'En voir plus',
-          image_url: 'http://storage-cube.quebecormedia.com/v1/dynamic_resize?quality=75&size=1500x1500&src=http%3A%2F%2Fstorage-cube.quebecormedia.com%2Fv1%2Fellequebec_prod%2Felle_quebec%2F1027d33e-ced8-430d-a558-256d439a899a%2Fpere-enfant.jpg',
-          buttons: [{
-            type: 'postback',
-            title: 'Autres choix',
-            payload: JSON.stringify({
-              type: 'NEXT_BRAND'
-            })
-          }]
-        }])
+            image_url: mobile.brand_image,
+            buttons: [{
+              type: 'postback',
+              title: mobile._id,
+              payload: JSON.stringify({
+                type: 'SELECT_BRAND',
+                data: { brand: mobile._id }
+              })
+            }]
+          })).concat([{
+            title: 'En voir plus',
+            image_url: 'http://iconshow.me/media/images/Mixed/Free-Flat-UI-Icons/png/512/plus-24-512.png',
+            buttons: [{
+              type: 'postback',
+              title: 'Autres choix',
+              payload: JSON.stringify({
+                type: 'NEXT_BRAND'
+              })
+            }]
+          }])
+        }
       }
+    }
+  }
+
+  else {
+    return {
+      text: `That all the brands i have :( Please select one of them to pursue ;)`
     }
   }
 }
 
-function* write_phone(context,text){
 
-  const mobiles = yield Mobile
-    .find({})
-    .exec()
-    .then((data) => {
-      console.log('data avant filtre',data)
-      return data.filter((element) => {
-        let pattern = element.pattern
-        return text.match(RegExp(pattern,'ig'))
-    })},function(){
-      console.log("rejected")})
-
-    console.log('write_phone',mobiles)
-
-    if(mobiles){
-      return {
-          attachment: {
-            type: 'template',
-            payload: {
-              template_type: 'generic',
-              elements: mobiles.map(mobile => ({
-                  title:`${mobile.model} - ${mobile.brand}`,
-                  subtitle:`${mobile.price} €`,
-                  image_url: 'http://storage-cube.quebecormedia.com/v1/dynamic_resize?quality=75&size=1500x1500&src=http%3A%2F%2Fstorage-cube.quebecormedia.com%2Fv1%2Fellequebec_prod%2Felle_quebec%2F1027d33e-ced8-430d-a558-256d439a899a%2Fpere-enfant.jpg',
-                  buttons: [{
-                    type: 'postback',
-                    title: 'Acheter',
-                    payload: JSON.stringify({
-                      type: 'NEXT_STEP',
-                      data: { brand: mobile.model }
-                    })
-                  },
-                  {
-                    type: 'postback',
-                    title: "Plus d'infos",
-                    payload: JSON.stringify({
-                      type: 'INFO',
-                      data: { model: mobile.model }
-                    })
-                  },
-                  {
-                    type: 'phone_number',
-                    title: 'Appeler Jumia',
-                    payload: '+33668297514'
-                  }
-                ]
-              })).concat([{
-                  title:'En voir plus',
-                  image_url: 'http://storage-cube.quebecormedia.com/v1/dynamic_resize?quality=75&size=1500x1500&src=http%3A%2F%2Fstorage-cube.quebecormedia.com%2Fv1%2Fellequebec_prod%2Felle_quebec%2F1027d33e-ced8-430d-a558-256d439a899a%2Fpere-enfant.jpg',
-                  buttons: [{
-                    type: 'postback',
-                    title: 'Autres choix',
-                    payload: JSON.stringify({
-                      type: 'NEXT_PHONE'
-                    })
-                  },
-                  {
-                    type:'postback',
-                    title:'Set Alert Price',
-                    payload:JSON.stringify({
-                      type:'SET_ALERT_PRICE'
-                    })
-                  }
-                ]
-              }
-
-              ])
-            }
-          }
-        }
-    }
-
-    else{
-      return {text:'Plus de téléphones qui te correpondent'}
-    }
-
-
-
-}
-
-
-function* mobileCarousel (context){
-  const mobiles = yield Mobile
-    .find({$and: [
-      {
-        brand: {
-          $eq: context.brand
-        }
-      },
-      {
-        price: {
-          $gt: context.priceRange[0],
-          $lt: context.priceRange[1]
-        }
-      }
-    ]})
-    .skip((context.page_mobile || 0) * 2)
-    .limit(2)
-    .exec()
-
-    console.log('mobile carousel',typeof(mobiles))
-    yield sendSelection (context)
-}
 
 function* sendSelection (context){
   console.log('page',context.page_phone)
-  let mobiles = context.product_to_propose.slice((context.page_phone * 2  || 0))
+  let convert_promise = yield context.product_to_propose
+  console.log('mobile 1', 1)
+  mobiles = convert_promise.slice(context.page_phone * 2  || 0,(context.page_phone * 2  || 0)+2)
+  // let mobiles = context.product_to_propose.slice(context.page_phone * 2  || 0)
   console.log('mobiles of SendSelection',mobiles)
+
   if(mobiles.length > 0){
     return {
       attachment: {
@@ -368,8 +402,7 @@ function* sendSelection (context){
                 payload: JSON.stringify({
                   type: 'INFO',
                   data: {
-                    model: mobile.model,
-                    description: mobile.description
+                    mobile: mobile
                   }
                 })
               },
@@ -381,10 +414,10 @@ function* sendSelection (context){
             ]
           })).concat([{
               title:'En voir plus',
-              image_url: 'http://storage-cube.quebecormedia.com/v1/dynamic_resize?quality=75&size=1500x1500&src=http%3A%2F%2Fstorage-cube.quebecormedia.com%2Fv1%2Fellequebec_prod%2Felle_quebec%2F1027d33e-ced8-430d-a558-256d439a899a%2Fpere-enfant.jpg',
+              image_url: 'http://iconshow.me/media/images/Mixed/Free-Flat-UI-Icons/png/512/plus-24-512.png',
               buttons: [{
                 type: 'postback',
-                title: 'Autres choix',
+                title: 'More choices',
                 payload: JSON.stringify({
                   type: 'NEXT_PHONE'
                 })
@@ -409,19 +442,13 @@ function* sendSelection (context){
         content_type: 'text',
         title: 'oui',
         payload: JSON.stringify({
-          type: 'SET_ALERT_PRICE',
-          data: {
-            priceRange: [0, 50]
-          }
+          type: 'SET_ALERT_PRICE'
         })
       }, {
         content_type: 'text',
         title: 'non',
         payload: JSON.stringify({
-          type: 'NOT_SET_PRICE',
-          data: {
-            priceRange: [50, 100]
-          }
+          type: 'NOT_SET_PRICE'
         })
       }]
     }

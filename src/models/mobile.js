@@ -8,5 +8,6 @@ module.exports = mongoose.model('Mobile', {
   image:String,
   description:String,
   link:String,
-  pattern:String
+  pattern:String,
+  brand_image:String
 })

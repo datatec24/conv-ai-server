@@ -21,5 +21,6 @@ module.exports = mongoose.model('User', {
       required: true
     }
   },
-  context: mongoose.Schema.Types.Mixed
+  context: mongoose.Schema.Types.Mixed,
+  subscription: mongoose.Schema.Types.Mixed
 })
