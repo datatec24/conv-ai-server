@@ -82,8 +82,7 @@ module.exports = wrap(function* (messenger, user, context = defaultContext, acti
           payload: {
             template_type: 'generic',
             elements: [{
-              title: 'Une femme',
-              subtitle: `C'est un humain mais pas un homme`,
+              title: `C'est un humain mais pas un homme`,
               image_url: random([
                 'https://media.giphy.com/media/Tmwir1pAi8fUk/giphy.gif',
                 'https://media.giphy.com/media/10nHpaiNpVoHL2/giphy.gif',
@@ -99,8 +98,7 @@ module.exports = wrap(function* (messenger, user, context = defaultContext, acti
                 })
               }]
             }, {
-              title: 'Un homme',
-              subtitle: `C'est un humain mais pas une femme`,
+              title: `C'est un humain mais pas une femme`,
               image_url: random([
                 'https://media.giphy.com/media/E9mB3gRCuIqeQ/giphy.gif',
                 'https://media.giphy.com/media/pNpONEEg3pLIQ/giphy.gif',
