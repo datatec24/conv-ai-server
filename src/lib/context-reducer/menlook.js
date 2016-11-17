@@ -82,7 +82,8 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
           payload: {
             template_type: 'generic',
             elements: [{
-              title: `C'est un humain mais pas un homme`,
+              title: `Une femme`,
+              subtitle: `C'est un humain mais pas un homme`,
               image_url: random([
                 'https://media.giphy.com/media/Tmwir1pAi8fUk/giphy.gif',
                 'https://media.giphy.com/media/10nHpaiNpVoHL2/giphy.gif',
@@ -91,14 +92,15 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
               ]),
               buttons: [{
                 type: 'postback',
-                title: 'Une femme',
+                title: `Oui, let's go !`,
                 payload: JSON.stringify({
                   type: 'SELECT_GENDER',
                   data: { gender: 'female' }
                 })
               }]
             }, {
-              title: `C'est un humain mais pas une femme`,
+              title: 'Un homme',
+              subtitle: `C'est un humain mais pas une femme`,
               image_url: random([
                 'https://media.giphy.com/media/E9mB3gRCuIqeQ/giphy.gif',
                 'https://media.giphy.com/media/pNpONEEg3pLIQ/giphy.gif',
@@ -107,7 +109,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
               ]),
               buttons: [{
                 type: 'postback',
-                title: 'Un homme',
+                title: `Oui, let's go !`,
                 payload: JSON.stringify({
                   type: 'SELECT_GENDER',
                   data: { gender: 'male' }
@@ -295,7 +297,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: 'Mon père',
+                  title: `Oui, let's go !`,
                   payload: JSON.stringify({
                     type: 'SELECT_PERSON_TYPE',
                     data: { personType: 'father' }
@@ -310,7 +312,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: 'Mon frère',
+                  title: `Oui, let's go !`,
                   payload: JSON.stringify({
                     type: 'SELECT_PERSON_TYPE',
                     data: { personType: 'brother' }
@@ -328,7 +330,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: 'Mon pote',
+                  title: `Oui, let's go !`,
                   payload: JSON.stringify({
                     type: 'SELECT_PERSON_TYPE',
                     data: { personType: 'friend_male' }
@@ -345,7 +347,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: 'Mon mec',
+                  title: `Oui, let's go !`,
                   payload: JSON.stringify({
                     type: 'SELECT_PERSON_TYPE',
                     data: { personType: 'husband' }
@@ -365,7 +367,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: 'Un autre',
+                  title: `Oui, let's go !`,
                   payload: JSON.stringify({
                     type: 'SELECT_PERSON_TYPE',
                     data: { personType: 'other_male' }
@@ -397,7 +399,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: 'Ma mère',
+                  title: `Oui, let's go !`,
                   payload: JSON.stringify({
                     type: 'SELECT_PERSON_TYPE',
                     data: { personType: 'mother' }
@@ -414,7 +416,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: 'Ma sœur',
+                  title: `Oui, let's go !`,
                   payload: JSON.stringify({
                     type: 'SELECT_PERSON_TYPE',
                     data: { personType: 'sister' }
@@ -431,7 +433,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: 'Ma pote',
+                  title: `Oui, let's go !`,
                   payload: JSON.stringify({
                     type: 'SELECT_PERSON_TYPE',
                     data: { personType: 'friend_female' }
@@ -449,7 +451,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: 'Mon amoureuse',
+                  title: `Oui, let's go !`,
                   payload: JSON.stringify({
                     type: 'SELECT_PERSON_TYPE',
                     data: { personType: 'wife' }
@@ -465,7 +467,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: 'Une autre',
+                  title: `Oui, let's go !`,
                   payload: JSON.stringify({
                     type: 'SELECT_PERSON_TYPE',
                     data: { personType: 'other_female' }
@@ -739,7 +741,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: 'Geek',
+                  title: `Oui, let's go !`,
                   payload: JSON.stringify({
                     type: 'SELECT_STYLE',
                     data: { style: 'geek' }
@@ -754,7 +756,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: 'Business',
+                  title: `Oui, let's go !`,
                   payload: JSON.stringify({
                     type: 'SELECT_STYLE',
                     data: { style: 'business' }
@@ -769,7 +771,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: 'Casual',
+                  title: `Oui, let's go !`,
                   payload: JSON.stringify({
                     type: 'SELECT_STYLE',
                     data: { style: 'casual' }
@@ -783,7 +785,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: 'Créateur',
+                  title: `Oui, let's go !`,
                   payload: JSON.stringify({
                     type: 'SELECT_STYLE',
                     data: { style: 'creator' }
@@ -799,7 +801,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: 'Streetwear',
+                  title: `Oui, let's go !`,
                   payload: JSON.stringify({
                     type: 'SELECT_STYLE',
                     data: { style: 'streetwear' }
@@ -825,7 +827,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: 'Geek',
+                  title: `Oui, let's go !`,
                   payload: JSON.stringify({
                     type: 'SELECT_STYLE',
                     data: { style: 'geek' }
@@ -842,7 +844,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: 'Street',
+                  title: `Oui, let's go !`,
                   payload: JSON.stringify({
                     type: 'SELECT_STYLE',
                     data: { style: 'street' }
@@ -858,7 +860,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: 'Classic',
+                  title: `Oui, let's go !`,
                   payload: JSON.stringify({
                     type: 'SELECT_STYLE',
                     data: { style: 'classic' }
@@ -873,7 +875,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 ]),
                 buttons: [{
                   type: 'postback',
-                  title: 'Luxe',
+                  title: `Oui, let's go !`,
                   payload: JSON.stringify({
                     type: 'SELECT_STYLE',
                     data: { style: 'luxury' }
