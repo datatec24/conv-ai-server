@@ -103,7 +103,7 @@ module.exports = bot => {
 
           case 'string':
             expectation.matches.forEach(match => {
-              if (!~message.text.indexOf(match)) return
+              if (!~message.text.toLowerCase().indexOf(match)) return
               action = {
                 type: expectation.actionType,
                 data: {
