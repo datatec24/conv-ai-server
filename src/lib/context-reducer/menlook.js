@@ -37,7 +37,7 @@ const defaultContext = {
     actionType: 'INSULT',
     dataType: 'string',
     matches: [
-      `abruti`,
+      `abruti de la`,
       `ahuri`,
       `aigrefin`,
       `anachorète`,
@@ -130,7 +130,7 @@ const defaultContext = {
       `clown`,
       `cochon`,
       `cocu`,
-      `con`,
+      ` con `,
       `conard`,
       `conchieur`,
       `concombre`,
@@ -186,6 +186,7 @@ const defaultContext = {
       `empoté`,
       `enculeur de mouches`,
       `enculé`,
+      `encule`,
       `enflure`,
       `enfoiré`,
       `erreur de la nature`,
@@ -417,6 +418,7 @@ const defaultContext = {
       `putassière`,
       `pute au rabais`,
       `pute borgne`,
+      `pute`,
       `putréfaction`,
       `pygocéphale`,
       `pécore`,
@@ -582,11 +584,18 @@ const defaultContext = {
       'secrètes',
       'secre'
     ]
-  }, {
+  },
+  // {
+  //   actionType: 'SELECT_MAIL',
+  //   dataKey: 'mail',
+  //   dataType: 'string',
+  //   matches: ['@']
+  // }
+  {
     actionType: 'SELECT_MAIL',
+    dataType: 'regex',
     dataKey: 'mail',
-    dataType: 'string',
-    matches: ['@']
+    regex: /(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/
   }]
 }
 
@@ -608,28 +617,28 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
       }
 
       yield reply({
-        text: `Hello ${user.profile.firstName}, je m'appelle Mr Bot.`
+        text: `🎄 Hello ${user.profile.firstName}, je m'appelle Mr Bot. 🎄`
+      })
+
+      yield delay(1000)
+
+      yield reply({
+        text: `Tu serais pas en galère de cadeau de noël 🎁 par hasard ? Parce que si c'est le cas, tu as frappé à la bonne porte 🚪 !`
       })
 
       yield delay(2000)
 
       yield reply({
-        text: `Tu serais pas en galère de cadeau de noël par hasard ? Parce que si c'est le cas, tu as frappé à la bonne porte !`
+        text: `Alors par contre je ne suis qu'un renne 🐑 : autant dans ma famille on se transmet de père 🎅 en fils la culture du cadeau, autant taper sur un clavier avec des sabots c'est un peu la galère, alors essaye de rester clair !`
       })
 
-      yield delay(3000)
+      yield delay(2000)
 
       yield reply({
-        text: `Alors par contre je ne suis qu'un renne : autant dans ma famille on se transmet de père en fils la culture du cadeau, autant taper sur un clavier avec des sabots c'est un peu la galère, alors essaye de rester clair !`
+        text: `Tu peux lancer une nouvelle recherche à tout moment en écrivant "C'est parti" :)`
       })
 
-      yield delay(3000)
-
-      yield reply({
-        text: `Tu peux lancer une nouvelle recherche à tout moment en écrivant "C'est parti".`
-      })
-
-      yield delay(3000)
+      yield delay(2000)
 
       yield reply({
         text: 'Il est pour qui ce cadeau ?'
@@ -745,7 +754,12 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
         attachment: {
           type: 'image',
           payload: {
-            url: 'TODO'
+            url: random([
+              'https://media.giphy.com/media/IcGkqdUmYLFGE/giphy.gif',
+              'https://media.giphy.com/media/1Z02vuppxP1Pa/giphy.gif',
+              'https://media.giphy.com/media/3ornjSL2sBcPflIDiU/giphy.gif',
+              'http://giphy.com/gifs/bill-murray-N4vPkNL2Z3v3i'
+            ])
           }
         }
       })
@@ -860,9 +874,30 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
         })
       }
 
-      yield reply({
-        text: `Pas de chance ! Rien ne t'empêche de réessayer, mais j'ai bien peur que tu sois loin du compte !`
-      })
+      else if(action.data.secret < 50000) {
+        yield reply({
+          text: `C'est bien trop bas ;) on peut être très bling bling chez Menlook :) `
+        })
+      }
+
+      else if(action.data.secret < 65000 && action.data.secret >= 50000 ) {
+        yield reply({
+          text: `Tu commences à t'approcher du compte! Mais tu est toujours un peu trop bas ;) `
+        })
+      }
+
+      else if(action.data.secret > 65000 && action.data.secret <= 80000) {
+        yield reply({
+          text: `Tu chauffes, mais tu es un peu trop haut ;) `
+        })
+      }
+
+      else if(action.data.secret > 80000) {
+        yield reply({
+          text: `Tu n'es pas chez Channel ;) on ne vend pas de la haute couture :) `
+        })
+      }
+
 
       return context
     }
