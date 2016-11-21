@@ -12,6 +12,23 @@ const confirm = () => random([
   `Oui c'est ça`
 ])
 
+const delay = (ms) => {
+  let ctr
+  let rej
+
+  const p = new Promise(function (resolve, reject) {
+    ctr = setTimeout(resolve, ms)
+    rej = reject
+  })
+
+  p.cancel = () => {
+    clearTimeout(ctr)
+    rej(new Error('Cancelled'))
+  }
+
+  return p
+}
+
 const defaultContext = {
   _expect: [{
     actionType: 'RESET',
@@ -584,14 +601,7 @@ const defaultContext = {
       'secrètes',
       'secre'
     ]
-  },
-  // {
-  //   actionType: 'SELECT_MAIL',
-  //   dataKey: 'mail',
-  //   dataType: 'string',
-  //   matches: ['@']
-  // }
-  {
+  }, {
     actionType: 'SELECT_MAIL',
     dataType: 'regex',
     dataKey: 'mail',
@@ -606,16 +616,6 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
   switch (action.type) {
     case 'START':
     case 'RESET': {
-
-      function delay(ms){
-          var ctr, rej, p = new Promise(function (resolve, reject) {
-              ctr = setTimeout(resolve, ms);
-              rej = reject;
-          });
-          p.cancel = function(){ clearTimeout(ctr); rej(Error("Cancelled"))};
-          return p;
-      }
-
       yield reply({
         text: `🎄 Hello ${user.profile.firstName}, je m'appelle Mr Bot. 🎄`
       })
@@ -745,7 +745,6 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
     }
 
     case 'THANKS': {
-
       yield reply({
         text: `Mais de rien, plaisir d'offrir joie de recevoir.`
       })
@@ -872,32 +871,23 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
           secretFound: true,
           _expect: context._expect.filter(expectation => expectation.actionType !== 'SELECT_SECRET')
         })
-      }
-
-      else if(action.data.secret < 50000) {
+      } else if (action.data.secret < 50000) {
         yield reply({
           text: `C'est bien trop bas ;) on peut être très bling bling chez Menlook :) `
         })
-      }
-
-      else if(action.data.secret < 65000 && action.data.secret >= 50000 ) {
+      } else if (action.data.secret < 65000 && action.data.secret >= 50000) {
         yield reply({
           text: `Tu commences à t'approcher du compte! Mais tu est toujours un peu trop bas ;) `
         })
-      }
-
-      else if(action.data.secret > 65000 && action.data.secret <= 80000) {
+      } else if (action.data.secret > 65000 && action.data.secret <= 80000) {
         yield reply({
           text: `Tu chauffes, mais tu es un peu trop haut ;) `
         })
-      }
-
-      else if(action.data.secret > 80000) {
+      } else if (action.data.secret > 80000) {
         yield reply({
           text: `Tu n'es pas chez Channel ;) on ne vend pas de la haute couture :) `
         })
       }
-
 
       return context
     }
@@ -1383,7 +1373,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                     data: { style: 'casual' }
                   })
                 }]
-              },{
+              }, {
                 title: 'Business',
                 subtitle: `Si même quand il bricole, il est capable d'être en costume`,
                 image_url: random([
@@ -1428,7 +1418,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                     data: { style: 'streetwear' }
                   })
                 }]
-              },{
+              }, {
                 title: 'Geek',
                 subtitle: `Si son ordi est son meilleur ami`,
                 image_url: random([

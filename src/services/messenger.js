@@ -48,9 +48,6 @@ module.exports = bot => {
    */
 
   const getContext = co.wrap(function* (user) {
-    console.log(contextReducer)
-    console.log(typeof(contextReducer))
-    console.log(bot.script)
     const defaultContext = yield contextReducer[bot.script](messenger, user)
     return R.propOr(defaultContext, bot.id, user.context || {})
   })
@@ -90,7 +87,6 @@ module.exports = bot => {
       action = JSON.parse(message.quick_reply.payload)
     } else {
       ;(context._expect || []).forEach(expectation => {
-        console.log(expectation)
         switch (expectation.dataType) {
           case 'number':
             let matches = message.text.match(/[0-9]+/)
@@ -108,7 +104,6 @@ module.exports = bot => {
           case 'string':
             expectation.matches.forEach(match => {
               if (message.text.toLowerCase().indexOf(match) === -1) return
-              console.log('match mon gars',match)
               action = {
                 type: expectation.actionType,
                 data: {
@@ -120,9 +115,7 @@ module.exports = bot => {
 
           case 'regex': {
             const matches = message.text.match(expectation.regex)
-            console.log('matchs regex',matches)
             if (matches) {
-
               action = {
                 type: expectation.actionType,
                 data: {
