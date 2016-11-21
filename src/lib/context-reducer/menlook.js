@@ -617,28 +617,28 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
     case 'START':
     case 'RESET': {
       yield reply({
-        text: `🎄 Hello ${user.profile.firstName}, je m'appelle Mr Bot. 🎄`
+        text: `🎄 Hello ${user.profile.firstName}, je m'appelle Rudolph. 🎄`
       })
 
-      yield delay(1000)
+      yield delay(2000)
 
       yield reply({
         text: `Tu serais pas en galère de cadeau de noël 🎁 par hasard ? Parce que si c'est le cas, tu as frappé à la bonne porte 🚪 !`
       })
 
-      yield delay(2000)
+      yield delay(3000)
 
       yield reply({
         text: `Alors par contre je ne suis qu'un renne 🐑 : autant dans ma famille on se transmet de père 🎅 en fils la culture du cadeau, autant taper sur un clavier avec des sabots c'est un peu la galère, alors essaye de rester clair !`
       })
 
-      yield delay(2000)
+      yield delay(3000)
 
       yield reply({
         text: `Tu peux lancer une nouvelle recherche à tout moment en écrivant "C'est parti" :)`
       })
 
-      yield delay(2000)
+      yield delay(3000)
 
       yield reply({
         text: 'Il est pour qui ce cadeau ?'
@@ -863,7 +863,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
           })
         } else {
           yield reply({
-            text: `T'as vraiment de la chance ! Donnes nous ton adresse e-mail et nous te contacterons le 20 décembre si tu fais parti des gagnants suite au tirage au sort !`
+            text: `T'as vraiment de la chance ! Donne nous ton adresse e-mail et nous te contacterons le 20 décembre si tu fais parti des gagnants suite au tirage au sort !`
           })
         }
 
@@ -1535,9 +1535,9 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
       if (products.length) {
         setTimeout(() => co(function* () {
           yield reply({
-            text: `J'espère que tu as aimé la sélection que nous t'avons proposé ! Vas-y donnes moi ton adresse mail, comme ça je pourrai t'envoyer des sélections aux petits oignons ;).`
+            text: `J'espère que tu as aimé la sélection que nous t'avons proposé ! Vas-y donne moi ton adresse mail, comme ça je pourrai t'envoyer des sélections aux petits oignons ;).`
           })
-        }), 3000)
+        }), 4000)
       }
 
       return newContext
