@@ -103,7 +103,7 @@ module.exports = bot => {
 
           case 'string':
             expectation.matches.forEach(match => {
-              if (!~message.text.toLowerCase().indexOf(match)) return
+              if (message.text.toLowerCase().indexOf(match) === -1) return
               action = {
                 type: expectation.actionType,
                 data: {
@@ -118,7 +118,9 @@ module.exports = bot => {
             if (matches) {
               action = {
                 type: expectation.actionType,
-                data: Object.assign({}, expectation.data)
+                data: {
+                  [expectation.dataKey]: matches[0]
+                }
               }
             }
             break

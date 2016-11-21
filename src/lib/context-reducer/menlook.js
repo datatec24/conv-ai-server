@@ -12,6 +12,23 @@ const confirm = () => random([
   `Oui c'est ça`
 ])
 
+const delay = (ms) => {
+  let ctr
+  let rej
+
+  const p = new Promise(function (resolve, reject) {
+    ctr = setTimeout(resolve, ms)
+    rej = reject
+  })
+
+  p.cancel = () => {
+    clearTimeout(ctr)
+    rej(new Error('Cancelled'))
+  }
+
+  return p
+}
+
 const defaultContext = {
   _expect: [{
     actionType: 'RESET',
@@ -37,7 +54,7 @@ const defaultContext = {
     actionType: 'INSULT',
     dataType: 'string',
     matches: [
-      `abruti`,
+      `abruti de la`,
       `ahuri`,
       `aigrefin`,
       `anachorète`,
@@ -130,7 +147,7 @@ const defaultContext = {
       `clown`,
       `cochon`,
       `cocu`,
-      `con`,
+      ` con `,
       `conard`,
       `conchieur`,
       `concombre`,
@@ -186,6 +203,7 @@ const defaultContext = {
       `empoté`,
       `enculeur de mouches`,
       `enculé`,
+      `encule`,
       `enflure`,
       `enfoiré`,
       `erreur de la nature`,
@@ -417,6 +435,7 @@ const defaultContext = {
       `putassière`,
       `pute au rabais`,
       `pute borgne`,
+      `pute`,
       `putréfaction`,
       `pygocéphale`,
       `pécore`,
@@ -576,13 +595,17 @@ const defaultContext = {
     actionType: 'SECRET',
     dataType: 'string',
     matches: [
-      'secret'
+      'secret',
+      'secrète',
+      'secrets',
+      'secrètes',
+      'secre'
     ]
   }, {
     actionType: 'SELECT_MAIL',
+    dataType: 'regex',
     dataKey: 'mail',
-    dataType: 'string',
-    matches: ['@']
+    regex: /(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/
   }]
 }
 
@@ -594,20 +617,28 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
     case 'START':
     case 'RESET': {
       yield reply({
-        text: `Hello ${user.profile.firstName}, je m'appelle Mr Bot.`
+        text: `🎄 Hello ${user.profile.firstName}, je m'appelle Mr Bot. 🎄`
       })
 
-      yield reply({
-        text: `Tu serais pas en galère de cadeau de noël par hasard ? Parce que si c'est le cas, tu as frappé à la bonne porte !`
-      })
+      yield delay(1000)
 
       yield reply({
-        text: `Alors par contre je ne suis qu'un renne : autant dans ma famille on se transmet de père en fils la culture du cadeau, autant taper sur un clavier avec des sabots c'est un peu la galère, alors essayes de rester clair !`
+        text: `Tu serais pas en galère de cadeau de noël 🎁 par hasard ? Parce que si c'est le cas, tu as frappé à la bonne porte 🚪 !`
       })
 
+      yield delay(2000)
+
       yield reply({
-        text: `Tu peux lancer une nouvelle recherche à tout moment en écrivant "C'est parti".`
+        text: `Alors par contre je ne suis qu'un renne 🐑 : autant dans ma famille on se transmet de père 🎅 en fils la culture du cadeau, autant taper sur un clavier avec des sabots c'est un peu la galère, alors essaye de rester clair !`
       })
+
+      yield delay(2000)
+
+      yield reply({
+        text: `Tu peux lancer une nouvelle recherche à tout moment en écrivant "C'est parti" :)`
+      })
+
+      yield delay(2000)
 
       yield reply({
         text: 'Il est pour qui ce cadeau ?'
@@ -665,7 +696,18 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
 
     case 'GREETINGS': {
       yield reply({
-        text: `Salut !`
+        attachment: {
+          type: 'template',
+          payload: {
+            template_type: 'button',
+            text: `Salut ! Pour profiter de mes services, tu n'as qu'à suivre mes conseils et cliquer sur le bouton ci-après.`,
+            buttons: [{
+              type: 'postback',
+              title: "C'est parti!",
+              payload: JSON.stringify({ type: 'RESET' })
+            }]
+          }
+        }
       })
       return context
     }
@@ -711,7 +753,27 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
         attachment: {
           type: 'image',
           payload: {
-            url: 'TODO'
+            url: random([
+              'https://media.giphy.com/media/IcGkqdUmYLFGE/giphy.gif',
+              'https://media.giphy.com/media/1Z02vuppxP1Pa/giphy.gif',
+              'https://media.giphy.com/media/3ornjSL2sBcPflIDiU/giphy.gif',
+              'http://giphy.com/gifs/bill-murray-N4vPkNL2Z3v3i'
+            ])
+          }
+        }
+      })
+
+      yield reply({
+        attachment: {
+          type: 'template',
+          payload: {
+            template_type: 'button',
+            text: `N'hésites pas à rédemarrer une nouvelle recherche en cliquant sur le bouton ci-après`,
+            buttons: [{
+              type: 'postback',
+              title: "C'est parti!",
+              payload: JSON.stringify({ type: 'RESET' })
+            }]
           }
         }
       })
@@ -737,6 +799,21 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
               'https://media.giphy.com/media/l3vRfiK5kaT1N5ZLy/giphy.gif',
               'https://media.giphy.com/media/RrVzUOXldFe8M/giphy.gif'
             ])
+          }
+        }
+      })
+
+      yield reply({
+        attachment: {
+          type: 'template',
+          payload: {
+            template_type: 'button',
+            text: `N'hésites pas à rédemarrer une nouvelle recherche en cliquant sur le bouton ci-après`,
+            buttons: [{
+              type: 'postback',
+              title: "C'est parti!",
+              payload: JSON.stringify({ type: 'RESET' })
+            }]
           }
         }
       })
@@ -794,11 +871,23 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
           secretFound: true,
           _expect: context._expect.filter(expectation => expectation.actionType !== 'SELECT_SECRET')
         })
+      } else if (action.data.secret < 50000) {
+        yield reply({
+          text: `C'est bien trop bas ;) on peut être très bling bling chez Menlook :) `
+        })
+      } else if (action.data.secret < 65000 && action.data.secret >= 50000) {
+        yield reply({
+          text: `Tu commences à t'approcher du compte! Mais tu est toujours un peu trop bas ;) `
+        })
+      } else if (action.data.secret > 65000 && action.data.secret <= 80000) {
+        yield reply({
+          text: `Tu chauffes, mais tu es un peu trop haut ;) `
+        })
+      } else if (action.data.secret > 80000) {
+        yield reply({
+          text: `Tu n'es pas chez Channel ;) on ne vend pas de la haute couture :) `
+        })
       }
-
-      yield reply({
-        text: `Pas de chance ! Rien ne t'empêche de réessayer, mais j'ai bien peur que tu sois loin du compte !`
-      })
 
       return context
     }
@@ -1270,18 +1359,18 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
             payload: {
               template_type: 'generic',
               elements: [{
-                title: 'Geek',
-                subtitle: `Si son ordi est son meilleur ami`,
+                title: 'Casual',
+                subtitle: `Si le mieux est l'ennemi du bien`,
                 image_url: random([
-                  'https://media.giphy.com/media/3osxYlcLL9cE1uqEms/giphy.gif',
-                  'https://media.giphy.com/media/lfA4pv18hwQGQ/giphy.gif'
+                  'https://media.giphy.com/media/l3vRo0x0MQ15dtNvO/giphy.gif',
+                  'https://media.giphy.com/media/wZwRL2iqmV5S0/giphy.gif'
                 ]),
                 buttons: [{
                   type: 'postback',
                   title: confirm(),
                   payload: JSON.stringify({
                     type: 'SELECT_STYLE',
-                    data: { style: 'geek' }
+                    data: { style: 'casual' }
                   })
                 }]
               }, {
@@ -1297,21 +1386,6 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                   payload: JSON.stringify({
                     type: 'SELECT_STYLE',
                     data: { style: 'business' }
-                  })
-                }]
-              }, {
-                title: 'Casual',
-                subtitle: `Si le mieux est l'ennemi du bien`,
-                image_url: random([
-                  'https://media.giphy.com/media/l3vRo0x0MQ15dtNvO/giphy.gif',
-                  'https://media.giphy.com/media/wZwRL2iqmV5S0/giphy.gif'
-                ]),
-                buttons: [{
-                  type: 'postback',
-                  title: confirm(),
-                  payload: JSON.stringify({
-                    type: 'SELECT_STYLE',
-                    data: { style: 'casual' }
                   })
                 }]
               }, {
@@ -1344,6 +1418,21 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                     data: { style: 'streetwear' }
                   })
                 }]
+              }, {
+                title: 'Geek',
+                subtitle: `Si son ordi est son meilleur ami`,
+                image_url: random([
+                  'https://media.giphy.com/media/3osxYlcLL9cE1uqEms/giphy.gif',
+                  'https://media.giphy.com/media/lfA4pv18hwQGQ/giphy.gif'
+                ]),
+                buttons: [{
+                  type: 'postback',
+                  title: confirm(),
+                  payload: JSON.stringify({
+                    type: 'SELECT_STYLE',
+                    data: { style: 'geek' }
+                  })
+                }]
               }]
             }
           }
@@ -1357,37 +1446,6 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
             payload: {
               template_type: 'generic',
               elements: [{
-                title: 'Geek',
-                subtitle: `Si son ordi est son meilleur ami`,
-                image_url: random([
-                  'https://media.giphy.com/media/HyQYsK9VHtSy4/giphy.gif'
-                ]),
-                buttons: [{
-                  type: 'postback',
-                  title: confirm(),
-                  payload: JSON.stringify({
-                    type: 'SELECT_STYLE',
-                    data: { style: 'geek' }
-                  })
-                }]
-              }, {
-                title: 'Street',
-                subtitle: `Jamais sans mes baskets`,
-                image_url: random([
-                  'https://media.giphy.com/media/giOrHKMWzCE6I/giphy.gif',
-                  'https://media.giphy.com/media/3o6MbptiXgo6YBredG/giphy.gif',
-                  'https://media.giphy.com/media/l2SpYD0XxCIXaEGGI/giphy.gif',
-                  'https://media.giphy.com/media/KcskXXAir5TCE/giphy.gif'
-                ]),
-                buttons: [{
-                  type: 'postback',
-                  title: confirm(),
-                  payload: JSON.stringify({
-                    type: 'SELECT_STYLE',
-                    data: { style: 'street' }
-                  })
-                }]
-              }, {
                 title: 'Classic',
                 subtitle: `Si le mieux est l'ennemi du bien`,
                 image_url: random([
@@ -1416,6 +1474,37 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                   payload: JSON.stringify({
                     type: 'SELECT_STYLE',
                     data: { style: 'luxury' }
+                  })
+                }]
+              }, {
+                title: 'Street',
+                subtitle: `Jamais sans mes baskets`,
+                image_url: random([
+                  'https://media.giphy.com/media/giOrHKMWzCE6I/giphy.gif',
+                  'https://media.giphy.com/media/3o6MbptiXgo6YBredG/giphy.gif',
+                  'https://media.giphy.com/media/l2SpYD0XxCIXaEGGI/giphy.gif',
+                  'https://media.giphy.com/media/KcskXXAir5TCE/giphy.gif'
+                ]),
+                buttons: [{
+                  type: 'postback',
+                  title: confirm(),
+                  payload: JSON.stringify({
+                    type: 'SELECT_STYLE',
+                    data: { style: 'street' }
+                  })
+                }]
+              }, {
+                title: 'Geek',
+                subtitle: `Si son ordi est son meilleur ami`,
+                image_url: random([
+                  'https://media.giphy.com/media/HyQYsK9VHtSy4/giphy.gif'
+                ]),
+                buttons: [{
+                  type: 'postback',
+                  title: confirm(),
+                  payload: JSON.stringify({
+                    type: 'SELECT_STYLE',
+                    data: { style: 'geek' }
                   })
                 }]
               }]
@@ -1476,7 +1565,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
             text: `Oula, je crois que tu m'as démasqué... je préfère qu'on suive le déroulé parce que sinon je suis vite perdu : je vais être honnête avec toi, je ne suis qu'un robot avec un costume de renne. Si tu veux repartir à zéro clique sur le bouton qui apparait. Merci de ta compréhension.`,
             buttons: [{
               type: 'postback',
-              title: 'Réinitilaiser',
+              title: "C'est parti!",
               payload: JSON.stringify({ type: 'RESET' })
             }]
           }
@@ -1494,7 +1583,7 @@ function* getProducts (context) {
         quantity: { $gt: 0 }
       }, {
         $or: [
-          { gender: { $eq: context.gender } },
+          { gender: { $eq: context.style === 'geek' ? null : context.gender } },
           { gender: { $eq: null } }
         ]
       }, {
@@ -1520,8 +1609,8 @@ function* getProducts (context) {
         }
       }, {
         price: {
-          $gte: context.priceRange[0] * 100,
-          $lte: context.priceRange[1] * 100
+          $gte: context.style === 'geek' ? null : context.priceRange[0] * 100,
+          $lte: context.style === 'geek' ? null : context.priceRange[1] * 100
         }
       }]
     })
@@ -1537,10 +1626,10 @@ function* showProducts (products) {
         type: 'template',
         payload: {
           template_type: 'button',
-          text: `Je suis vraiment désolé, je n'ai plus aucun produit à te proposer. Si tu veux bien me donner ton adresse mail, je la transmets à mes équipes qui t'enverront une proposition personnalisée. Sinon, tu peux effectuer une nouvelle recherche avec d'autres critères en saisissant "C'est parti"`,
+          text: `Je suis vraiment désolé, je n'ai plus aucun produit à te proposer pour ces critères. Si tu veux bien me donner ton adresse mail, je la transmets à mes équipes qui t'enverront une proposition personnalisée. Sinon, tu peux effectuer une nouvelle recherche avec d'autres critères en saisissant "C'est parti"`,
           buttons: [{
             type: 'postback',
-            title: 'Réinitilaiser',
+            title: "C'est parti!",
             payload: JSON.stringify({ type: 'RESET' })
           }]
         }
@@ -1575,7 +1664,7 @@ function* showProducts (products) {
           text: `C'est tout ce que j'ai à te proposer. Si tu veux réinitialiser la conversation clique sur le bouton ci-apres. Merci de ta compréhension.`,
           buttons: [{
             type: 'postback',
-            title: 'Réinitilaiser',
+            title: "C'est parti!",
             payload: JSON.stringify({ type: 'RESET' })
           }]
         }

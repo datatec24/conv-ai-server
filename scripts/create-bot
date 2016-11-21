@@ -52,6 +52,59 @@ co(function* () {
     }
   })
 
+  // Create welcome text
+  yield request({
+    method: 'POST',
+    uri: 'https://graph.facebook.com/v2.6/me/thread_settings',
+    qs: {
+      access_token: argv.token
+    },
+    json: {
+      setting_type: 'greeting',
+      greeting: {
+        text: "Clique sur démarrer pour trouver un cadeau :)"
+      }
+    }
+  })
+
+  // Create persitent menu
+  yield request({
+    method: 'POST',
+    uri: 'https://graph.facebook.com/v2.6/me/thread_settings',
+    qs: {
+      access_token: argv.token
+    },
+    json: {
+      setting_type : "call_to_actions",
+      thread_state : "existing_thread",
+      call_to_actions:[
+        {
+          "type":"postback",
+          "title":"C'est parti!",
+          "payload":JSON.stringify({ type: 'RESET' })
+        },
+        {
+          "type":"web_url",
+          "title":"Aller sur Menlook.com",
+          "url":"www.menlook.com"
+        }]
+    }
+  })
+
+  // Whitelist menlook domain
+  yield request({
+    method: 'POST',
+    uri: 'https://graph.facebook.com/v2.6/me/thread_settings',
+    qs: {
+      access_token: argv.token
+    },
+    json: {
+      setting_type : "domain_whitelisting",
+      whitelisted_domains : ["https://www.menlook.com"],
+      domain_action_type: "add"
+    }
+  })
+
   // Output useful infos
   console.log(chalk.green('Bot created!'))
   console.log(chalk.blue('Webhook URL:'), chalk.bold(`/messenger/${bot.id}`))
@@ -62,4 +115,3 @@ co(function* () {
   console.error(chalk.red(err))
   process.exit(1)
 })
-
