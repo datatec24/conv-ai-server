@@ -1607,9 +1607,9 @@ function* getProducts (context) {
           }[context.style]
         }
       }, {
-        price: {
-          $gte: context.style === 'geek' ? null : context.priceRange[0] * 100,
-          $lte: context.style === 'geek' ? null : context.priceRange[1] * 100
+        price: context.style === 'geek' ? { $gte: 0 } : {
+          $gte: context.priceRange[0] * 100,
+          $lte: context.priceRange[1] * 100
         }
       }]
     })
