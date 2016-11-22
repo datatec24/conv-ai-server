@@ -935,7 +935,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
               note: 4
             }
           })
-        },{
+        }, {
           content_type: 'text',
           title: '5',
           payload: JSON.stringify({
@@ -952,7 +952,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
       })
     }
 
-    case 'NOTATION':{
+    case 'NOTATION': {
       yield reply({
         text: `Merci pour ton retour :). N'hésites pas à me demander une nouvelle selection en saisissant "C'est parti" et à parler de mes services autour de toi :).`
       })
