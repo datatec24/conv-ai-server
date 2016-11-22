@@ -894,11 +894,71 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
 
     case 'SELECT_MAIL': {
       yield reply({
-        text: `Ok, bien noté, je transmets :). N'hésites pas à me demander une nouvelle selection en saisissant "C'est parti" et à parler de mes services autour de toi :).`
+        text: `Ok, bien noté, je transmets :).`
+      })
+
+      yield reply({
+        text: `Afin que le père noêl puisse contrôler mes performances, peux-tu me donner une note de 1 à 5 (5 voulant dire que l'expérience et mes conseils t'ont plu)?`,
+        quick_replies: [{
+          content_type: 'text',
+          title: '1',
+          payload: JSON.stringify({
+            type: 'NOTATION',
+            data: {
+              note: 1
+            }
+          })
+        }, {
+          content_type: 'text',
+          title: '2',
+          payload: JSON.stringify({
+            type: 'NOTATION',
+            data: {
+              note: 2
+            }
+          })
+        }, {
+          content_type: 'text',
+          title: '3',
+          payload: JSON.stringify({
+            type: 'NOTATION',
+            data: {
+              note: 3
+            }
+          })
+        }, {
+          content_type: 'text',
+          title: '4',
+          payload: JSON.stringify({
+            type: 'NOTATION',
+            data: {
+              note: 4
+            }
+          })
+        },{
+          content_type: 'text',
+          title: '5',
+          payload: JSON.stringify({
+            type: 'NOTATION',
+            data: {
+              note: 5
+            }
+          })
+        }]
       })
 
       return Object.assign({}, context, {
         mail: action.data.mail
+      })
+    }
+
+    case 'NOTATION':{
+      yield reply({
+        text: `Merci pour ton retour :). N'hésites pas à me demander une nouvelle selection en saisissant "C'est parti" et à parler de mes services autour de toi :).`
+      })
+
+      return Object.assign({}, context, {
+        note: action.data.note
       })
     }
 
