@@ -1583,17 +1583,19 @@ function* getProducts (context) {
         quantity: { $gt: 0 }
       }, {
         $or: [
-          { gender: { $eq: context.style === 'geek' ? null : context.gender } },
+          { gender: { $eq: context.gender } },
           { gender: { $eq: null } }
         ]
       }, {
-        $or: [context.style === 'geek' ? null : {
+        $or: context.style === 'geek' ? [{
+          age: { $gte: 0 }
+        }] : [{
           age: {
             $eq: [25, 40, 60, 80].reverse().reduce((acc, age) => age >= context.age ? age : acc)
           }
         }, {
           age: { $eq: 0 }
-        }].filter(f => !!f)
+        }]
       }, {
         style: {
           $eq: {
