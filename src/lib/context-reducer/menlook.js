@@ -1477,7 +1477,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                   })
                 }]
               }, {
-                title: 'Street',
+                title: 'Streetwear',
                 subtitle: `Jamais sans mes baskets`,
                 image_url: random([
                   'https://media.giphy.com/media/giOrHKMWzCE6I/giphy.gif',
@@ -1490,7 +1490,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                   title: confirm(),
                   payload: JSON.stringify({
                     type: 'SELECT_STYLE',
-                    data: { style: 'street' }
+                    data: { style: 'streetwear' }
                   })
                 }]
               }, {
@@ -1602,7 +1602,6 @@ function* getProducts (context) {
             casual: 'Casual',
             creator: 'Créateur',
             streetwear: 'Streetwear',
-            street: 'Street',
             classic: 'Classic',
             luxury: 'Luxe'
           }[context.style]
