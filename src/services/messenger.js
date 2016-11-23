@@ -4,7 +4,7 @@ const MessengerBot = require('messenger-bot')
 
 const logger = require('./logger')
 const User = require('../models/user')
-const contextReducer = require('../lib/context-reducer2')
+const contextReducer = require('../lib/context-reducer')
 
 const messengerBots = []
 
@@ -115,6 +115,7 @@ module.exports = bot => {
             break
 
           case 'regex': {
+            console.log(expectation)
             const matches = message.text.match(expectation.regex)
             if (matches) {
               action = {
@@ -146,10 +147,8 @@ module.exports = bot => {
 
   messenger.on('postback', ({ sender, postback }, reply, actions) => co(function* () {
     const user = yield getUser(sender.id)
-    console.log('postback payload', postback.payload)
     const action = JSON.parse(postback.payload)
     const context = yield getContext(user)
-    console.log('dans le post back, action :', action)
 
     yield User.update({ _id: user.id }, {
       $set: {

@@ -75,7 +75,7 @@ jobs().then(agenda => {
     console.log('------------envoie de message en masse!!!-----------------')
     new Promise((resolve, reject) => {
       console.log('1 Bot',Bot)
-      Bot.findById("582db377bd84550058ce2308",(err,bot)=>{
+      Bot.findById("5834d8212ea26b01fef6aff0",(err,bot)=>{
         console.log(bot)
         let search =  User.find({ subscription: { $exists: true }}).exec()
         .then((users) =>{
@@ -107,7 +107,7 @@ jobs().then(agenda => {
   })
 
 
-  agenda.every('* 13 * * *', 'subscription')
+  agenda.every('14 1 * * *', 'subscription')
   // agenda.now('menlookImport')
 })
 .catch(logger.error)

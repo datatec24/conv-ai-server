@@ -1,8 +1,7 @@
 const { wrap } = require('co')
-const Product = require('../models/product')
-const Mobile = require('../models/mobile')
-const User = require('../models/user')
-const cron = require('node-cron')
+const Product = require('../../models/product')
+const Mobile = require('../../models/mobile')
+const User = require('../../models/user')
 
 
 module.exports = wrap(function* (messenger, user, context = {}, action = { type: 'NOOP' }) {
@@ -17,6 +16,7 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
         _expect: [{
           actionType: 'WRITE_PHONE',
           dataType: 'regex',
+          dataKey: 'text',
           regex: /./
         },
         {
@@ -72,6 +72,7 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
 
     case 'WRITE_PHONE':{
       const text = action.text
+      console.log("action",action)
 
       yield result = Mobile.find({
         $where: new Function(`return !!'${action.data.text.replace("'", '')}'.match(RegExp(this.pattern, 'ig'))`)
