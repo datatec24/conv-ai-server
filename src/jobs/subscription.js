@@ -64,18 +64,16 @@ function sendSelection (products) {
 }
 
 jobs().then(agenda => {
-  console.log('subscription starttttt')
 
   agenda.define('subscription', (job, done) => {
     new Promise((resolve, reject) => {
       Bot.findById('5834d8212ea26b01fef6aff0', (err, bot) => {
-        if (err) console.log(err)
+        if (err) throw err
         User.find({subscription: {$exists: true}}).exec()
         .then((users) => {
           users.forEach((user) => {
             let userId = user.messenger.id
             let products = user.subscription
-            console.log('product', products)
             if (products.length > 0) {
               MessengerBot(bot).sendMessage(userId, {text: 'Here is a fresh selection of our mobile '}, () => {
                 MessengerBot(bot).sendMessage(userId, sendSelection(products), () => {
@@ -88,11 +86,9 @@ jobs().then(agenda => {
       })
     })
     .then(() => {
-      console.log('-------fin du job------')
       done()
     })
     .catch(err => {
-      console.log('-------fin du job avec erreur------')
       logger.error(err)
       done(err)
     })
