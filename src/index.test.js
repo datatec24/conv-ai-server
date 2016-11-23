@@ -8,6 +8,23 @@ jest.mock('os', () => ({
   })
 }))
 
+jest.mock('fs', () => {
+  const fs = require.requireActual('fs')
+
+  return Object.assign({}, fs, {
+    readdirSync: jest.fn(path => {
+      if (~path.indexOf('jobs')) {
+        return [
+          'foo',
+          'bar'
+        ]
+      }
+
+      return fs.readdirSync(path)
+    })
+  })
+})
+
 jest.mock('./services/logger')
 
 jest.mock('./server', () => jest.fn())
@@ -85,7 +102,8 @@ describe('#master', () => {
   it('should spawn workers', () => {
     require('./index')
 
-    expect(require('cluster').fork).toHaveBeenCalledTimes(5)
+    // 4 cpus + 2 jobs
+    expect(require('cluster').fork).toHaveBeenCalledTimes(6)
   })
 
   it('should re-spawn workers on exit', () => {
