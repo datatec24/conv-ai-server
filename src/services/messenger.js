@@ -115,7 +115,6 @@ module.exports = bot => {
             break
 
           case 'regex': {
-            console.log(expectation)
             const matches = message.text.match(expectation.regex)
             if (matches) {
               action = {
