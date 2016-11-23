@@ -44,12 +44,10 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
         // .limit(2)
         .exec()
         .then(function(data){
-          console.log('brand',data)
           context.brand_to_propose = data
           return data
         })
 
-      console.log(context)
       yield reply(yield sendBrand(context))
 
       return context
@@ -64,7 +62,6 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
                   regex: RegExp('sto[p]*', 'ig')
                 }]
       })
-      console.log('contextr brand au debut',newContext)
 
       yield reply(yield sendBrand(newContext))
       return newContext
@@ -72,7 +69,6 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
 
     case 'WRITE_PHONE':{
       const text = action.text
-      console.log("action",action)
 
       yield result = Mobile.find({
         $where: new Function(`return !!'${action.data.text.replace("'", '')}'.match(RegExp(this.pattern, 'ig'))`)
@@ -91,7 +87,6 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
       })
 
 
-      console.log('contexte', result)
       yield reply (yield sendSelection(context))
 
       return Object.assign({}, context, {
@@ -108,7 +103,6 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
       newContext = Object.assign({}, context, action.data, {
         page_phone: context.page_phone + 1
       })
-      console.log('------ICIIIII',newContext)
       yield reply (yield sendSelection(newContext))
 
       return newContext
@@ -152,7 +146,6 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
     }
 
     case 'SELECT_PRICE_RANGE': {
-      console.log('-----------SELECT_PRICE_RANGE')
       context = Object.assign({}, context, action.data, {
         page_phone: 0
       })
@@ -221,7 +214,6 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
 
       if (!user.subscription || user.subscription.length===0){
 
-        console.log('hereeeeee',user,user.id)
         yield User.findOneAndUpdate({ _id: user.id },{
           $set:{
             subscription:context.product_to_propose
@@ -328,10 +320,8 @@ function* sendBrand (context) {
 
   mobiles = context.brand_to_propose.slice(context.page_brand * 2  || 0,(context.page_brand * 2  || 0)+2)
   // let mobiles = context.product_to_propose.slice(context.page_phone * 2  || 0)
-  console.log('mobiles of SendSelection',mobiles)
 
 
-  console.log('---------------', mobiles)
   if(mobiles.length > 0){
     return {
       attachment: {
@@ -375,12 +365,9 @@ function* sendBrand (context) {
 
 
 function* sendSelection (context){
-  console.log('page',context.page_phone)
   let convert_promise = yield context.product_to_propose
-  console.log('mobile 1', 1)
   mobiles = convert_promise.slice(context.page_phone * 2  || 0,(context.page_phone * 2  || 0)+2)
   // let mobiles = context.product_to_propose.slice(context.page_phone * 2  || 0)
-  console.log('mobiles of SendSelection',mobiles)
 
   if(mobiles.length > 0){
     return {
