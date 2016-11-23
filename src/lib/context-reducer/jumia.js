@@ -1,29 +1,26 @@
 const { wrap } = require('co')
-const Product = require('../../models/product')
 const Mobile = require('../../models/mobile')
 const User = require('../../models/user')
-
 
 module.exports = wrap(function* (messenger, user, context = {}, action = { type: 'NOOP' }) {
   const reply = messenger.sendMessage.bind(messenger, user.messenger.id)
   switch (action.type) {
     case 'START':
     case 'RESET': {
-
       const context = Object.assign({}, {
         page_brand: 0,
-        page_phone:0,
+        page_phone: 0,
         _expect: [{
           actionType: 'WRITE_PHONE',
           dataType: 'regex',
           dataKey: 'text',
           regex: /./
         },
-        {
-          actionType: 'STOP',
-          dataType: 'regex',
-          regex: RegExp('sto[p]*', 'ig')
-        }]
+          {
+            actionType: 'STOP',
+            dataType: 'regex',
+            regex: RegExp('sto[p]*', 'ig')
+          }]
       })
 
       yield reply({
@@ -38,12 +35,12 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
         text: `If you don't, you can choose one of your favorite brand below`
       })
 
-      const mobiles = yield Mobile
-        .aggregate({$group: {_id: '$brand',brand_image: { $first : "$brand_image" }}})
+      yield Mobile
+        .aggregate({$group: {_id: '$brand', brand_image: { $first: '$brand_image' }}})
         // .skip((context.page_brand || 0) * 2)
         // .limit(2)
         .exec()
-        .then(function(data){
+        .then(function (data) {
           context.brand_to_propose = data
           return data
         })
@@ -57,20 +54,18 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
       const newContext = Object.assign({}, context, {
         page_brand: context.page_brand + 1,
         _expect: [{
-                  actionType: 'STOP',
-                  dataType: 'regex',
-                  regex: RegExp('sto[p]*', 'ig')
-                }]
+          actionType: 'STOP',
+          dataType: 'regex',
+          regex: RegExp('sto[p]*', 'ig')
+        }]
       })
 
       yield reply(yield sendBrand(newContext))
       return newContext
     }
 
-    case 'WRITE_PHONE':{
-      const text = action.text
-
-      yield result = Mobile.find({
+    case 'WRITE_PHONE': {
+      yield Mobile.find({
         $where: new Function(`return !!'${action.data.text.replace("'", '')}'.match(RegExp(this.pattern, 'ig'))`)
       })
       // .skip(context.page_phone * 2  || 0)
@@ -81,35 +76,32 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
       //   let pattern = element.pattern
       //   return 'iphone'.match(RegExp(pattern,'ig'))
       //   })},function(){console.log("rejected")})
-      .then(function(data){
+      .then(function (data) {
         context.product_to_propose = data
         return data
       })
 
-
-      yield reply (yield sendSelection(context))
+      yield reply(yield sendSelection(context))
 
       return Object.assign({}, context, {
         _expect: [{
-                  actionType: 'STOP',
-                  dataType: 'regex',
-                  regex: RegExp('sto[p]*', 'ig')
-                }]
+          actionType: 'STOP',
+          dataType: 'regex',
+          regex: RegExp('sto[p]*', 'ig')
+        }]
       })
-
     }
 
-    case 'NEXT_PHONE':{
-      newContext = Object.assign({}, context, action.data, {
+    case 'NEXT_PHONE': {
+      let newContext = Object.assign({}, context, action.data, {
         page_phone: context.page_phone + 1
       })
-      yield reply (yield sendSelection(newContext))
+      yield reply(yield sendSelection(newContext))
 
       return newContext
     }
 
-    case 'SELECT_BRAND':{
-
+    case 'SELECT_BRAND': {
       yield reply({
         text: `Ok ${action.data.brand} is nice :) and what is your budget ?`,
         quick_replies: [{
@@ -150,7 +142,7 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
         page_phone: 0
       })
 
-      const mobiles = yield Mobile
+      yield Mobile
         .find({$and: [
           {
             brand: {
@@ -167,7 +159,7 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
         // .skip((context.page_phone || 0) * 2)
         // .limit(2)
         .exec()
-        .then(function(data){
+        .then(function (data) {
           context.product_to_propose = data
           return data
         })
@@ -185,58 +177,42 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
       return newContext
     }
 
-    case 'STOP':{
-      if (!user.subscription){
-
+    case 'STOP': {
+      if (!user.subscription) {
         yield reply({text: "You don't have any subscription"})
 
         return context
-      }
-
-      else{
-
-        yield User.findOneAndUpdate({ _id: user.id },{
-          $set:{
-            subscription:[]
+      } else {
+        yield User.findOneAndUpdate({ _id: user.id }, {
+          $set: {
+            subscription: []
           }
         }).exec()
 
-        yield reply({text: "You have successfully unsubscribed ;)"})
+        yield reply({text: 'You have successfully unsubscribed ;)'})
 
         return context
       }
-
-      break
     }
 
     case 'SET_ALERT_PRICE': {
-
-
-      if (!user.subscription || user.subscription.length===0){
-
-        yield User.findOneAndUpdate({ _id: user.id },{
-          $set:{
-            subscription:context.product_to_propose
+      if (!user.subscription || user.subscription.length === 0) {
+        yield User.findOneAndUpdate({ _id: user.id }, {
+          $set: {
+            subscription: context.product_to_propose
           }
         }).exec()
-
 
         yield reply({text: "You are now subscribed :)\nYou will receive new selection everyday at 12pm :)\nTo stop send 'Stop'"})
 
         return context
+      } else {
+        reply({text: "Already subscribed :)\nTo stop send 'Stop'"})
+        return context
       }
-
-
-
-        else{
-          reply({text: "Already subscribed :)\nTo stop send 'Stop'"})
-          return context
-        }
-
-      break
     }
 
-    case 'NOT_SET_PRICE':{
+    case 'NOT_SET_PRICE': {
       yield reply({
         attachment: {
           type: 'template',
@@ -255,19 +231,18 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
       return context
     }
 
-    case 'INFO':{
-
+    case 'INFO': {
       yield reply({
-        attachment:{
-          type:"template",
-          payload:{
-            template_type:"button",
-            text:`Keys Feature :\n${action.data.mobile.model}`,
-            buttons:[
+        attachment: {
+          type: 'template',
+          payload: {
+            template_type: 'button',
+            text: `Keys Feature :\n${action.data.mobile.model}`,
+            buttons: [
               {
                 type: 'web_url',
                 title: 'Acheter',
-                url:`${action.data.mobile.link}`
+                url: `${action.data.mobile.link}`
               },
               {
                 type: 'phone_number',
@@ -287,7 +262,6 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
       })
 
       return Object.assign({}, context, action.data)
-
     }
 
     case 'NOOP':
@@ -317,12 +291,10 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
 })
 
 function* sendBrand (context) {
-
-  mobiles = context.brand_to_propose.slice(context.page_brand * 2  || 0,(context.page_brand * 2  || 0)+2)
+  let mobiles = context.brand_to_propose.slice(context.page_brand * 2 || 0, (context.page_brand * 2 || 0) + 2)
   // let mobiles = context.product_to_propose.slice(context.page_phone * 2  || 0)
 
-
-  if(mobiles.length > 0){
+  if (mobiles.length > 0) {
     return {
       attachment: {
         type: 'template',
@@ -353,77 +325,72 @@ function* sendBrand (context) {
         }
       }
     }
-  }
-
-  else {
+  } else {
     return {
       text: `That all the brands i have :( Please select one of them to pursue ;)`
     }
   }
 }
 
-
-
-function* sendSelection (context){
-  let convert_promise = yield context.product_to_propose
-  mobiles = convert_promise.slice(context.page_phone * 2  || 0,(context.page_phone * 2  || 0)+2)
+function* sendSelection (context) {
+  let convertpromise = yield context.product_to_propose
+  let mobiles = convertpromise.slice(context.page_phone * 2 || 0, (context.page_phone * 2 || 0) + 2)
   // let mobiles = context.product_to_propose.slice(context.page_phone * 2  || 0)
 
-  if(mobiles.length > 0){
+  if (mobiles.length > 0) {
     return {
       attachment: {
         type: 'template',
         payload: {
           template_type: 'generic',
           elements: mobiles.map(mobile => ({
-              title:`${mobile.model} - ${mobile.brand}`,
-              subtitle:`₦ ${mobile.price}`,
-              image_url: `${mobile.image}`,
-              buttons: [{
-                type: 'web_url',
-                title: 'Acheter',
-                url:`${mobile.link}`
-              },
-              {
-                type: 'postback',
-                title: "Plus d'infos",
-                payload: JSON.stringify({
-                  type: 'INFO',
-                  data: {
-                    mobile: mobile
-                  }
-                })
-              },
-              {
-                type: 'phone_number',
-                title: 'Appeler Jumia',
-                payload: '+33668297514'
-              }
+            title: `${mobile.model} - ${mobile.brand}`,
+            subtitle: `₦ ${mobile.price}`,
+            image_url: `${mobile.image}`,
+            buttons: [{
+              type: 'web_url',
+              title: 'Acheter',
+              url: `${mobile.link}`
+            },
+            {
+              type: 'postback',
+              title: "Plus d'infos",
+              payload: JSON.stringify({
+                type: 'INFO',
+                data: {
+                  mobile: mobile
+                }
+              })
+            },
+            {
+              type: 'phone_number',
+              title: 'Appeler Jumia',
+              payload: '+33668297514'
+            }
             ]
           })).concat([{
-              title:'En voir plus',
-              image_url: 'http://iconshow.me/media/images/Mixed/Free-Flat-UI-Icons/png/512/plus-24-512.png',
-              buttons: [{
-                type: 'postback',
-                title: 'More choices',
-                payload: JSON.stringify({
-                  type: 'NEXT_PHONE'
-                })
-              },
-              {
-                type:'postback',
-                title:'Set Alert Price',
-                payload:JSON.stringify({
-                  type:'SET_ALERT_PRICE'
-                })
-              }
+            title: 'En voir plus',
+            image_url: 'http://iconshow.me/media/images/Mixed/Free-Flat-UI-Icons/png/512/plus-24-512.png',
+            buttons: [{
+              type: 'postback',
+              title: 'More choices',
+              payload: JSON.stringify({
+                type: 'NEXT_PHONE'
+              })
+            },
+            {
+              type: 'postback',
+              title: 'Set Alert Price',
+              payload: JSON.stringify({
+                type: 'SET_ALERT_PRICE'
+              })
+            }
             ]
           }])
         }
       }
     }
-  }
-  else{
+  } else {
     return {
       text: `I don't have any more mobile to propose :( but do you want to be alerted as soon as i have more?`,
       quick_replies: [{
@@ -440,6 +407,5 @@ function* sendSelection (context){
         })
       }]
     }
-
-}
+  }
 }

@@ -1,52 +1,49 @@
 const jobs = require('../services/jobs')
 const logger = require('../services/logger')
-const Product = require('../models/product')
 const User = require('../models/user')
 const MessengerBot = require('../services/messenger')
 const Bot = require('../models/bot')
 
-function sendSelection (products){
-  mobiles = products.slice(0,3)
+function sendSelection (products) {
+  let mobiles = products.slice(0, 3)
   // let mobiles = context.product_to_propose.slice(context.page_phone * 2  || 0)
-  console.log('mobiles of Send Selection',mobiles)
 
-  if(mobiles.length > 0){
+  if (mobiles.length > 0) {
     return {
       attachment: {
         type: 'template',
         payload: {
           template_type: 'generic',
           elements: mobiles.map(mobile => ({
-              title:`${mobile.model} - ${mobile.brand}`,
-              subtitle:`₦ ${mobile.price}`,
-              image_url: `${mobile.image}`,
-              buttons: [{
-                type: 'web_url',
-                title: 'Acheter',
-                url:`${mobile.link}`
-              },
-              {
-                type: 'postback',
-                title: "Plus d'infos",
-                payload: JSON.stringify({
-                  type: 'INFO',
-                  data: {
-                    mobile: mobile
-                  }
-                })
-              },
-              {
-                type: 'phone_number',
-                title: 'Appeler Jumia',
-                payload: '+33668297514'
-              }
+            title: `${mobile.model} - ${mobile.brand}`,
+            subtitle: `₦ ${mobile.price}`,
+            image_url: `${mobile.image}`,
+            buttons: [{
+              type: 'web_url',
+              title: 'Acheter',
+              url: `${mobile.link}`
+            },
+            {
+              type: 'postback',
+              title: "Plus d'infos",
+              payload: JSON.stringify({
+                type: 'INFO',
+                data: {
+                  mobile: mobile
+                }
+              })
+            },
+            {
+              type: 'phone_number',
+              title: 'Appeler Jumia',
+              payload: '+33668297514'
+            }
             ]
           }))
         }
       }
     }
-  }
-  else{
+  } else {
     return {
       text: `I don't have any more mobile to propose :( but do you want to be alerted as soon as i have more?`,
       quick_replies: [{
@@ -63,30 +60,25 @@ function sendSelection (products){
         })
       }]
     }
-
-}
+  }
 }
 
 jobs().then(agenda => {
-
   console.log('subscription starttttt')
 
   agenda.define('subscription', (job, done) => {
-    console.log('------------envoie de message en masse!!!-----------------')
     new Promise((resolve, reject) => {
-      console.log('1 Bot',Bot)
-      Bot.findById("5834d8212ea26b01fef6aff0",(err,bot)=>{
-        console.log(bot)
-        let search =  User.find({ subscription: { $exists: true }}).exec()
-        .then((users) =>{
-          console.log('Users qui ont souscriiiiiiiit',users)
-          users.forEach((user)=>{
+      Bot.findById('5834d8212ea26b01fef6aff0', (err, bot) => {
+        if (err) console.log(err)
+        User.find({subscription: {$exists: true}}).exec()
+        .then((users) => {
+          users.forEach((user) => {
             let userId = user.messenger.id
             let products = user.subscription
-            console.log('product',products)
-            if(products.length>0){
-              MessengerBot(bot).sendMessage(userId, {text:"Here is a fresh selection of our mobile "},()=>{
-                MessengerBot(bot).sendMessage(userId, sendSelection(products),()=>{
+            console.log('product', products)
+            if (products.length > 0) {
+              MessengerBot(bot).sendMessage(userId, {text: 'Here is a fresh selection of our mobile '}, () => {
+                MessengerBot(bot).sendMessage(userId, sendSelection(products), () => {
                   resolve()
                 })
               })
@@ -105,7 +97,6 @@ jobs().then(agenda => {
       done(err)
     })
   })
-
 
   agenda.every('14 1 * * *', 'subscription')
   // agenda.now('menlookImport')
