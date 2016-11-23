@@ -859,7 +859,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
       if (action.data.secret === 65000) {
         if (context.mail) {
           yield reply({
-            text: `T'as vraiment de la chance ! Nous te contacterons à l'adresse suivante le 20 décembre si tu fais parti des gagnants suite au tirage au sort ! ${context.mail}`
+            text: `T'as vraiment de la chance ! Nous te contacterons à ${context.mail} le 20 décembre si tu fais parti des gagnants suite au tirage au sort !`
           })
         } else {
           yield reply({
@@ -892,7 +892,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
       return context
     }
 
-    case 'SELECT_MAIL': {
+    case 'CONFIRM_MAIL': {
       yield reply({
         text: `Ok, bien noté, je transmets :).`
       })
@@ -950,6 +950,37 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
       return Object.assign({}, context, {
         mail: action.data.mail
       })
+    }
+
+    case 'OPPOSE_MAIL': {
+      yield reply({
+        text: `Peux-tu réessayer à nouveau s'il te plaît :)`
+      })
+
+      return context
+    }
+
+    case 'SELECT_MAIL': {
+      yield reply({
+        text: `J'ai compris que ton mail était: ${action.data.mail}\nTu confirmes?`,
+        quick_replies: [{
+          content_type: 'text',
+          title: 'Oui',
+          payload: JSON.stringify({
+            type: 'CONFIRM_MAIL',
+            data: {
+              mail: action.data.mail
+            }
+          })
+        }, {
+          content_type: 'text',
+          title: 'Non',
+          payload: JSON.stringify({
+            type: 'OPPOSE_MAIL'
+          })
+        }]
+      })
+      return context
     }
 
     case 'NOTATION': {
@@ -1595,11 +1626,16 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
       if (products.length) {
         setTimeout(() => co(function* () {
           yield reply({
-            text: `J'espère que tu as aimé la sélection que nous t'avons proposé ! Vas-y donne moi ton adresse mail, comme ça je pourrai t'envoyer des sélections aux petits oignons ;).`
+            text: `J'espère que tu as aimé la sélection que nous t'avons proposé! Si tu me donnes ton adresse mail, je pourrai t'envoyer des sélections aux petits oignons ;).`
           })
+          if (!context.secretFound) {
+            yield delay(8000)
+            yield reply({
+              text: `En attendant, tu n'as toujours pas réussi à percer mon secret!`
+            })
+          }
         }), 4000)
       }
-
       return newContext
     }
 
