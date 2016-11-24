@@ -7,7 +7,6 @@ co(function* () {
   let mobile = yield Mobile.findOne({})
 
   if (!mobile) {
-    console.log('On fabrique le catalogue')
     yield new Mobile({
       id: '1',
       brand: 'Apple',

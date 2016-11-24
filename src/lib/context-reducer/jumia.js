@@ -65,21 +65,13 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
     }
 
     case 'WRITE_PHONE': {
-      yield Mobile.find({
-        $where: new Function(`return !!'${action.data.text.replace("'", '')}'.match(RegExp(this.pattern, 'ig'))`)
-      })
-      // .skip(context.page_phone * 2  || 0)
-      // .limit(2)
+      yield Mobile.find({})
       .exec()
-      // .then(function(data){
-      //   return data.filter((element) => {
-      //   let pattern = element.pattern
-      //   return 'iphone'.match(RegExp(pattern,'ig'))
-      //   })},function(){console.log("rejected")})
       .then(function (data) {
-        context.product_to_propose = data
-        return data
-      })
+        return context.product_to_propose = data.filter((element) => {
+          let pattern = element.pattern
+          return 'iphone'.match(RegExp(pattern, 'ig'))
+        }) }, function (rejection) { return rejection })
 
       yield reply(yield sendSelection(context))
 
@@ -156,8 +148,6 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
             }
           }
         ]})
-        // .skip((context.page_phone || 0) * 2)
-        // .limit(2)
         .exec()
         .then(function (data) {
           context.product_to_propose = data
@@ -178,16 +168,12 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
     }
 
     case 'STOP': {
-      if (!user.subscription) {
+      if (!context.subscription || context.subscription.length === 0) {
         yield reply({text: "You don't have any subscription"})
 
         return context
       } else {
-        yield User.findOneAndUpdate({ _id: user.id }, {
-          $set: {
-            subscription: []
-          }
-        }).exec()
+        context.subscription = []
 
         yield reply({text: 'You have successfully unsubscribed ;)'})
 
@@ -196,12 +182,8 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
     }
 
     case 'SET_ALERT_PRICE': {
-      if (!user.subscription || user.subscription.length === 0) {
-        yield User.findOneAndUpdate({ _id: user.id }, {
-          $set: {
-            subscription: context.product_to_propose
-          }
-        }).exec()
+      if (!context.subscription || context.subscription.length === 0) {
+        context.subscription = context.product_to_propose
 
         yield reply({text: "You are now subscribed :)\nYou will receive new selection everyday at 12pm :)\nTo stop send 'Stop'"})
 
@@ -292,7 +274,6 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
 
 function* sendBrand (context) {
   let mobiles = context.brand_to_propose.slice(context.page_brand * 2 || 0, (context.page_brand * 2 || 0) + 2)
-  // let mobiles = context.product_to_propose.slice(context.page_phone * 2  || 0)
 
   if (mobiles.length > 0) {
     return {
@@ -335,7 +316,6 @@ function* sendBrand (context) {
 function* sendSelection (context) {
   let convertpromise = yield context.product_to_propose
   let mobiles = convertpromise.slice(context.page_phone * 2 || 0, (context.page_phone * 2 || 0) + 2)
-  // let mobiles = context.product_to_propose.slice(context.page_phone * 2  || 0)
 
   if (mobiles.length > 0) {
     return {

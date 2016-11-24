@@ -6,7 +6,6 @@ const Bot = require('../models/bot')
 
 function sendSelection (products) {
   let mobiles = products.slice(0, 3)
-  // let mobiles = context.product_to_propose.slice(context.page_phone * 2  || 0)
 
   if (mobiles.length > 0) {
     return {
@@ -64,12 +63,13 @@ function sendSelection (products) {
 }
 
 jobs().then(agenda => {
-
-  agenda.define('subscription', (job, done) => {
+  agenda.define('subscription_jumia', (job, done) => {
     new Promise((resolve, reject) => {
+      // Comment trouver un moyen général d'avoir l'id du bot Jumia
       Bot.findById('5834d8212ea26b01fef6aff0', (err, bot) => {
+        let jumiaId = bot.id
         if (err) throw err
-        User.find({subscription: {$exists: true}}).exec()
+        User.find({[`context.${bot.id}.subscription`]: {$exists: true}}).exec()
         .then((users) => {
           users.forEach((user) => {
             let userId = user.messenger.id
@@ -94,7 +94,7 @@ jobs().then(agenda => {
     })
   })
 
-  agenda.every('14 1 * * *', 'subscription')
+  agenda.every('14 1 * * *', 'subscription_jumia')
   // agenda.now('menlookImport')
 })
 .catch(logger.error)

@@ -36,8 +36,7 @@ module.exports = bot => {
         messenger: {
           id: messengerId
         },
-        context: {},
-        subscription: {}
+        context: {}
       }).save()
     }
 
