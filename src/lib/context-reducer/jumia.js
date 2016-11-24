@@ -7,7 +7,7 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
   switch (action.type) {
     case 'START':
     case 'RESET': {
-      const context = Object.assign({}, {
+      const newcontext = Object.assign({}, {
         page_brand: 0,
         page_phone: 0,
         _expect: [{
@@ -47,7 +47,7 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
 
       yield reply(yield sendBrand(context))
 
-      return context
+      return newcontext
     }
 
     case 'NEXT_BRAND': {
