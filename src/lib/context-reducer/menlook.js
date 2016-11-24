@@ -690,7 +690,8 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
 
       return Object.assign({}, defaultContext, {
         secretFound: context.secretFound,
-        mail: context.mail
+        mail: context.mail,
+        registration: context.registration
       })
     }
 
