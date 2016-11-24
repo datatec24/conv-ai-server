@@ -691,7 +691,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
       return Object.assign({}, defaultContext, {
         secretFound: context.secretFound,
         mail: context.mail,
-        registration: context.registration
+        registration: !context.registration ? new Date() : context.registration
       })
     }
 
@@ -1025,8 +1025,9 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 title: 'Mon frère',
                 subtitle: `Personne de sexe masculin née du même père et de la même mère qu'une autre personne.`,
                 image_url: random([
-                  'https://media.giphy.com/media/US08vOBGfQJsQ/giphy.gif',
-                  'https://media.giphy.com/media/9b5oNUMROaHtu/giphy.gif'
+                  'https://media.com/media/l0HlKTVessi0K1HVK/giphy.gif',
+                  'https://media.giphy.com/media/l3V0dclK0lcUw2ygE/giphy.gif',
+                  'https://media.giphy.com/media/a8XDXwqpfK1JS/giphy.gif'
                 ]),
                 buttons: [{
                   type: 'postback',
@@ -1112,8 +1113,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 subtitle: `Femme qui a mis au monde ou qui a adopté un ou plusieurs enfants`,
                 image_url: random([
                   'https://media.giphy.com/media/KJXClfNiq0vCM/giphy.gif',
-                  'https://media.giphy.com/media/d2YXyTfgHz4bDO00/giphy.gif',
-                  'https://media.giphy.com/media/3oEduZtPOv5OSecubu/giphy.gif'
+                  'https://media.giphy.com/media/d2YXyTfgHz4bDO00/giphy.gif'
                 ]),
                 buttons: [{
                   type: 'postback',
