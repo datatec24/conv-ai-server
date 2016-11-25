@@ -7,9 +7,10 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
   switch (action.type) {
     case 'START':
     case 'RESET': {
-      const newcontext = Object.assign({}, {
+       context = Object.assign({}, {
         page_brand: 0,
         page_phone: 0,
+        subscription: !context.subscription ? [] : context.subscription,
         _expect: [{
           actionType: 'WRITE_PHONE',
           dataType: 'regex',
@@ -47,7 +48,7 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
 
       yield reply(yield sendBrand(context))
 
-      return newcontext
+      return context
     }
 
     case 'NEXT_BRAND': {
@@ -61,7 +62,13 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
       })
 
       yield reply(yield sendBrand(newContext))
-      return newContext
+      return Object.assign({}, newContext, {
+        _expect: [{
+          actionType: 'STOP',
+          dataType: 'regex',
+          regex: RegExp('sto[p]*', 'ig')
+        }]
+      })
     }
 
     case 'WRITE_PHONE': {
@@ -185,7 +192,7 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
       if (!context.subscription || context.subscription.length === 0) {
         context.subscription = context.product_to_propose
 
-        yield reply({text: "You are now subscribed :)\nYou will receive new selection everyday at 12pm :)\nTo stop send 'Stop'"})
+        yield reply({text: "You are now subscribed :)\nYou will receive new selection on a regular basis :)\nTo stop send 'Stop'"})
 
         return context
       } else {
@@ -294,7 +301,7 @@ function* sendBrand (context) {
             }]
           })).concat([{
             title: 'En voir plus',
-            image_url: 'http://iconshow.me/media/images/Mixed/Free-Flat-UI-Icons/png/512/plus-24-512.png',
+            image_url: 'http://4.bp.blogspot.com/-US3GOtMVxmw/Ts9semOx6kI/AAAAAAAABJs/w6iqw1ix8-o/s1600/signe-plus.gif',
             buttons: [{
               type: 'postback',
               title: 'Autres choix',
@@ -350,7 +357,7 @@ function* sendSelection (context) {
             ]
           })).concat([{
             title: 'En voir plus',
-            image_url: 'http://iconshow.me/media/images/Mixed/Free-Flat-UI-Icons/png/512/plus-24-512.png',
+            image_url: 'http://4.bp.blogspot.com/-US3GOtMVxmw/Ts9semOx6kI/AAAAAAAABJs/w6iqw1ix8-o/s1600/signe-plus.gif',
             buttons: [{
               type: 'postback',
               title: 'More choices',

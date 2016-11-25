@@ -1,8 +1,9 @@
 const jobs = require('../services/jobs')
 const logger = require('../services/logger')
 const User = require('../models/user')
-const MessengerBot = require('../services/messenger')
+const MessengerBot = require('messenger-bot')
 const Bot = require('../models/bot')
+
 
 function sendSelection (products) {
   let mobiles = products.slice(0, 3)
@@ -62,27 +63,31 @@ function sendSelection (products) {
   }
 }
 
+let botId = process.env.NODE_ENV === 'development' ? '5838913f014e49005843ecbc' : 'TODO'
+
 jobs().then(agenda => {
   agenda.define('subscription_jumia', (job, done) => {
     new Promise((resolve, reject) => {
-      // Comment trouver un moyen général d'avoir l'id du bot Jumia
-      Bot.findById('5834d8212ea26b01fef6aff0', (err, bot) => {
-        let jumiaId = bot.id
-        if (err) throw err
-        User.find({[`context.${bot.id}.subscription`]: {$exists: true}}).exec()
+      Bot.findById(botId, (err, bot) => {
+        if (err) throw reject(err)
+        User.find({[`context.${botId}.subscription`]: {$exists: true}}).exec()
         .then((users) => {
           users.forEach((user) => {
             let userId = user.messenger.id
-            let products = user.subscription
+            let products = user.context[botId].subscription
             if (products.length > 0) {
-              MessengerBot(bot).sendMessage(userId, {text: 'Here is a fresh selection of our mobile '}, () => {
-                MessengerBot(bot).sendMessage(userId, sendSelection(products), () => {
-                  resolve()
+              let botClass = new MessengerBot(bot.messenger)
+              botClass.sendMessage(userId, {text: 'Here is a fresh selection of our mobile just for you :)'}, () => {
+                if (err) reject(err)
+                botClass.sendMessage(userId, sendSelection(products), () => {
+                  if (err) reject(err)
                 })
               })
             }
           })
+          return resolve()
         })
+        .catch(err => reject(err))
       })
     })
     .then(() => {
@@ -94,7 +99,6 @@ jobs().then(agenda => {
     })
   })
 
-  agenda.every('14 1 * * *', 'subscription_jumia')
-  // agenda.now('menlookImport')
+  agenda.every('6 hours', 'subscription_jumia')
 })
 .catch(logger.error)

@@ -10,7 +10,7 @@ co(function* () {
     yield new Mobile({
       id: '1',
       brand: 'Apple',
-      brand_image: 'http://figuresambigues.free.fr/PhotosSemantiques/Resources/ligne-horizontale-1.jpeg',
+      brand_image: 'http://logok.org/wp-content/uploads/2014/04/Apple-Logo-black.png',
       model: 'iPhone 7 128GB - Black',
       price: 438500,
       description: 'Display: 4.7-inch Retina HD\nCPU: Quad Core A10 Fusion chip with 64-bit Architecture\nMemory: 2GB RAM; 128GB ROM\nOS: Apple iOS 10\nCamera: 12MP; 7MP HD FaceTime\nColour: Black',
@@ -22,7 +22,7 @@ co(function* () {
     yield new Mobile({
       id: '2',
       brand: 'Apple',
-      brand_image: 'http://figuresambigues.free.fr/PhotosSemantiques/Resources/ligne-horizontale-1.jpeg',
+      brand_image: 'http://logok.org/wp-content/uploads/2014/04/Apple-Logo-black.png',
       model: 'Apple iPhone 6 Plus 16GB - Space Grey',
       price: 225750,
       description: 'Operating System: iOS 8\nCamera Specs: 8MP (Primary); 1.2MP (Secondary)\nScreen: 5.5" LED-backlit IPS LCD, capacitive touchscreen\nMemory: 16GB, 1GB RAM',
@@ -46,7 +46,7 @@ co(function* () {
     yield new Mobile({
       id: '4',
       brand: 'Tecno',
-      brand_image: 'https://www.tecno-mobile.com/Public/Img/logo/brand.png',
+      brand_image: 'http://3.bp.blogspot.com/-aiYA-qlIGaQ/VTkK2Rf3TZI/AAAAAAAAAW4/FpqvirTKfIs/w1200-h630-p-nu/Tecno-logo.png',
       model: 'Tecno Phantom 5 - Gold',
       price: 95550,
       description: 'Display Size: 5.5 Inches\nProcessor: 1.3GHz Octa Core\nRAM: 3GB\nInternal Memory: 32GB',
@@ -58,25 +58,14 @@ co(function* () {
     yield new Mobile({
       id: '5',
       brand: 'Infinix',
-      brand_image: 'http://d2idx9epdcbzys.cloudfront.net/media//Infinix-logo.png',
+      brand_image: 'http://www.talkandroidphones.com/wp-content/uploads/2016/07/infinix-logo.jpg',
       model: 'Infinix Hot 4 X557 - Gold',
       price: 41700,
       description: 'Screen: 5.5" HD Display\nMemory: 2GB RAM, 16GB ROM, 32GB micro SD\nCPU: MT6580 Quad Core Cortex; 1.3GHz\nOperating System: XOS (Based on Android Marshmallow)',
       link: 'https://www.jumia.com.ng/infinix-hot-4-x557-gold-5516266.html',
       pattern: 'Infini|Hot 4',
-      image: 'https://static.daraz.pk/p/infinix-0300-6012836-3-zoom.jpg'
+      image: 'http://i1.wp.com/thegadgetsfreak.com/wp-content/uploads/2016/09/infinix-hot-3.jpg?resize=600%2C574'
     }).save()
 
-    yield new Mobile({
-      id: '6',
-      brand: 'Infinix',
-      brand_image: 'http://d2idx9epdcbzys.cloudfront.net/media//Infinix-logo.png',
-      model: 'Infinix Hot 4 X557 - Gold',
-      price: 41700,
-      description: 'Screen: 5.5" HD Display\nMemory: 2GB RAM, 16GB ROM, 32GB micro SD\nCPU: MT6580 Quad Core Cortex; 1.3GHz\nOperating System: XOS (Based on Android Marshmallow)',
-      link: 'https://www.jumia.com.ng/infinix-hot-4-x557-gold-5516266.html',
-      pattern: 'Infini|Hot 4',
-      image: 'https://static.daraz.pk/p/infinix-0300-6012836-3-zoom.jpg'
-    }).save()
   }
 })
