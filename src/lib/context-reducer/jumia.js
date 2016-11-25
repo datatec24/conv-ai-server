@@ -1,27 +1,26 @@
 const { wrap } = require('co')
 const Mobile = require('../../models/mobile')
-const User = require('../../models/user')
 
 module.exports = wrap(function* (messenger, user, context = {}, action = { type: 'NOOP' }) {
   const reply = messenger.sendMessage.bind(messenger, user.messenger.id)
   switch (action.type) {
     case 'START':
     case 'RESET': {
-       context = Object.assign({}, {
+      context = Object.assign({}, {
         page_brand: 0,
         page_phone: 0,
         subscription: !context.subscription ? [] : context.subscription,
         _expect: [{
           actionType: 'WRITE_PHONE',
-          dataType: 'regex',
+          dataType: 'string',
           dataKey: 'text',
-          regex: /./
+          matches: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x']
         },
-          {
-            actionType: 'STOP',
-            dataType: 'regex',
-            regex: RegExp('sto[p]*', 'ig')
-          }]
+        {
+          actionType: 'STOP',
+          dataType: 'regex',
+          regex: /sto[p]*/ig
+        }]
       })
 
       yield reply({
@@ -75,10 +74,13 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
       yield Mobile.find({})
       .exec()
       .then(function (data) {
-        return context.product_to_propose = data.filter((element) => {
+        context.product_to_propose = data.filter((element) => {
           let pattern = element.pattern
-          return 'iphone'.match(RegExp(pattern, 'ig'))
-        }) }, function (rejection) { return rejection })
+          let result = action.data.text.match(RegExp(pattern, 'ig'))
+          return result
+        })
+        return context.product_to_propose
+      }, function (rejection) { return rejection })
 
       yield reply(yield sendSelection(context))
 

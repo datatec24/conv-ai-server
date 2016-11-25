@@ -66,6 +66,5 @@ co(function* () {
       pattern: 'Infini|Hot 4',
       image: 'http://i1.wp.com/thegadgetsfreak.com/wp-content/uploads/2016/09/infinix-hot-3.jpg?resize=600%2C574'
     }).save()
-
   }
 })

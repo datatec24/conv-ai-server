@@ -4,7 +4,6 @@ const User = require('../models/user')
 const MessengerBot = require('messenger-bot')
 const Bot = require('../models/bot')
 
-
 function sendSelection (products) {
   let mobiles = products.slice(0, 3)
 
