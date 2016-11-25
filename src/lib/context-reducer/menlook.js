@@ -635,12 +635,6 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
       yield delay(4000)
 
       yield reply({
-        text: `Tu peux lancer une nouvelle recherche à tout moment en écrivant "C'est parti" :)`
-      })
-
-      yield delay(3000)
-
-      yield reply({
         text: 'Il est pour qui ce cadeau ?'
       })
 
@@ -1203,7 +1197,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
     case 'SELECT_PERSON_TYPE': {
       if (action.data.personType === 'father') {
         yield reply({
-          text: `Ah ouais le paternel il faut pas se planter ;). Désolé de l'indiscretion, mais peux-tu me dire quelle âge il a ?`
+          text: `Ah ouais le paternel il faut pas se planter ;). Désolé de l'indiscretion, mais peux-tu me dire quel âge il a ?`
         })
       }
 
