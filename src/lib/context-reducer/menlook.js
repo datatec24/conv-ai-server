@@ -623,7 +623,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
       yield delay(2000)
 
       yield reply({
-        text: `Tu serais pas en galère de cadeau de noël 🎁 par hasard ? Parce que si c'est le cas, tu as frappé à la bonne porte 🚪 !`
+        text: `Tu as un peu de mal à trouver un cadeau de noël 🎁 ? Parce que si c'est le cas, tu as frappé à la bonne porte 🚪 !`
       })
 
       yield delay(3000)
@@ -632,7 +632,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
         text: `Alors par contre je ne suis qu'un renne 🐑 : autant dans ma famille on se transmet de père 🎅 en fils la culture du cadeau, autant taper sur un clavier avec des sabots c'est un peu la galère, alors essaye de rester clair !`
       })
 
-      yield delay(3000)
+      yield delay(4000)
 
       yield reply({
         text: `Tu peux lancer une nouvelle recherche à tout moment en écrivant "C'est parti" :)`
@@ -1109,6 +1109,24 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
             payload: {
               template_type: 'generic',
               elements: [{
+                title: 'Mon amoureuse',
+                subtitle: `Personne qui partage ta vie amoureuse`,
+                image_url: random([
+                  'https://media.giphy.com/media/vnFgpIPUm2LWE/giphy.gif',
+                  'https://media.giphy.com/media/C22AQC8rmdm8w/giphy.gif',
+                  'https://media.giphy.com/media/B0yZVxVLvvvnq/giphy.gif',
+                  'https://media.giphy.com/media/FWEDryeIeESeA/giphy.gif',
+                  'https://media.giphy.com/media/GPM6GakQaAnf2/giphy.gif'
+                ]),
+                buttons: [{
+                  type: 'postback',
+                  title: confirm(),
+                  payload: JSON.stringify({
+                    type: 'SELECT_PERSON_TYPE',
+                    data: { personType: 'wife' }
+                  })
+                }]
+              }, {
                 title: 'Ma mère',
                 subtitle: `Femme qui a mis au monde ou qui a adopté un ou plusieurs enfants`,
                 image_url: random([
@@ -1155,24 +1173,6 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                   payload: JSON.stringify({
                     type: 'SELECT_PERSON_TYPE',
                     data: { personType: 'friend_female' }
-                  })
-                }]
-              }, {
-                title: 'Mon amoureuse',
-                subtitle: `Personne qui partage ta vie amoureuse`,
-                image_url: random([
-                  'https://media.giphy.com/media/vnFgpIPUm2LWE/giphy.gif',
-                  'https://media.giphy.com/media/C22AQC8rmdm8w/giphy.gif',
-                  'https://media.giphy.com/media/B0yZVxVLvvvnq/giphy.gif',
-                  'https://media.giphy.com/media/FWEDryeIeESeA/giphy.gif',
-                  'https://media.giphy.com/media/GPM6GakQaAnf2/giphy.gif'
-                ]),
-                buttons: [{
-                  type: 'postback',
-                  title: confirm(),
-                  payload: JSON.stringify({
-                    type: 'SELECT_PERSON_TYPE',
-                    data: { personType: 'wife' }
                   })
                 }]
               }, {
@@ -1309,7 +1309,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
       }
 
       yield reply({
-        text: `Parfait ! Et tu veux mettre combien ?`,
+        text: `Parfait ! Et quel est ton budget ?`,
         quick_replies: [{
           content_type: 'text',
           title: '- de 50€',
@@ -1538,7 +1538,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
             payload: {
               template_type: 'generic',
               elements: [{
-                title: 'Classic',
+                title: 'Classique',
                 subtitle: `Si le mieux est l'ennemi du bien`,
                 image_url: random([
                   'https://media.giphy.com/media/qwULUwNPgj2Qo/giphy.gif',
