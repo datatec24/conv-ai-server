@@ -617,25 +617,25 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
     case 'START':
     case 'RESET': {
       yield reply({
-        text: `🎄 Hello ${user.profile.firstName}, je m'appelle Rudolph. 🎄`
+        text: `🎄 Bonjour ${user.profile.firstName}, je m'appelle Rudolph. 🎄`
       })
 
       yield delay(2000)
 
       yield reply({
-        text: `Tu as un peu de mal à trouver un cadeau de noël 🎁 ? Parce que si c'est le cas, tu as frappé à la bonne porte 🚪 !`
+        text: `Je vais te poser quelques questions afin de t'orienter vers les meilleurs cadeaux 🎁 de Noël ;)`
       })
 
       yield delay(3000)
 
       yield reply({
-        text: `Alors par contre je ne suis qu'un renne 🐑 : autant dans ma famille on se transmet de père 🎅 en fils la culture du cadeau, autant taper sur un clavier avec des sabots c'est un peu la galère, alors essaye de rester clair !`
+        text: `Par contre je ne suis qu'un jeune renne 🐑 : même si nous partageons la culture du cadeau dans ma famille 🎅, je suis toujours en plein apprentissage ! Il serait donc préférable que tu restes clair avec moi :). `
       })
 
       yield delay(4000)
 
       yield reply({
-        text: 'Il est pour qui ce cadeau ?'
+        text: 'Á qui ce cadeau est-il destiné ? '
       })
 
       yield reply({
@@ -645,7 +645,6 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
             template_type: 'generic',
             elements: [{
               title: `Une femme`,
-              subtitle: `C'est un humain mais pas un homme`,
               image_url: random([
                 'https://media.giphy.com/media/Tmwir1pAi8fUk/giphy.gif',
                 'https://media.giphy.com/media/10nHpaiNpVoHL2/giphy.gif',
@@ -662,7 +661,6 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
               }]
             }, {
               title: 'Un homme',
-              subtitle: `C'est un humain mais pas une femme`,
               image_url: random([
                 'https://media.giphy.com/media/E9mB3gRCuIqeQ/giphy.gif',
                 'https://media.giphy.com/media/pNpONEEg3pLIQ/giphy.gif',
@@ -695,7 +693,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
           type: 'template',
           payload: {
             template_type: 'button',
-            text: `Salut ! Pour profiter de mes services, tu n'as qu'à suivre mes conseils et cliquer sur le bouton ci-après.`,
+            text: `Bonjour ! Pour profiter de mes conseils, il te suffit de cliquer sur le bouton çi-dessous !`,
             buttons: [{
               type: 'postback',
               title: "C'est parti!",
@@ -710,9 +708,9 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
     case 'INSULT': {
       yield reply({
         text: random([
-          `Je sens que ça te fait du bien ! lache toi !`,
-          `Haha tu oublies que je ne suis qu'un robot renne et que ça me passe bien au dessus des bois !`,
-          `Oulà, c'est vraimant pas gentil d'être méchant`
+          `C'est plutôt facile de se lâcher sur un robot !`,
+          `Tu oublies que je ne suis qu'un robot renne, cela ne me fait pas grand chose !`,
+          `C'est pas gentil d'être méchant !`
         ])
       })
 
@@ -779,7 +777,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
     case 'COMPLIMENT': {
       yield reply({
         text: random([
-          `Je sais je sais, c'est ça d'avoir les bois lustrés ;)`,
+          `C'est très gentil de ta part !`,
           `À ton service ;)`
         ])
       })
@@ -826,15 +824,15 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
       }
 
       yield reply({
-        text: `Ahh ! Je vois que t'es dans les petits papiers !`
+        text: `Je vois que tu es dans les petits papiers !`
       })
 
       yield reply({
-        text: `Esprit de Noël oblige, si tu trouves la réponse à la question suivante, tu pourras participer au tirage au sort qui te permettra peut-être de gagner un des trois bons d'achat de 100€ à dépenser sur Menlook.`
+        text: `Esprit de Noël oblige, si tu trouves la réponse à cette question, tu pourras participer au tirage au sort qui te permettra peut-être de gagner un des trois bons d'achat de 100€ à dépenser sur Menlook...`
       })
 
       yield reply({
-        text: `T'es prêt ?`
+        text: ` Es-tu prêt ?`
       })
 
       yield reply({
@@ -854,11 +852,11 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
       if (action.data.secret === 65000) {
         if (context.mail) {
           yield reply({
-            text: `T'as vraiment de la chance ! Nous te contacterons à ${context.mail} le 20 décembre si tu fais parti des gagnants suite au tirage au sort !`
+            text: `Super ! Tu as vraiment de la chance ! Nous te contacterons à ${context.mail} le 20 décembre si tu fais parti des gagnants suite au tirage au sort !`
           })
         } else {
           yield reply({
-            text: `T'as vraiment de la chance ! Donne nous ton adresse e-mail et nous te contacterons le 20 décembre si tu fais parti des gagnants suite au tirage au sort !`
+            text: `Super ! Tu as vraiment de la chance ! Donne nous ton adresse e-mail et nous te contacterons le 20 décembre si tu fais parti des gagnants suite au tirage au sort !`
           })
         }
 
@@ -868,7 +866,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
         })
       } else if (action.data.secret < 50000) {
         yield reply({
-          text: `C'est bien trop bas ;) on peut être très bling bling chez Menlook :) `
+          text: `C'est encore bien trop bas ;)`
         })
       } else if (action.data.secret < 65000 && action.data.secret >= 50000) {
         yield reply({
@@ -876,11 +874,11 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
         })
       } else if (action.data.secret > 65000 && action.data.secret <= 80000) {
         yield reply({
-          text: `Tu chauffes, mais tu es un peu trop haut ;) `
+          text: `Tu te rapproches, mais tu es un peu trop haut ;) `
         })
       } else if (action.data.secret > 80000) {
         yield reply({
-          text: `Tu n'es pas chez Channel ;) on ne vend pas de la haute couture :) `
+          text: `Tu es bien trop haut :) `
         })
       }
 
@@ -893,7 +891,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
       })
 
       yield reply({
-        text: `Afin que le père noêl puisse contrôler mes performances, peux-tu me donner une note de 1 à 5 (5 voulant dire que l'expérience et mes conseils t'ont plu)?`,
+        text: `Pourrais-tu qualifier l'expérience que tu as vécue avec une note de 1 à 5 (5 voulant dire que l'expérience et mes conseils t'ont plu)?`,
         quick_replies: [{
           content_type: 'text',
           title: '1',
@@ -991,7 +989,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
     case 'SELECT_GENDER': {
       if (action.data.gender === 'male') {
         yield reply({
-          text: `Cool c'est ma spécialité ! Et cet homme, c'est qui pour toi ?`
+          text: `Très bien ! Peux-tu me dire qui il est pour toi ?`
         })
 
         yield reply({
@@ -1032,7 +1030,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                   })
                 }]
               }, {
-                title: 'Mon pote',
+                title: 'Mon ami',
                 subtitle: `Personne avec laquelle on est uni par l'amitié`,
                 image_url: random([
                   'https://media.giphy.com/media/5mgDtUF43Y97q/giphy.gif',
@@ -1050,7 +1048,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                   })
                 }]
               }, {
-                title: 'Mon mec',
+                title: 'Mon amoureux',
                 subtitle: `Personne qui partage ta vie amoureuse`,
                 image_url: random([
                   'https://media.giphy.com/media/mOfjr4Xg9Vqxi/giphy.gif',
@@ -1094,7 +1092,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
 
       if (action.data.gender === 'female') {
         yield reply({
-          text: `Ca tombe bien ! On a aussi une belle sélection pour elles ;) Qui est l'heureuse élue ?`
+          text: `Parfait, nous avons une belle sélection pour elles ! Qui est l'heureuse élue ?`
         })
 
         yield reply({
@@ -1153,7 +1151,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                   })
                 }]
               }, {
-                title: 'Ma pote',
+                title: 'Mon amie',
                 subtitle: `Personne avec laquelle on est uni par l'amitié`,
                 image_url: random([
                   'https://media.giphy.com/media/wjQQeYnTW4cCY/giphy.gif',
@@ -1197,61 +1195,61 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
     case 'SELECT_PERSON_TYPE': {
       if (action.data.personType === 'father') {
         yield reply({
-          text: `Ah ouais le paternel il faut pas se planter ;). Désolé de l'indiscretion, mais peux-tu me dire quel âge il a ?`
+          text: `Très bien, peux tu me donner son âge ?`
         })
       }
 
       if (action.data.personType === 'brother') {
         yield reply({
-          text: `Un bon cadeau pour son frangin ! On va trouver à coup sur :). Il a quel âge du coup ?`
+          text: `Aucun problème ! Peux-tu me donner son âge ?`
         })
       }
 
       if (action.data.personType === 'friend_male') {
         yield reply({
-          text: `J'aimerais bien avoir des amis comme toi :). Il a quel âge ce pote ?`
+          text: `C'est très sympathique de ta part ! Peux-tu me donner son âge ? `
         })
       }
 
       if (action.data.personType === 'husband') {
         yield reply({
-          text: `Ok, on va se concentrer pour trouver quelque chose de bien alors :). Il a quel âge ton mec ?`
+          text: `Parfait ! Peux-tu me donner l'âge de ton conjoint ?`
         })
       }
 
       if (action.data.personType === 'other_male') {
         yield reply({
-          text: `Ca marche ;). Tu peux me dire quel âge il a ?`
+          text: `Nous allons lui trouver de beaux cadeaux. Peux tu me donner son âge ?`
         })
       }
 
       if (action.data.personType === 'mother') {
         yield reply({
-          text: `Oula, j'ai beaucoup de poids sur les épaules :). Sans indiscretion, elle a quel âge ta mère ?`
+          text: `Elle sera très heureuse, j'en suis sûr ! Sans indiscrétion, peux-tu me donner son âge ?`
         })
       }
 
       if (action.data.personType === 'sister') {
         yield reply({
-          text: `Un bon cadeau pour sa frangine ! On devrait pouvoir s'en sortir :). Elle a quel age du coup ?`
+          text: `Très bien. Puis-je connaître l'âge de ta soeur ?`
         })
       }
 
       if (action.data.personType === 'friend_female') {
         yield reply({
-          text: `J'aimerais bien avoir des amis comme toi :). Elle a quel age cette pote ?`
+          text: `Merci beaucoup ! Peux-tu me donner l'âge de cette amie ?`
         })
       }
 
       if (action.data.personType === 'wife') {
         yield reply({
-          text: `Ok, on va se concentrer pour trouver quelque chose de bien alors :). elle a quel âge ton amoureuse ?`
+          text: `Parfait, je vais faire de mon mieux alors ! Peux tu me donner son âge ?`
         })
       }
 
       if (action.data.personType === 'other_female') {
         yield reply({
-          text: `Ca marche ;). Tu peux me dire quel âge elle a ?`
+          text: `Très bien ! Pourrais-tu me donner son âge s'il te plaît ?`
         })
       }
 
@@ -1267,7 +1265,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
     case 'SELECT_AGE': {
       if (action.data.age < 10) {
         yield reply({
-          text: `Aie aie aie, c'est trop jeune pour moi ça. Tu devrais aller voir chez jouet club :).`
+          text: `J'ai bien peur que cela soit un peu jeune pour moi ! Une visite chez Jouet Club s'impose !`
         })
 
         yield reply({
@@ -1287,7 +1285,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
 
       if (action.data.age > 100) {
         yield reply({
-          text: `Oula c'est vieux ! Offres lui plutôt des chocolats, s'il y a bien un âge ou on s'en fout de grossir...`
+          text: `C'est peut-être un peu vieux pour moi ! Ne voudrais-tu pas lui offrir des chocolats plutôt ?`
         })
 
         yield reply({
@@ -1303,7 +1301,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
       }
 
       yield reply({
-        text: `Parfait ! Et quel est ton budget ?`,
+        text: `Parfait ! Puis-je connaître ton budget ?`,
         quick_replies: [{
           content_type: 'text',
           title: '- de 50€',
@@ -1358,7 +1356,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
 
       if (max <= 50) {
         yield reply({
-          text: `Je comprends, nous aussi on a une famille nombreuse`
+          text: `Je comprends, j'ai aussi une famille nombreuse !`
         })
 
         yield reply({
@@ -1374,7 +1372,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
         })
       } else if (max <= 100) {
         yield reply({
-          text: `Top, on va avoir l'embarras du choix`
+          text: `De quoi trouver un beau cadeau !`
         })
 
         yield reply({
@@ -1390,7 +1388,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
         })
       } else if (max <= 200) {
         yield reply({
-          text: `T'aurais pas des choses à te faire pardonner ?`
+          text: `Parfait, tu vas avoir l'embarras du choix ! `
         })
 
         yield reply({
@@ -1406,7 +1404,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
         })
       } else {
         yield reply({
-          text: `C'est beau, cette année tu craques ton PEL !`
+          text: `Quelle chance ! C'est très gentil de ta part ! `
         })
 
         yield reply({
@@ -1427,13 +1425,13 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
         text: `Dernière question et je te fais des propositions, quel style a ${{
           father: 'ton père',
           brother: 'ton frère',
-          friend_male: 'ton pote',
+          friend_male: 'ton ami',
           other_male: 'cette personne',
-          husband: 'ton mec',
+          husband: 'ton amoureux',
           mother: 'ta mère',
           sister: 'ta sœur',
-          friend_female: 'ta pote',
-          wife: 'ta conjointe',
+          friend_female: 'ton amie',
+          wife: 'ton amoureuse',
           other_female: 'cette personne'
         }[context.personType]} ?`
       })
@@ -1446,7 +1444,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
               template_type: 'generic',
               elements: [{
                 title: 'Casual',
-                subtitle: `Si le mieux est l'ennemi du bien`,
+                subtitle: `Si simplicité rime avec efficacité`,
                 image_url: random([
                   'https://media.giphy.com/media/l3vRo0x0MQ15dtNvO/giphy.gif',
                   'https://media.giphy.com/media/wZwRL2iqmV5S0/giphy.gif'
@@ -1461,7 +1459,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 }]
               }, {
                 title: 'Business',
-                subtitle: `Si même quand il bricole, il est capable d'être en costume`,
+                subtitle: `Si il est capable de porter un costume, même en jardinant.`,
                 image_url: random([
                   'https://media.giphy.com/media/geXJ0CoZr9PyM/giphy.gif',
                   'https://media.giphy.com/media/eu9wzTP9nrMHu/giphy.gif'
@@ -1476,7 +1474,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 }]
               }, {
                 title: 'Créateur',
-                subtitle: `La mode, la mode, la mode`,
+                subtitle: `La mode, la mode, la mode !`,
                 image_url: random([
                   'https://media.giphy.com/media/12npFVlmZoXN4Y/giphy.gif'
                 ]),
@@ -1490,7 +1488,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 }]
               }, {
                 title: 'Streetwear',
-                subtitle: `Si Chelsea est plus un club de foot qu'une paire de boots`,
+                subtitle: `Si Chelsea est avant tout un club de Football et non une paire de boots`,
                 image_url: random([
                   'https://media.giphy.com/media/MGEAxIetbbYIM/giphy.gif',
                   'https://media.giphy.com/media/ThL1SeU0MWc6I/giphy.gif',
@@ -1506,7 +1504,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 }]
               }, {
                 title: 'Geek',
-                subtitle: `Si son ordi est son meilleur ami`,
+                subtitle: `Sous titre : Si son ordinateur est son meilleur ami`,
                 image_url: random([
                   'https://media.giphy.com/media/3osxYlcLL9cE1uqEms/giphy.gif',
                   'https://media.giphy.com/media/lfA4pv18hwQGQ/giphy.gif'
@@ -1533,7 +1531,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
               template_type: 'generic',
               elements: [{
                 title: 'Classique',
-                subtitle: `Si le mieux est l'ennemi du bien`,
+                subtitle: `Si simplicité rime avec efficacité`,
                 image_url: random([
                   'https://media.giphy.com/media/qwULUwNPgj2Qo/giphy.gif',
                   'https://media.giphy.com/media/AyyPXf1JCDFp6/giphy.gif',
@@ -1549,7 +1547,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 }]
               }, {
                 title: 'Luxe',
-                subtitle: `Si elle préfère les carats aux carottes`,
+                subtitle: `Diamonds are the girls best friends`,
                 image_url: random([
                   'https://media.giphy.com/media/5cCsgiWcBI3Fm/giphy.gif',
                   'https://media.giphy.com/media/11NyZoAHUafEHe/giphy.gif'
@@ -1581,7 +1579,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
                 }]
               }, {
                 title: 'Geek',
-                subtitle: `Si son ordi est son meilleur ami`,
+                subtitle: `Si son ordinateur est son meilleur ami`,
                 image_url: random([
                   'https://media.giphy.com/media/HyQYsK9VHtSy4/giphy.gif'
                 ]),
@@ -1621,7 +1619,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
       if (products.length) {
         setTimeout(() => co(function* () {
           yield reply({
-            text: `J'espère que tu as aimé la sélection que nous t'avons proposé! Si tu me donnes ton adresse mail, je pourrai t'envoyer des sélections aux petits oignons ;).`
+            text: `J'espère que tu as apprécié cette sélection ! Tu peux nous donner ton adresse e-mail afin que nous te fassions parvenir d'autres sélections. Tu peux également écrire "Nouvelle Recherche" pour repartir de zéro. `
           })
           if (!context.secretFound) {
             yield delay(8000)
@@ -1653,7 +1651,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
           type: 'template',
           payload: {
             template_type: 'button',
-            text: `Oula, je crois que tu m'as démasqué... je préfère qu'on suive le déroulé parce que sinon je suis vite perdu : je vais être honnête avec toi, je ne suis qu'un robot avec un costume de renne. Si tu veux repartir à zéro clique sur le bouton qui apparait. Merci de ta compréhension.`,
+            text: `Je pense que tu m'as démasqué ! Pour être honnête avec toi, je ne suis qu'un robot avec un costume de renne. Je serai donc bien plus efficace dans ta recherche si nous restons clairs. Tu peux également repartir de zéro en cliquant sur le bouton suivant.`,
             buttons: [{
               type: 'postback',
               title: "C'est parti!",
