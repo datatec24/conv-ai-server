@@ -645,7 +645,6 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
             template_type: 'generic',
             elements: [{
               title: `Une femme`,
-              subtitle: `C'est un humain mais pas un homme`,
               image_url: random([
                 'https://media.giphy.com/media/Tmwir1pAi8fUk/giphy.gif',
                 'https://media.giphy.com/media/10nHpaiNpVoHL2/giphy.gif',
@@ -662,7 +661,6 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
               }]
             }, {
               title: 'Un homme',
-              subtitle: `C'est un humain mais pas une femme`,
               image_url: random([
                 'https://media.giphy.com/media/E9mB3gRCuIqeQ/giphy.gif',
                 'https://media.giphy.com/media/pNpONEEg3pLIQ/giphy.gif',
@@ -1203,19 +1201,19 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
 
       if (action.data.personType === 'brother') {
         yield reply({
-          text: `Aucun problème ! Peux tu me donner son âge ?`
+          text: `Aucun problème ! Peux-tu me donner son âge ?`
         })
       }
 
       if (action.data.personType === 'friend_male') {
         yield reply({
-          text: `C'est très sympathique de ta part ! Peux tu me donner son âge ? `
+          text: `C'est très sympathique de ta part ! Peux-tu me donner son âge ? `
         })
       }
 
       if (action.data.personType === 'husband') {
         yield reply({
-          text: `Parfait ! Peux tu me donner l'âge de ton conjoint ?`
+          text: `Parfait ! Peux-tu me donner l'âge de ton conjoint ?`
         })
       }
 
@@ -1227,7 +1225,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
 
       if (action.data.personType === 'mother') {
         yield reply({
-          text: `Elle en sera très heureuse, j'en suis sûr ! Sans indiscretion, peux-tu me donner son âge ?`
+          text: `Elle sera très heureuse, j'en suis sûr ! Sans indiscrétion, peux-tu me donner son âge ?`
         })
       }
 
@@ -1239,7 +1237,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
 
       if (action.data.personType === 'friend_female') {
         yield reply({
-          text: `Merci beaucoup ! Peux tu me donner l'âge de cette amie ?`
+          text: `Merci beaucoup ! Peux-tu me donner l'âge de cette amie ?`
         })
       }
 
@@ -1429,11 +1427,11 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
           brother: 'ton frère',
           friend_male: 'ton ami',
           other_male: 'cette personne',
-          husband: 'ton mec',
+          husband: 'ton amoureux',
           mother: 'ta mère',
           sister: 'ta sœur',
           friend_female: 'ton amie',
-          wife: 'ta conjointe',
+          wife: 'ton amoureuse',
           other_female: 'cette personne'
         }[context.personType]} ?`
       })
