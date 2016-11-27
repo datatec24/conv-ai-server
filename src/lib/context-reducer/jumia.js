@@ -282,7 +282,7 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
 })
 
 function* sendBrand (context) {
-  let mobiles = context.brand_to_propose.slice(context.page_brand * 2 || 0, (context.page_brand * 2 || 0) + 2)
+  let mobiles = context.brand_to_propose.slice(context.page_brand * 3 || 0, (context.page_brand * 3 || 0) + 3)
 
   if (mobiles.length > 0) {
     return {

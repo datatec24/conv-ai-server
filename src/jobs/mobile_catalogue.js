@@ -66,5 +66,65 @@ co(function* () {
       pattern: 'Infini|Hot 4',
       image: 'http://i1.wp.com/thegadgetsfreak.com/wp-content/uploads/2016/09/infinix-hot-3.jpg?resize=600%2C574'
     }).save()
+
+    yield new Mobile({
+      id: '6',
+      brand: 'Samsung',
+      brand_image: 'http://www.samsung.com/common/img/logo-square-letter.png',
+      model: 'Samsung Galaxy Note 5 32GB - Gold Platinum',
+      price: 246700,
+      description: 'Screen Size: 5.7"\nProcessor: Octa Core 2.1Ghz\nRAM: 4GB\nHDD/Internal Memory: 32GB',
+      link: 'http://www.samsung.com/global/galaxy/galaxy-note5/images/galaxy-note5_gallery_front_silver_s3.png',
+      pattern: 'samsu|salaxy|note 5',
+      image: 'http://i1.wp.com/thegadgetsfreak.com/wp-content/uploads/2016/09/infinix-hot-3.jpg?resize=600%2C574'
+    }).save()
+
+    yield new Mobile({
+      id: '7',
+      brand: 'Tecno',
+      brand_image: 'http://3.bp.blogspot.com/-aiYA-qlIGaQ/VTkK2Rf3TZI/AAAAAAAAAW4/FpqvirTKfIs/w1200-h630-p-nu/Tecno-logo.png',
+      model: 'Tecno W5 Lite - Gold',
+      price: 37950,
+      description: '',
+      link: 'https://www.jumia.com.ng/tecno-w5-lite-gold-5597299.html',
+      pattern: 'Tecno|W5',
+      image: 'http://www.tdafrica.com/media/catalog/product/cache/1/image/400x405/9df78eab33525d08d6e5fb8d27136e95/w/2/w2_gold_1.jpg'
+    }).save()
+
+    yield new Mobile({
+      id: '8',
+      brand: 'Lenovo',
+      brand_image: 'http://fullhdpictures.com/wp-content/uploads/2016/01/Lenovo-Logos.jpg',
+      model: 'Lenovo Tab 3 7" QuadCore',
+      price: 37495,
+      description: '',
+      link: 'https://www.jumia.com.ng/lenovo-tab-3-7-quadcore-1.3ghz-3g1gb16gb-hddmicro-sim-android-tablet-black-5612811.html',
+      pattern: 'lenovo|W5',
+      image: 'http://cdn2.gsmarena.com/vv/bigpic/lenovo-tab3-711.jpg'
+    }).save()
+
+    yield new Mobile({
+      id: '9',
+      brand: 'Alcatel',
+      brand_image: 'http://www.techguide.com.au/wp-content/uploads/2016/02/Alcatel16MWC1.jpg',
+      model: 'Alcatel Pixi 4 (5") - Silver',
+      price: 20650,
+      description: '',
+      link: 'https://www.jumia.com.ng/alcatel-pixi-4-5-silver-5599878.html',
+      pattern: 'Alcat|Pixi',
+      image: 'http://media.ldlc.com/ld/products/00/03/66/32/LD0003663226_2.jpg'
+    }).save()
+
+    yield new Mobile({
+      id: '10',
+      brand: 'Infinix',
+      brand_image: 'http://www.talkandroidphones.com/wp-content/uploads/2016/07/infinix-logo.jpg',
+      model: 'Infinix Zero 4 X555 - Grey',
+      price: 94600,
+      description: 'Infinix Zero 4 X555 - Grey',
+      link: 'https://www.jumia.com.ng/infinix-zero-4-x555-grey-5595204.html',
+      pattern: 'infini|Zero 4',
+      image: 'https://i0.wp.com/techlector.com/wp-content/uploads/2015/06/INFINIX-ZERO-2.jpg?resize=400%2C400'
+    }).save()
   }
 })
