@@ -23,4 +23,5 @@ function wait_for_it {
 
 wait_for_it $mongodb__server__hostname $mongodb__server__port
 wait_for_it $elasticsearch__server__hostname $elasticsearch__server__port
+
 exec nodemon ./src/index.js
