@@ -58,7 +58,6 @@
     "request": "^2.76.0",
     "request-promise": "^4.1.1",
     "require-directory": "^2.1.1",
-    "sharp": "^0.16.2",
     "uuid": "^2.0.3",
     "winston": "^2.2.0",
     "winston-elasticsearch": "^0.4.0",
