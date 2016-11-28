@@ -36,7 +36,9 @@ const defaultContext = {
     matches: [
       'reset',
       'est parti',
-      'c parti'
+      'c parti',
+      'nouvelle recherche',
+      'go'
     ]
   }, {
     actionType: 'GREETINGS',
