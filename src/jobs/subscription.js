@@ -62,7 +62,7 @@ function sendSelection (products) {
   }
 }
 
-let botId = process.env.NODE_ENV === 'development' ? '5838913f014e49005843ecbc' : 'TODO'
+let botId = process.env.NODE_ENV === 'development' ? '5838913f014e49005843ecbc' : '583c0a264513b60007cb5fb9'
 
 jobs().then(agenda => {
   agenda.define('subscription_jumia', (job, done) => {
