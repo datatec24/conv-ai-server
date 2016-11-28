@@ -38,12 +38,12 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
           dataType: 'regex',
           regex: /sto[p]*/ig
         },
-      {
-        actionType: 'RESET',
-        dataType: 'string',
-        dataKey: 'wakeup',
-        matches:['wake','wake up']
-      }]
+        {
+          actionType: 'RESET',
+          dataType: 'string',
+          dataKey: 'wakeup',
+          matches: ['wake', 'wake up']
+        }]
       })
 
       yield reply({
@@ -74,7 +74,7 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
       return context
     }
 
-    case 'GO':{
+    case 'GO': {
       yield reply({
         text: `Ok so tell me more about what you want, do you already know which phone you want ?`
       })
@@ -102,7 +102,7 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
       return context
     }
 
-    case 'SLEEP':{
+    case 'SLEEP': {
       yield reply({
         text: `I can only hunt phones ${user.profile.firstName}... Say 'Kunle wake up' so I can hunt a deal for you. In the meantime, I go home.`
       })
@@ -132,22 +132,22 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
       }, function (rejection) { return rejection })
 
       yield reply({
-        text:`Ok ${user.profile.firstName}, this models are hot in the market:`
+        text: `Ok ${user.profile.firstName}, this models are hot in the market:`
       })
 
       yield reply(yield sendSelection(context))
 
       return Object.assign({}, context, {_expect: [{
-                actionType: 'STOP',
-                dataType: 'regex',
-                regex: /sto[p]*/ig
-              },
-            {
-              actionType: 'RESET',
-              dataType: 'string',
-              dataKey: 'wakeup',
-              matches:['wake','wake up']
-            }]})
+        actionType: 'STOP',
+        dataType: 'regex',
+        regex: /sto[p]*/ig
+      },
+      {
+        actionType: 'RESET',
+        dataType: 'string',
+        dataKey: 'wakeup',
+        matches: ['wake', 'wake up']
+      }]})
     }
 
     case 'NEXT_PHONE': {
@@ -192,19 +192,19 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
         }]
       })
 
-      return Object.assign({}, context, action.data,context,{
+      return Object.assign({}, context, action.data, context, {
         _expect: [{
-                actionType: 'STOP',
-                dataType: 'regex',
-                regex: /sto[p]*/ig
-              },
-            {
-              actionType: 'RESET',
-              dataType: 'string',
-              dataKey: 'wakeup',
-              matches:['wake','wake up']
-            }]
-          })
+          actionType: 'STOP',
+          dataType: 'regex',
+          regex: /sto[p]*/ig
+        },
+        {
+          actionType: 'RESET',
+          dataType: 'string',
+          dataKey: 'wakeup',
+          matches: ['wake', 'wake up']
+        }]
+      })
     }
 
     case 'SELECT_PRICE_RANGE': {
@@ -232,7 +232,7 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
           return data
         })
       yield reply({
-        text:`Ok ${user.profile.firstName}, this models are hot in the market:`
+        text: `Ok ${user.profile.firstName}, this models are hot in the market:`
       })
       yield reply(yield sendSelection(context))
       return context
@@ -262,7 +262,7 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
     }
 
     case 'SET_ALERT_PRICE': {
-      context.subscription = context.product_to_propose.filter(element =>{
+      context.subscription = context.product_to_propose.filter(element => {
         return (element.id === action.data.mobile.id)
       })
 
@@ -439,7 +439,7 @@ function* sendSelection (context) {
             },
             {
               type: 'postback',
-              title: "More info",
+              title: 'More info',
               payload: JSON.stringify({
                 type: 'INFO',
                 data: {
@@ -479,35 +479,35 @@ function* sendSelection (context) {
     }
   } else {
     return {
-          text: `I don't have any more mobile to propose matching your query :(\nPlease select an other brand below or price :)\n`,
-          quick_replies: [{
-            content_type: 'text',
-            title: '- de 100 000 ₦',
-            payload: JSON.stringify({
-              type: 'SELECT_PRICE_RANGE',
-              data: {
-                priceRange: [0, 100000]
-              }
-            })
-          }, {
-            content_type: 'text',
-            title: '100 000 - 200 000 ₦',
-            payload: JSON.stringify({
-              type: 'SELECT_PRICE_RANGE',
-              data: {
-                priceRange: [100000, 200000]
-              }
-            })
-          }, {
-            content_type: 'text',
-            title: '+ de 200 000 ₦',
-            payload: JSON.stringify({
-              type: 'SELECT_PRICE_RANGE',
-              data: {
-                priceRange: [200000, 100000000000]
-              }
-            })
-          }]
-        }
+      text: `I don't have any more mobile to propose matching your query :(\nPlease select an other brand below or price :)\n`,
+      quick_replies: [{
+        content_type: 'text',
+        title: '- de 100 000 ₦',
+        payload: JSON.stringify({
+          type: 'SELECT_PRICE_RANGE',
+          data: {
+            priceRange: [0, 100000]
+          }
+        })
+      }, {
+        content_type: 'text',
+        title: '100 000 - 200 000 ₦',
+        payload: JSON.stringify({
+          type: 'SELECT_PRICE_RANGE',
+          data: {
+            priceRange: [100000, 200000]
+          }
+        })
+      }, {
+        content_type: 'text',
+        title: '+ de 200 000 ₦',
+        payload: JSON.stringify({
+          type: 'SELECT_PRICE_RANGE',
+          data: {
+            priceRange: [200000, 100000000000]
+          }
+        })
+      }]
+    }
   }
 }
