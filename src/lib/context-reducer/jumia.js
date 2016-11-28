@@ -1,6 +1,23 @@
 const { wrap } = require('co')
 const Mobile = require('../../models/mobile')
 
+const delay = (ms) => {
+  let ctr
+  let rej
+
+  const p = new Promise(function (resolve, reject) {
+    ctr = setTimeout(resolve, ms)
+    rej = reject
+  })
+
+  p.cancel = () => {
+    clearTimeout(ctr)
+    rej(new Error('Cancelled'))
+  }
+
+  return p
+}
+
 module.exports = wrap(function* (messenger, user, context = {}, action = { type: 'NOOP' }) {
   const reply = messenger.sendMessage.bind(messenger, user.messenger.id)
   switch (action.type) {
@@ -27,9 +44,13 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
         text: `Hello ${user.profile.firstName}, I'm Kunle, your phone hunter.\nI can propose you some phone 📱 and set alert ⏰  when there is promotion 🚀🚀 :)\nOf course my work is totally free ;)`
       })
 
+      yield delay(2000)
+
       yield reply({
         text: `Ok so tell me more about what you want, do you already know which phone you want ?`
       })
+
+      yield delay(2000)
 
       yield reply({
         text: `If you don't, you can choose one of your favorite brand below`
@@ -228,7 +249,7 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
           type: 'template',
           payload: {
             template_type: 'button',
-            text: `Keys Feature :\n${action.data.mobile.model}`,
+            text: `Keys Feature :\n${action.data.mobile.description}`,
             buttons: [
               {
                 type: 'web_url',
@@ -277,7 +298,6 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
 
       return context
     }
-
   }
 })
 
@@ -306,7 +326,7 @@ function* sendBrand (context) {
             image_url: 'http://4.bp.blogspot.com/-US3GOtMVxmw/Ts9semOx6kI/AAAAAAAABJs/w6iqw1ix8-o/s1600/signe-plus.gif',
             buttons: [{
               type: 'postback',
-              title: 'Autres choix',
+              title: 'More choices',
               payload: JSON.stringify({
                 type: 'NEXT_BRAND'
               })
@@ -338,12 +358,12 @@ function* sendSelection (context) {
             image_url: `${mobile.image}`,
             buttons: [{
               type: 'web_url',
-              title: 'Acheter',
+              title: 'Buy',
               url: `${mobile.link}`
             },
             {
               type: 'postback',
-              title: "Plus d'infos",
+              title: "More info",
               payload: JSON.stringify({
                 type: 'INFO',
                 data: {
@@ -358,7 +378,7 @@ function* sendSelection (context) {
             }
             ]
           })).concat([{
-            title: 'En voir plus',
+            title: 'Other options',
             image_url: 'http://4.bp.blogspot.com/-US3GOtMVxmw/Ts9semOx6kI/AAAAAAAABJs/w6iqw1ix8-o/s1600/signe-plus.gif',
             buttons: [{
               type: 'postback',
