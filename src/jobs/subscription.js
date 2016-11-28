@@ -42,23 +42,6 @@ function sendSelection (products) {
         }
       }
     }
-  } else {
-    return {
-      text: `I don't have any more mobile to propose :( but do you want to be alerted as soon as i have more?`,
-      quick_replies: [{
-        content_type: 'text',
-        title: 'oui',
-        payload: JSON.stringify({
-          type: 'SET_ALERT_PRICE'
-        })
-      }, {
-        content_type: 'text',
-        title: 'non',
-        payload: JSON.stringify({
-          type: 'NOT_SET_PRICE'
-        })
-      }]
-    }
   }
 }
 
