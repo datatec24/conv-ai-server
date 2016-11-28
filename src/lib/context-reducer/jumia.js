@@ -37,15 +37,44 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
           actionType: 'STOP',
           dataType: 'regex',
           regex: /sto[p]*/ig
-        }]
+        },
+      {
+        actionType: 'RESET',
+        dataType: 'string',
+        dataKey: 'wakeup',
+        matches:['wake','wake up']
+      }]
       })
 
       yield reply({
-        text: `Hello ${user.profile.firstName}, I'm Kunle, your phone hunter.\nI can propose you some phone 📱 and set alert ⏰  when there is promotion 🚀🚀 :)\nOf course my work is totally free ;)`
+        text: `Hello ${user.profile.firstName}, I'm Kunle, your phone hunter📱 :)`
+
       })
 
-      yield delay(2000)
+      yield delay(1000)
 
+      yield reply({
+        text: `Here is what I can do for you. I will negotiate the price and alert ⏰ you when I have a deal🚀🚀, are you interested?\nI will not take a commission :)`,
+        quick_replies: [{
+          content_type: 'text',
+          title: 'Yes',
+          payload: JSON.stringify({
+            type: 'GO'
+          })
+        }, {
+          content_type: 'text',
+          title: 'No',
+          payload: JSON.stringify({
+            type: 'SLEEP'
+          })
+        }]
+
+      })
+
+      return context
+    }
+
+    case 'GO':{
       yield reply({
         text: `Ok so tell me more about what you want, do you already know which phone you want ?`
       })
@@ -55,6 +84,8 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
       yield reply({
         text: `If you don't, you can choose one of your favorite brand below`
       })
+
+      yield delay(2000)
 
       yield Mobile
         .aggregate({$group: {_id: '$brand', brand_image: { $first: '$brand_image' }}})
@@ -71,24 +102,21 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
       return context
     }
 
+    case 'SLEEP':{
+      yield reply({
+        text: `I can only hunt phones ${user.profile.firstName}... Say 'Kunle wake up' so I can hunt a deal for you. In the meantime, I go home.`
+      })
+
+      return context
+    }
+
     case 'NEXT_BRAND': {
       const newContext = Object.assign({}, context, {
-        page_brand: context.page_brand + 1,
-        _expect: [{
-          actionType: 'STOP',
-          dataType: 'regex',
-          regex: RegExp('sto[p]*', 'ig')
-        }]
+        page_brand: context.page_brand + 1
       })
 
       yield reply(yield sendBrand(newContext))
-      return Object.assign({}, newContext, {
-        _expect: [{
-          actionType: 'STOP',
-          dataType: 'regex',
-          regex: RegExp('sto[p]*', 'ig')
-        }]
-      })
+      return Object.assign({}, newContext)
     }
 
     case 'WRITE_PHONE': {
@@ -103,15 +131,23 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
         return context.product_to_propose
       }, function (rejection) { return rejection })
 
+      yield reply({
+        text:`Ok ${user.profile.firstName}, this models are hot in the market:`
+      })
+
       yield reply(yield sendSelection(context))
 
-      return Object.assign({}, context, {
-        _expect: [{
-          actionType: 'STOP',
-          dataType: 'regex',
-          regex: RegExp('sto[p]*', 'ig')
-        }]
-      })
+      return Object.assign({}, context, {_expect: [{
+                actionType: 'STOP',
+                dataType: 'regex',
+                regex: /sto[p]*/ig
+              },
+            {
+              actionType: 'RESET',
+              dataType: 'string',
+              dataKey: 'wakeup',
+              matches:['wake','wake up']
+            }]})
     }
 
     case 'NEXT_PHONE': {
@@ -156,7 +192,19 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
         }]
       })
 
-      return Object.assign({}, context, action.data)
+      return Object.assign({}, context, action.data,context,{
+        _expect: [{
+                actionType: 'STOP',
+                dataType: 'regex',
+                regex: /sto[p]*/ig
+              },
+            {
+              actionType: 'RESET',
+              dataType: 'string',
+              dataKey: 'wakeup',
+              matches:['wake','wake up']
+            }]
+          })
     }
 
     case 'SELECT_PRICE_RANGE': {
@@ -183,7 +231,9 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
           context.product_to_propose = data
           return data
         })
-
+      yield reply({
+        text:`Ok ${user.profile.firstName}, this models are hot in the market:`
+      })
       yield reply(yield sendSelection(context))
       return context
     }
@@ -199,29 +249,50 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
 
     case 'STOP': {
       if (!context.subscription || context.subscription.length === 0) {
-        yield reply({text: "You don't have any subscription"})
+        yield reply({text: "You don't have any alert set"})
 
         return context
       } else {
         context.subscription = []
 
-        yield reply({text: 'You have successfully unsubscribed ;)'})
+        yield reply({text: 'You have successfully unsubscribed for your alerts ;)'})
 
         return context
       }
     }
 
     case 'SET_ALERT_PRICE': {
-      if (!context.subscription || context.subscription.length === 0) {
-        context.subscription = context.product_to_propose
+      context.subscription = context.product_to_propose.filter(element =>{
+        return (element.id === action.data.mobile.id)
+      })
 
-        yield reply({text: "You are now subscribed :)\nYou will receive new selection on a regular basis :)\nTo stop send 'Stop'"})
+      yield reply({text: `Ok ${user.profile.firstName}, I will hunt a better deal for ${action.data.mobile.model} , and will alert you when I have a better price. To stop alert, please send 'Stop'`})
 
-        return context
-      } else {
-        reply({text: "Already subscribed :)\nTo stop send 'Stop'"})
-        return context
-      }
+      yield reply({
+        attachment: {
+          type: 'template',
+          payload: {
+            template_type: 'button',
+            text: `What do you want to do?`,
+            buttons: [
+              {
+                type: 'phone_number',
+                title: 'Call Jumia',
+                payload: '+33668297514'
+              },
+              {
+                type: 'postback',
+                title: 'More choices',
+                payload: JSON.stringify({
+                  type: 'NEXT_PHONE'
+                })
+              }
+            ]
+          }
+        }
+      })
+
+      return context
     }
 
     case 'NOT_SET_PRICE': {
@@ -240,7 +311,7 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
         }
       })
 
-      return context
+      return Object.assign({}, context, action.data)
     }
 
     case 'INFO': {
@@ -253,13 +324,18 @@ module.exports = wrap(function* (messenger, user, context = {}, action = { type:
             buttons: [
               {
                 type: 'web_url',
-                title: 'Acheter',
+                title: 'Buy',
                 url: `${action.data.mobile.link}`
               },
               {
-                type: 'phone_number',
-                title: 'Appeler Jumia',
-                payload: '+33668297514'
+                type: 'postback',
+                title: 'Go hunt better deal',
+                payload: JSON.stringify({
+                  type: 'SET_ALERT_PRICE',
+                  data: {
+                    mobile: action.data.mobile
+                  }
+                })
               },
               {
                 type: 'postback',
@@ -372,9 +448,14 @@ function* sendSelection (context) {
               })
             },
             {
-              type: 'phone_number',
-              title: 'Appeler Jumia',
-              payload: '+33668297514'
+              type: 'postback',
+              title: 'Go hunt better deal',
+              payload: JSON.stringify({
+                type: 'SET_ALERT_PRICE',
+                data: {
+                  mobile: mobile
+                }
+              })
             }
             ]
           })).concat([{
@@ -388,33 +469,45 @@ function* sendSelection (context) {
               })
             },
             {
-              type: 'postback',
-              title: 'Set Alert Price',
-              payload: JSON.stringify({
-                type: 'SET_ALERT_PRICE'
-              })
-            }
-            ]
+              type: 'phone_number',
+              title: 'Appeler Jumia',
+              payload: '+33668297514'
+            }]
           }])
         }
       }
     }
   } else {
     return {
-      text: `I don't have any more mobile to propose :( but do you want to be alerted as soon as i have more?`,
-      quick_replies: [{
-        content_type: 'text',
-        title: 'oui',
-        payload: JSON.stringify({
-          type: 'SET_ALERT_PRICE'
-        })
-      }, {
-        content_type: 'text',
-        title: 'non',
-        payload: JSON.stringify({
-          type: 'NOT_SET_PRICE'
-        })
-      }]
-    }
+          text: `I don't have any more mobile to propose matching your query :(\nPlease select an other brand below or price :)\n`,
+          quick_replies: [{
+            content_type: 'text',
+            title: '- de 100 000 ₦',
+            payload: JSON.stringify({
+              type: 'SELECT_PRICE_RANGE',
+              data: {
+                priceRange: [0, 100000]
+              }
+            })
+          }, {
+            content_type: 'text',
+            title: '100 000 - 200 000 ₦',
+            payload: JSON.stringify({
+              type: 'SELECT_PRICE_RANGE',
+              data: {
+                priceRange: [100000, 200000]
+              }
+            })
+          }, {
+            content_type: 'text',
+            title: '+ de 200 000 ₦',
+            payload: JSON.stringify({
+              type: 'SELECT_PRICE_RANGE',
+              data: {
+                priceRange: [200000, 100000000000]
+              }
+            })
+          }]
+        }
   }
 }
