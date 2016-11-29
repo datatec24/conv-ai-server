@@ -12,6 +12,8 @@ const confirm = () => random([
   `Oui c'est ça`
 ])
 
+let timeOut
+
 const delay = (ms) => {
   let ctr
   let rej
@@ -628,17 +630,19 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
         text: `Je vais te poser quelques questions afin de t'orienter vers les meilleurs cadeaux 🎁 de Noël ;)`
       })
 
-      yield delay(3000)
+      yield delay(4000)
 
       yield reply({
         text: `Par contre je ne suis qu'un jeune renne 🐑 : même si nous partageons la culture du cadeau dans ma famille 🎅, je suis toujours en plein apprentissage ! Il serait donc préférable que tu restes clair avec moi :). `
       })
 
-      yield delay(4000)
+      yield delay(6000)
 
       yield reply({
         text: 'Á qui ce cadeau est-il destiné ? '
       })
+
+      yield delay(2000)
 
       yield reply({
         attachment: {
@@ -1607,7 +1611,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
 
     case 'SELECT_STYLE': {
       yield reply({
-        text: `Ok, je te propose les produits suivants. Si tu cliques sur "Acheter", tu seras renvoyé directement sur la fiche du produit sur Menlook.com.`
+        text: `Ok, je te propose les produits suivants. Si tu cliques sur "Acheter", tu seras renvoyé directement sur la fiche du produit sur Menlook.com.\nClique sur 'Voir plus' pour voir d'autres cadeaux :)`
       })
 
       const newContext = Object.assign({}, context, action.data, {
@@ -1616,20 +1620,28 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
 
       const products = yield getProducts(newContext)
 
-      yield replyMany(yield showProducts(yield getProducts(newContext)))
+      yield replyMany(yield showProducts(products))
 
       if (products.length) {
-        setTimeout(() => co(function* () {
+        timeOut = setTimeout(() => co(function* () {
           yield reply({
             text: `J'espère que tu as apprécié cette sélection ! Tu peux nous donner ton adresse e-mail afin que nous te fassions parvenir d'autres sélections. Tu peux également écrire "Nouvelle Recherche" pour repartir de zéro. `
           })
           if (!context.secretFound) {
-            yield delay(8000)
+            yield delay(15000)
             yield reply({
               text: `En attendant, tu n'as toujours pas réussi à percer mon secret!`
             })
           }
-        }), 4000)
+        }), 20000)
+      } else {
+        setTimeout(() => co(function* () {
+          if (!context.secretFound) {
+            yield reply({
+              text: `En attendant, tu n'as toujours pas réussi à percer mon secret!`
+            })
+          }
+        }), 15000)
       }
       return newContext
     }
@@ -1639,7 +1651,34 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
         page: context.page + 1
       })
 
+      clearTimeout(timeOut)
+
+      const products = yield getProducts(newContext)
+
       yield replyMany(yield showProducts(yield getProducts(newContext)))
+
+      if (products.length) {
+        timeOut = setTimeout(() => co(function* () {
+          yield reply({
+            text: `J'espère que tu as apprécié cette sélection ! Tu peux nous donner ton adresse e-mail afin que nous te fassions parvenir d'autres sélections. Tu peux également écrire "Nouvelle Recherche" pour repartir de zéro. `
+          })
+          if (!context.secretFound) {
+            yield delay(15000)
+            yield reply({
+              text: `En attendant, tu n'as toujours pas réussi à percer mon secret!`
+            })
+          }
+        }), 20000)
+      } else {
+        setTimeout(() => co(function* () {
+          if (!context.secretFound) {
+            yield reply({
+              text: `En attendant, tu n'as toujours pas réussi à percer mon secret!`
+            })
+          }
+        }), 15000)
+      }
+
       return newContext
     }
 
@@ -1748,19 +1787,6 @@ function* showProducts (products) {
           }]
         }
       }
-    }, {
-      attachment: {
-        type: 'template',
-        payload: {
-          template_type: 'button',
-          text: `C'est tout ce que j'ai à te proposer. Si tu veux réinitialiser la conversation clique sur le bouton ci-apres. Merci de ta compréhension.`,
-          buttons: [{
-            type: 'postback',
-            title: "C'est parti!",
-            payload: JSON.stringify({ type: 'RESET' })
-          }]
-        }
-      }
     }]
   }
 
@@ -1769,6 +1795,7 @@ function* showProducts (products) {
       type: 'template',
       payload: {
         template_type: 'list',
+        'top_element_style': 'compact',
         elements: products.map(product => ({
           title: product.title,
           image_url: product.imageUrl,
