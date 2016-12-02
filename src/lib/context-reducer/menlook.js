@@ -12,8 +12,6 @@ const confirm = () => random([
   `Oui c'est ça`
 ])
 
-let timeOut
-
 const delay = (ms) => {
   let ctr
   let rej
@@ -1623,7 +1621,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
       yield replyMany(yield showProducts(products))
 
       if (products.length) {
-        timeOut = setTimeout(() => co(function* () {
+        setTimeout(() => co(function* () {
           yield reply({
             text: `J'espère que tu as apprécié cette sélection ! Tu peux nous donner ton adresse e-mail afin que nous te fassions parvenir d'autres sélections. Tu peux également écrire "Nouvelle Recherche" pour repartir de zéro. `
           })
@@ -1633,7 +1631,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
               text: `En attendant, tu n'as toujours pas réussi à percer mon secret!`
             })
           }
-        }), 20000)
+        }), 40000)
       } else {
         setTimeout(() => co(function* () {
           if (!context.secretFound) {
@@ -1651,33 +1649,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
         page: context.page + 1
       })
 
-      clearTimeout(timeOut)
-
-      const products = yield getProducts(newContext)
-
       yield replyMany(yield showProducts(yield getProducts(newContext)))
-
-      if (products.length) {
-        timeOut = setTimeout(() => co(function* () {
-          yield reply({
-            text: `J'espère que tu as apprécié cette sélection ! Tu peux nous donner ton adresse e-mail afin que nous te fassions parvenir d'autres sélections. Tu peux également écrire "Nouvelle Recherche" pour repartir de zéro. `
-          })
-          if (!context.secretFound) {
-            yield delay(15000)
-            yield reply({
-              text: `En attendant, tu n'as toujours pas réussi à percer mon secret!`
-            })
-          }
-        }), 20000)
-      } else {
-        setTimeout(() => co(function* () {
-          if (!context.secretFound) {
-            yield reply({
-              text: `En attendant, tu n'as toujours pas réussi à percer mon secret!`
-            })
-          }
-        }), 15000)
-      }
 
       return newContext
     }
