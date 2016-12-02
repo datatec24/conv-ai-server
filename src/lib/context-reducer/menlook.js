@@ -3,6 +3,21 @@ const Product = require('../../models/product')
 
 const random = (arr) => arr[Math.floor(Math.random() * arr.length)]
 
+const shuffle = (array) => {
+  var currentIndex = array.length, temporaryValue, randomIndex;
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+  return array;
+}
+
 const confirm = () => random([
   `Yes, let's go`,
   `Oui, je confirme`,
@@ -57,517 +72,22 @@ const defaultContext = {
     actionType: 'INSULT',
     dataType: 'string',
     matches: [
-      `abruti de la`,
-      `ahuri`,
-      `aigrefin`,
-      `anachorète`,
-      `analphabète`,
-      `andouille`,
-      `anus de poulpe`,
-      `arsouille`,
-      `aspirateur a muscadet`,
-      `assisté`,
-      `asticot`,
-      `attardé`,
-      `avorton`,
-      `babache`,
-      `bachibouzouk`,
-      `balai de chiottes`,
-      `baltringue`,
-      `banane`,
-      `bandit`,
-      `barjot`,
-      `batârd`,
-      `betterave`,
-      `bigleux`,
-      `blaireau`,
-      `boloss`,
-      `bordel`,
-      `bordel à cul`,
-      `boudin`,
-      `bouffon`,
-      `bougre d’âne`,
-      `bougre d’imbécile`,
-      `bougre de congre`,
-      `bougre de conne`,
-      `boule de pus`,
-      `boulet`,
-      `bouricot`,
-      `bourique`,
-      `bourrin`,
-      `boursemolle`,
-      `boursouflure`,
-      `bouseux`,
-      `boutonneux`,
-      `branleur`,
-      `branlotin`,
-      `branque`,
-      `branquignole`,
-      `brigand`,
-      `brêle`,
-      `brosse à chiottes`,
-      `bubon puant`,
-      `burne`,
-      `butor`,
-      `bécasse`,
-      `bégueule`,
-      `bélitre`,
-      `béotien`,
-      `bête`,
-      `cageot`,
-      `cagole`,
-      `calice`,
-      `canaille`,
-      `canaillou`,
-      `cancrelat`,
-      `caprinophile`,
-      `carburateur à beaujolais`,
-      `caribou`,
-      `casse-pieds`,
-      `cassos (cas social)`,
-      `catin`,
-      `cave`,
-      `cervelle d’huitre`,
-      `chacal`,
-      `chacal puant`,
-      `chafouin,`,
-      `chameau`,
-      `chancreux`,
-      `chancre puant`,
-      `chaoui`,
-      `charogne`,
-      `chenapan`,
-      `chiassard`,
-      `chiasse de caca fondu`,
-      `chieur`,
-      `chiure de pigeon`,
-      `cinglé`,
-      `clampin`,
-      `cloaque`,
-      `cloche`,
-      `clodo`,
-      `cloporte`,
-      `clown`,
-      `cochon`,
-      `cocu`,
-      ` con `,
-      `conard`,
-      `conchieur`,
-      `concombre`,
-      `connard`,
-      `connasse`,
-      `conne`,
-      `coprolithe`,
-      `coprophage`,
-      `cornard`,
-      `cornegidouille`,
-      `corniaud`,
-      `cornichon`,
-      `couard`,
-      `couille de tétard`,
-      `couille molle`,
-      `couillon`,
-      `crapaud de pissotière`,
-      `crapule`,
-      `crassard`,
-      `crasseuse`,
-      `crasspouillard!`,
-      `crevard`,
-      `crevure`,
-      `crotte de moineau`,
-      `cryptorchide`,
-      `crâne d’obus`,
-      `crétin`,
-      `crétin des alpes`,
-      `crétin des iles`,
-      `crétin goîtreux`,
-      `cuistre`,
-      `cul de babouin`,
-      `cul terreux`,
-      `dégueulasse`,
-      `don juan de pissotière`,
-      `ducon`,
-      `dugenou`,
-      `dugland`,
-      `dypterosodomite`,
-      `débile`,
-      `décamerde`,
-      `décérébré`,
-      `dégueulis`,
-      `dégénéré chromozomique`,
-      `dégénéré du bulbe`,
-      `dépravé`,
-      `détritus`,
-      `ecervelé`,
-      `ectoplasme`,
-      `emmerdeur`,
-      `empaffé`,
-      `emplâtre`,
-      `empoté`,
-      `enculeur de mouches`,
-      `enculé`,
-      `encule`,
-      `enflure`,
-      `enfoiré`,
-      `erreur de la nature`,
-      `eunuque`,
-      `face de cul`,
-      `face de pet`,
-      `face de rat`,
-      `faquin`,
-      `faraud`,
-      `faux jeton`,
-      `fesse d’huitre`,
-      `fesse de moule`,
-      `fesses molles`,
-      `fiente`,
-      `filou`,
-      `fini à l’urine`,
-      `fion`,
-      `fiote`,
-      `flaque de pus`,
-      `foireux`,
-      `foldingue`,
-      `fonctionnaire`,
-      `fouille merde`,
-      `four à merde`,
-      `fourbe`,
-      `foutriquet`,
-      `frapadingue`,
-      `frappe`,
-      `freluquet`,
-      `fricoteur`,
-      `frigide`,
-      `fripouille`,
-      `frippon`,
-      `frustré`,
-      `fumier`,
-      `fumiste`,
-      `furoncle`,
-      `félon`,
-      `ganache`,
-      `gangrène`,
-      `garage a bite`,
-      `gibier de potence`,
-      `gland`,
-      `glandeur`,
-      `glandus`,
-      `globicéphale`,
-      `gnome`,
-      `godiche`,
-      `gogol`,
-      `goinfre`,
-      `gommeux`,
-      `gougnafier`,
-      `goujat`,
-      `goulu`,
-      `gourdasse`,
-      `gourgandin/e`,
-      `grand cornichon`,
-      `grand dépandeur d’andouilles`,
-      `gras du bide`,
-      `graveleux`,
-      `gredin`,
-      `grenouille`,
-      `gringalet`,
-      `grognasse`,
-      `gros caca poilu`,
-      `gros con`,
-      `gros lard`,
-      `grosse merde puante`,
-      `grosse truie violette`,
-      `grue`,
-      `gueulard`,
-      `gueule de fion`,
-      `gueule de raie`,
-      `gueux`,
-      `gugus`,
-      `guignol`,
-      `has-been`,
-      `hérétique`,
-      `histrion`,
-      `homoncule`,
-      `hostie d’épais`,
-      `hurluberlu`,
-      `hérétique`,
-      `iconoclaste`,
-      `idiot`,
-      `ignare`,
-      `illettré`,
-      `imbibé`,
-      `imbécile`,
-      `impuissant`,
-      `infâme raie de cul`,
-      `ironie de la création`,
-      `ivrogne`,
-      `jaune`,
-      `jean-foutre`,
-      `jobard`,
-      `jobastre`,
-      `judas`,
-      `kroumir`,
-      `kéké`,
-      `laideron`,
-      `larve`,
-      `lavedu`,
-      `lépreux`,
-      `loboto`,
-      `loutre analphabète`,
-      `lèche-cul`,
-      `malandrin`,
-      `malotru`,
-      `malpropre`,
-      `manant`,
-      `manche à couille`,
-      `mange merde`,
-      `maquereau`,
-      `maquerelle`,
-      `maraud`,
-      `marchand de tapis`,
-      `margoulin`,
-      `merdaillon`,
-      `merdasse`,
-      `merde`,
-      `merde molle`,
-      `merdophile`,
-      `merlan frit`,
-      `microcéphale`,
-      `minable`,
-      `minus`,
-      `miteux`,
-      `moins que rien`,
-      `molasson`,
-      `mongol`,
-      `mononeuronal`,
-      `mont de brin`,
-      `morbleu`,
-      `morfale`,
-      `morille`,
-      `morpion`,
-      `mortecouille`,
-      `morue`,
-      `morveux`,
-      `motherfucker`,
-      `mou du bulbe`,
-      `mou du genou`,
-      `mou du gland`,
-      `moudlabite`,
-      `moule à gauffre`,
-      `mouton de panurge`,
-      `méchant.`,
-      `mécréant`,
-      `mérule`,
-      `nabot`,
-      `nain de jardin`,
-      `nanar`,
-      `naze`,
-      `nazillon`,
-      `necropédophile`,
-      `neuneu`,
-      `nez de boeuf`,
-      `niais, niaiseux`,
-      `nigaud`,
-      `niguedouille`,
-      `noob`,
-      `nounouille`,
-      `nécrophile`,
-      `obsédé`,
-      `oiseau de mauvaise augure`,
-      `olibrius`,
-      `ordure purulente`,
-      `outre à pisse`,
-      `outrecuidant`,
-      `pachyderme`,
-      `paltoquet`,
-      `panaris`,
-      `parasite`,
-      `parbleu`,
-      `parvenu`,
-      `patate`,
-      `paumé`,
-      `pauvre con`,
-      `paysan`,
-      `peau de bite`,
-      `peau de vache`,
-      `pecore`,
-      `peigne-cul`,
-      `peine a jouir`,
-      `peine à jouir`,
-      `pendard`,
-      `pervers`,
-      `pet de moule`,
-      `petite merde`,
-      `petzouille`,
-      `phlegmon`,
-      `pigeon`,
-      `pignolo`,
-      `pignouf`,
-      `pimbêche`,
-      `pinailleur`,
-      `pine d’ours`,
-      `pine d’huitre`,
-      `pintade`,
-      `pipistrelle puante`,
-      `piqueniquedouille`,
-      `pisse froid`,
-      `pisse-vinaigre`,
-      `pisseuse`,
-      `pissure`,
-      `piètre`,
-      `planqué`,
-      `playboy de superette`,
-      `pleutre`,
-      `plouc`,
-      `poire`,
-      `poireau`,
-      `poivrot`,
-      `polisson`,
-      `poltron`,
-      `pompe a merde`,
-      `porc`,
-      `pot de chambre`,
-      `pouacre, pouacreux`,
-      `pouffe`,
-      `pouffiasse`,
-      `poufieux`,
-      `pouilleux`,
-      `pourceau`,
-      `pourriture`,
-      `pousse mégot`,
-      `punaise`,
-      `putassière`,
-      `pute au rabais`,
-      `pute borgne`,
-      `pute`,
-      `putréfaction`,
-      `pygocéphale`,
-      `pécore`,
-      `pédale`,
-      `péquenot`,
-      `pétasse`,
-      `pétassoïde conassiforme`,
-      `pétochard`,
-      `quadrizomique`,
-      `queutard`,
-      `quiche`,
-      `raclure de bidet`,
-      `raclure de chiotte`,
-      `radasse`,
-      `radin`,
-      `ramassis de chiure de moineau`,
-      `rambo de pacotille`,
-      `rastaquouère`,
-      `renégat`,
-      `roquet`,
-      `roublard`,
-      `rouge`,
-      `roulure`,
-      `résidu de fausse couche`,
-      `résidus de partouze`,
-      `sabraque`,
-      `sac à brin`,
-      `sac à foutre`,
-      `sac à gnole`,
-      `sac à merde`,
-      `sac à viande`,
-      `sac à vin`,
-      `sacrebleu`,
-      `sacrement`,
-      `sacripan`,
-      `sagouin`,
-      `salaud`,
-      `saleté`,
-      `saligaud`,
-      `salopard`,
-      `salope`,
-      `saloperie`,
-      `salopiaud`,
-      `saltinbanque`,
-      `saperlipopette`,
-      `saperlotte`,
-      `sauvage`,
-      `scaphandrier d’eau de vaiselle`,
-      `scatophile`,
-      `scelerat`,
-      `schnock`,
-      `schpountz`,
-      `serpillière à foutre`,
-      `sinistrose ambulante`,
-      `sinoque`,
-      `sodomite`,
-      `sombre conne`,
-      `sombre crétin`,
-      `sot`,
-      `souillon`,
-      `sous merde`,
-      `spermatozoide avarié`,
-      `spermiducte`,
-      `suintance`,
-      `sybarite`,
-      `syphonné`,
-      `tabarnak`,
-      `tabernacle`,
-      `tâcheron`,
-      `tafiole`,
-      `tanche`,
-      `tartignole`,
-      `taré`,
-      `tas de saindoux`,
-      `tasse à foutre`,
-      `thon`,
-      `tire couilles`,
-      `tocard`,
-      `tonnerre de brest`,
-      `toqué`,
-      `trainé`,
-      `traîne savate`,
-      `tricard`,
-      `triple buse`,
-      `tromblon`,
-      `tronche de cake`,
-      `trou de balle`,
-      `trou du cul`,
-      `troubignole`,
-      `truand`,
-      `trumeaux`,
-      `tuberculeux`,
-      `tudieu`,
-      `tétârd`,
-      `tête d’ampoule`,
-      `tête de bite`,
-      `tête de chibre`,
-      `tête de con`,
-      `tête de noeud`,
-      `tête à claques`,
-      `usurpateur`,
-      `va nu pieds`,
-      `va te faire`,
-      `vandale`,
-      `vaurien`,
-      `vautour`,
-      `ventrebleu`,
-      `vermine`,
-      `veule`,
-      `vicelard`,
-      `vieille baderne`,
-      `vieille poule`,
-      `vieille taupe`,
-      `vieux chnoque`,
-      `vieux con`,
-      `vieux fossile`,
-      `vieux tableau`,
-      `vieux tromblon`,
-      `vilain`,
-      `voleur`,
-      `vorace`,
-      `voyou`,
-      `vérole`,
-      `wisigoth`,
-      `zigoto`,
-      `zonard`,
-      `zouave`,
-      `zoulou`,
-      `zozo`
+      'encule',
+      'fils de pute',
+      'ta gueule',
+      'gueule',
+      'pd',
+      'ntm',
+      'nique',
+      'nike',
+      'salaup',
+      'salot',
+      'race',
+      'tg',
+      'suce',
+      'bite',
+      'zeub',
+      'va te faire'
     ]
   }, {
     actionType: 'THANKS',
@@ -1708,18 +1228,60 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
 
     case 'SELECT_STYLE': {
       yield reply({
-        text: `Ok, je te propose les produits suivants. Si tu cliques sur "Acheter", tu seras renvoyé directement sur la fiche du produit sur Menlook.com.\nClique sur 'Voir plus' pour voir d'autres cadeaux :)`
+        text: `Voici les super cadeaux que j'ai dénichés pour toi ${user.profile.firstName}!Clique sur 'Voir plus' pour voir d'autres cadeaux :)`
       })
 
-      const newContext = Object.assign({}, context, action.data, {
+      context = Object.assign({}, context, action.data, {
         page: 0
       })
 
-      const products = yield getProducts(newContext)
+      yield Product
+        .find({
+          $and: [{
+            quantity: { $gt: 0 }
+          }, {
+            $or: [
+              { gender: { $eq: context.gender } },
+              { gender: { $eq: null } }
+            ]
+          }, {
+            $or: context.style === 'geek' ? [{
+              age: { $gte: 0 }
+            }] : [{
+              age: {
+                $eq: [25, 40, 60, 80].reverse().reduce((acc, age) => age >= context.age ? age : acc)
+              }
+            }, {
+              age: { $eq: 0 }
+            }]
+          }, {
+            style: {
+              $eq: {
+                geek: 'Geek',
+                business: 'Business',
+                casual: 'Casual',
+                creator: 'Créateur',
+                streetwear: 'Streetwear',
+                classic: 'Classic',
+                luxury: 'Luxe'
+              }[context.style]
+            }
+          }, {
+            price: context.style === 'geek' ? { $gte: 0 } : {
+              $gte: context.priceRange[0] * 100,
+              $lte: context.priceRange[1] * 100
+            }
+          }]
+        })
+        .exec()
+        .then(function (data) {
+          context.product_to_propose = shuffle(data)
+          return data
+        })
 
-      yield replyMany(yield showProducts(products))
+      yield replyMany(yield showProducts(context))
 
-      if (products.length) {
+      if (context.product_to_propose.length) {
         setTimeout(() => co(function* () {
           yield reply({
             text: `J'espère que tu as apprécié cette sélection ! N'hésite pas à m'en demander une nouvelle en écrivant "C'est parti".`
@@ -1762,7 +1324,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
           }
         }), 5000)
       }
-      return newContext
+      return context
     }
 
     case 'NEXT_PAGE': {
@@ -1770,7 +1332,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
         page: context.page + 1
       })
 
-      yield replyMany(yield showProducts(yield getProducts(newContext)))
+      yield replyMany(yield showProducts(newContext))
 
       return newContext
     }
@@ -1788,51 +1350,54 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
   }
 })
 
-function* getProducts (context) {
-  return Product
-    .find({
-      $and: [{
-        quantity: { $gt: 0 }
-      }, {
-        $or: [
-          { gender: { $eq: context.gender } },
-          { gender: { $eq: null } }
-        ]
-      }, {
-        $or: context.style === 'geek' ? [{
-          age: { $gte: 0 }
-        }] : [{
-          age: {
-            $eq: [25, 40, 60, 80].reverse().reduce((acc, age) => age >= context.age ? age : acc)
-          }
-        }, {
-          age: { $eq: 0 }
-        }]
-      }, {
-        style: {
-          $eq: {
-            geek: 'Geek',
-            business: 'Business',
-            casual: 'Casual',
-            creator: 'Créateur',
-            streetwear: 'Streetwear',
-            classic: 'Classic',
-            luxury: 'Luxe'
-          }[context.style]
-        }
-      }, {
-        price: context.style === 'geek' ? { $gte: 0 } : {
-          $gte: context.priceRange[0] * 100,
-          $lte: context.priceRange[1] * 100
-        }
-      }]
-    })
-    .skip((context.page || 0) * 4)
-    .limit(4)
-    .exec()
-}
+// function* getProducts (context) {
+//   return Product
+//     .find({
+//       $and: [{
+//         quantity: { $gt: 0 }
+//       }, {
+//         $or: [
+//           { gender: { $eq: context.gender } },
+//           { gender: { $eq: null } }
+//         ]
+//       }, {
+//         $or: context.style === 'geek' ? [{
+//           age: { $gte: 0 }
+//         }] : [{
+//           age: {
+//             $eq: [25, 40, 60, 80].reverse().reduce((acc, age) => age >= context.age ? age : acc)
+//           }
+//         }, {
+//           age: { $eq: 0 }
+//         }]
+//       }, {
+//         style: {
+//           $eq: {
+//             geek: 'Geek',
+//             business: 'Business',
+//             casual: 'Casual',
+//             creator: 'Créateur',
+//             streetwear: 'Streetwear',
+//             classic: 'Classic',
+//             luxury: 'Luxe'
+//           }[context.style]
+//         }
+//       }, {
+//         price: context.style === 'geek' ? { $gte: 0 } : {
+//           $gte: context.priceRange[0] * 100,
+//           $lte: context.priceRange[1] * 100
+//         }
+//       }]
+//     })
+//     .skip((context.page || 0) * 4)
+//     .limit(4)
+//     .exec()
+// }
 
-function* showProducts (products) {
+function* showProducts (context) {
+
+  let products = context.product_to_propose.slice(context.page * 4 || 0, (context.page * 4 || 0) + 4)
+
   if (!products.length) {
     return [{
       attachment: {
