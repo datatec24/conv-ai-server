@@ -4,18 +4,19 @@ const Product = require('../../models/product')
 const random = (arr) => arr[Math.floor(Math.random() * arr.length)]
 
 const shuffle = (array) => {
-  var currentIndex = array.length, temporaryValue, randomIndex;
+  let currentIndex, temporaryValue, randomIndex
+  currentIndex = array.length
   // While there remain elements to shuffle...
-  while (0 !== currentIndex) {
+  while (currentIndex !== 0) {
     // Pick a remaining element...
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex -= 1;
+    randomIndex = Math.floor(Math.random() * currentIndex)
+    currentIndex -= 1
     // And swap it with the current element.
-    temporaryValue = array[currentIndex];
-    array[currentIndex] = array[randomIndex];
-    array[randomIndex] = temporaryValue;
+    temporaryValue = array[currentIndex]
+    array[currentIndex] = array[randomIndex]
+    array[randomIndex] = temporaryValue
   }
-  return array;
+  return array
 }
 
 const confirm = () => random([
@@ -54,7 +55,9 @@ const defaultContext = {
       'c parti',
       'nouvelle recherche',
       'recherche',
-      'go'
+      'go',
+      'recommencer',
+      'recomencer'
     ]
   }, {
     actionType: 'GREETINGS',
@@ -129,10 +132,9 @@ const defaultContext = {
 
 module.exports = co.wrap(function* (messenger, user, context = defaultContext, action = { type: 'NOOP' }) {
   const reply = messenger.sendMessage.bind(messenger, user.messenger.id)
-  const replyMany = messages => messages.reduce((p, m) => p.then(() => reply(m)), Promise.resolve())
 
   switch (action.type) {
-    case 'START':{
+    case 'START': {
       yield reply({
         text: `🎄 Bonjour ${user.profile.firstName}, je m'appelle Rudolph. 🎄`
       })
@@ -140,120 +142,10 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
       yield delay(1000)
 
       yield reply({
-        text: `Je peux t'aider à trouver les meilleurs cadeaux 🎁 de Noël pour tes proches ou te faire gagner des bons d'achat Menlook ;)`
+        text: `Je vais te poser quelques questions afin de t'orienter vers les meilleurs cadeaux 🎁 de Noël 😉 et même t'en faire gagner!\nTu peux lancer une nouvelle recherche à tout moment en écrivant "recommencer" sur ton clavier.`
       })
 
-      yield reply({
-        text: `Que souhaites-tu faire ?`
-      })
-
-      yield reply({
-        attachment: {
-          type: 'template',
-          payload: {
-            template_type: 'generic',
-            elements: [{
-              title: `Trouver un cadeau 🎁`,
-              image_url: 'http://www.yogamag.info/dir/wp-content/uploads/2014/12/liste-cadeaux-noel.jpg',
-              buttons: [{
-                type: 'postback',
-                title: confirm(),
-                payload: JSON.stringify({
-                  type: 'START_PRESENT',
-                })
-              }]
-            }, {
-              title: 'Tenter de remporter des chèques cadeaux Menlook 💸',
-              image_url: 'http://www.benrun.fr/image/data/Produits/chequecadeau.jpg',
-              buttons: [{
-                type: 'postback',
-                title: confirm(),
-                payload: JSON.stringify({
-                  type: 'SECRET',
-                })
-              }]
-            }, {
-              title: 'Qui suis-je 🐑 ?',
-              image_url: 'https://scontent-cdg2-1.xx.fbcdn.net/v/t1.0-9/15181156_361857034168686_3768989194421828295_n.jpg?oh=a489ff4bf01a6bf4d7edc8c28210956a&oe=58B498FF',
-              buttons: [{
-                type: 'postback',
-                title: confirm(),
-                payload: JSON.stringify({
-                  type: 'PRESENTATION',
-                })
-              }]
-            }]
-          }
-        }
-      })
-
-
-      return Object.assign({}, defaultContext, {
-        secretFound: context.secretFound,
-        mail: context.mail,
-        registration: !context.registration ? new Date() : context.registration
-      })
-    }
-
-    case 'RESET': {
-      yield reply({
-        text: `Que souhaites-tu faire ?`
-      })
-
-      yield reply({
-        attachment: {
-          type: 'template',
-          payload: {
-            template_type: 'generic',
-            elements: [{
-              title: `Trouver un cadeau 🎁`,
-              image_url: 'http://www.yogamag.info/dir/wp-content/uploads/2014/12/liste-cadeaux-noel.jpg',
-              buttons: [{
-                type: 'postback',
-                title: confirm(),
-                payload: JSON.stringify({
-                  type: 'START_PRESENT',
-                })
-              }]
-            }, {
-              title: 'Tenter de remporter des chèques cadeaux Menlook 💸',
-              image_url: 'http://www.benrun.fr/image/data/Produits/chequecadeau.jpg',
-              buttons: [{
-                type: 'postback',
-                title: confirm(),
-                payload: JSON.stringify({
-                  type: 'SECRET',
-                })
-              }]
-            }, {
-              title: 'Qui suis-je 🐑 ?',
-              image_url: 'https://scontent-cdg2-1.xx.fbcdn.net/v/t1.0-9/15181156_361857034168686_3768989194421828295_n.jpg?oh=a489ff4bf01a6bf4d7edc8c28210956a&oe=58B498FF',
-              buttons: [{
-                type: 'postback',
-                title: confirm(),
-                payload: JSON.stringify({
-                  type: 'PRESENTATION',
-                })
-              }]
-            }]
-          }
-        }
-      })
-
-
-      return Object.assign({}, defaultContext, {
-        secretFound: context.secretFound,
-        mail: context.mail,
-        registration: !context.registration ? new Date() : context.registration
-      })
-    }
-
-    case 'START_PRESENT': {
-      yield reply({
-        text: `Je vais te poser quelques questions afin de t'orienter vers les meilleurs cadeaux 🎁 de Noël 😉\nTu peux lancer une nouvelle recherche à tout moment en écrivant "Nouvelle recherche" sur ton clavier.`
-      })
-
-      yield delay(2000)
+      yield delay(3000)
 
       yield reply({
         text: 'Á qui ce cadeau est-il destiné ? '
@@ -300,10 +192,69 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
           }
         }
       })
-      return context
+
+      return Object.assign({}, defaultContext, {
+        secretFound: context.secretFound,
+        mail: context.mail,
+        registration: !context.registration ? new Date() : context.registration
+      })
     }
 
-    case 'PRESENTATION':{
+    case 'RESET': {
+      yield reply({
+        text: 'Á qui ce cadeau est-il destiné ? '
+      })
+
+      yield reply({
+        attachment: {
+          type: 'template',
+          payload: {
+            template_type: 'generic',
+            elements: [{
+              title: `Une femme`,
+              image_url: random([
+                'https://media.giphy.com/media/Tmwir1pAi8fUk/giphy.gif',
+                'https://media.giphy.com/media/10nHpaiNpVoHL2/giphy.gif',
+                'https://media.giphy.com/media/WF7d2qsz6VuX6/giphy.gif',
+                'https://media.giphy.com/media/CgqLPXCa9djMI/giphy.gif'
+              ]),
+              buttons: [{
+                type: 'postback',
+                title: confirm(),
+                payload: JSON.stringify({
+                  type: 'SELECT_GENDER',
+                  data: { gender: 'female' }
+                })
+              }]
+            }, {
+              title: 'Un homme',
+              image_url: random([
+                'https://media.giphy.com/media/E9mB3gRCuIqeQ/giphy.gif',
+                'https://media.giphy.com/media/pNpONEEg3pLIQ/giphy.gif',
+                'https://media.giphy.com/media/iVRt7JRjBIH04/giphy.gif',
+                'https://media.giphy.com/media/1vh1PXneQqN1e/giphy.gif'
+              ]),
+              buttons: [{
+                type: 'postback',
+                title: confirm(),
+                payload: JSON.stringify({
+                  type: 'SELECT_GENDER',
+                  data: { gender: 'male' }
+                })
+              }]
+            }]
+          }
+        }
+      })
+
+      return Object.assign({}, defaultContext, {
+        secretFound: context.secretFound,
+        mail: context.mail,
+        registration: !context.registration ? new Date() : context.registration
+      })
+    }
+
+    case 'PRESENTATION': {
       yield reply({
         text: `Moi c'est Rudolph, le renne de Menlook + METTRE UNE PHRASE SUR MENLOOK + HISTOIRE MARRANTE OU LIEN MENLOOK`
       })
@@ -447,19 +398,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
       }
 
       yield reply({
-        text: `Je vois que tu es dans les petits papiers !`
-      })
-
-      yield reply({
-        text: `Esprit de Noël oblige, si tu trouves la réponse à cette question, tu pourras participer au tirage au sort qui te permettra peut-être de gagner un des trois bons d'achat de 100€ à dépenser sur Menlook...`
-      })
-
-      yield reply({
-        text: ` Es-tu prêt ?`
-      })
-
-      yield reply({
-        text: `Quel est le prix de l'article le plus cher que l'on peut trouver sur Menlook ?`
+        text: `Esprit de Noël oblige, je te propose de gagner un des trois bons d'achat de 100€ à dépenser sur Menlook.com. Pour ce faire, rien de plus simple, il te suffit de réponse à la question suivante:\nQuel est le prix de l'article le plus cher que l'on peut trouver sur Menlook ?`
       })
 
       return Object.assign({}, context, {
@@ -475,11 +414,41 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
       if (action.data.secret === 65000) {
         if (context.mail) {
           yield reply({
-            text: `Super ! Tu as vraiment de la chance ! Nous te contacterons à ${context.mail} le 20 décembre si tu fais parti des gagnants suite au tirage au sort !`
+            attachment: {
+              type: 'template',
+              payload: {
+                template_type: 'button',
+                text: `Félicitations!! Le produit le plus cher vendu par Menlook coûte effectivement 65 000€, il s'agit d'une magnifique montre Audemars Piguet ⌚ vendu par notre partenaire Cresus.`,
+                buttons: [{
+                  type: 'web_url',
+                  title: 'Voir la montre',
+                  url: 'http://www.menlook.com/fr/montres-occasion-vintage/audemars-piguet-royal-oak-chronographe-audemars-piguet-M2070_CRESUS_34812.html'
+                }]
+              }
+            }
+          })
+
+          yield reply({
+            text: `Nous te contacterons sur ${context.mail} le 20 décembre si tu fais parti des gagnants du tirage au sort !`
           })
         } else {
           yield reply({
-            text: `Super ! Tu as vraiment de la chance ! Donne nous ton adresse e-mail et nous te contacterons le 20 décembre si tu fais parti des gagnants suite au tirage au sort !`
+            attachment: {
+              type: 'template',
+              payload: {
+                template_type: 'button',
+                text: `Félicitations!! Le produit le plus cher vendu par Menlook coûte effectivement 65 000€, il s'agit d'une magnifique montre Audemars Piguet ⌚ vendu par notre partenaire Cresus.`,
+                buttons: [{
+                  type: 'web_url',
+                  title: 'Voir la montre',
+                  url: 'http://www.menlook.com/fr/montres-occasion-vintage/audemars-piguet-royal-oak-chronographe-audemars-piguet-M2070_CRESUS_34812.html'
+                }]
+              }
+            }
+          })
+
+          yield reply({
+            text: `Donne nous ton adresse mail et nous te recontacterons le 20 Décembre si tu as gagné :)`
           })
         }
 
@@ -593,6 +562,59 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
           title: 'Non',
           payload: JSON.stringify({
             type: 'OPPOSE_MAIL'
+          })
+        }]
+      })
+      return context
+    }
+
+    case 'NOTER': {
+      yield reply({
+        text: `Merci pour cet échange :) Pourrais-tu qualifier l'expérience que tu as vécue avec une note de 1 à 5 (5 voulant dire que l'expérience et mes conseils t'ont plu)?`,
+        quick_replies: [{
+          content_type: 'text',
+          title: '1',
+          payload: JSON.stringify({
+            type: 'NOTATION',
+            data: {
+              note: 1
+            }
+          })
+        }, {
+          content_type: 'text',
+          title: '2',
+          payload: JSON.stringify({
+            type: 'NOTATION',
+            data: {
+              note: 2
+            }
+          })
+        }, {
+          content_type: 'text',
+          title: '3',
+          payload: JSON.stringify({
+            type: 'NOTATION',
+            data: {
+              note: 3
+            }
+          })
+        }, {
+          content_type: 'text',
+          title: '4',
+          payload: JSON.stringify({
+            type: 'NOTATION',
+            data: {
+              note: 4
+            }
+          })
+        }, {
+          content_type: 'text',
+          title: '5',
+          payload: JSON.stringify({
+            type: 'NOTATION',
+            data: {
+              note: 5
+            }
           })
         }]
       })
@@ -1228,102 +1250,15 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
 
     case 'SELECT_STYLE': {
       yield reply({
-        text: `Voici les super cadeaux que j'ai dénichés pour toi ${user.profile.firstName}!Clique sur 'Voir plus' pour voir d'autres cadeaux :)`
+        text: `Voici les super cadeaux que j'ai dénichés pour toi ${user.profile.firstName}!`
       })
 
       context = Object.assign({}, context, action.data, {
         page: 0
       })
 
-      yield Product
-        .find({
-          $and: [{
-            quantity: { $gt: 0 }
-          }, {
-            $or: [
-              { gender: { $eq: context.gender } },
-              { gender: { $eq: null } }
-            ]
-          }, {
-            $or: context.style === 'geek' ? [{
-              age: { $gte: 0 }
-            }] : [{
-              age: {
-                $eq: [25, 40, 60, 80].reverse().reduce((acc, age) => age >= context.age ? age : acc)
-              }
-            }, {
-              age: { $eq: 0 }
-            }]
-          }, {
-            style: {
-              $eq: {
-                geek: 'Geek',
-                business: 'Business',
-                casual: 'Casual',
-                creator: 'Créateur',
-                streetwear: 'Streetwear',
-                classic: 'Classic',
-                luxury: 'Luxe'
-              }[context.style]
-            }
-          }, {
-            price: context.style === 'geek' ? { $gte: 0 } : {
-              $gte: context.priceRange[0] * 100,
-              $lte: context.priceRange[1] * 100
-            }
-          }]
-        })
-        .exec()
-        .then(function (data) {
-          context.product_to_propose = shuffle(data)
-          return data
-        })
+      yield display(messenger, user, context)
 
-      yield replyMany(yield showProducts(context))
-
-      if (context.product_to_propose.length) {
-        setTimeout(() => co(function* () {
-          yield reply({
-            text: `J'espère que tu as apprécié cette sélection ! N'hésite pas à m'en demander une nouvelle en écrivant "C'est parti".`
-          })
-          if (!context.secretFound) {
-            yield delay(5000)
-            yield reply({
-              attachment: {
-                type: 'template',
-                payload: {
-                  template_type: 'button',
-                  text: `Allez, je te fais moi aussi un cadeau. Menlook te propose de gagner 100€ en bon d'achats si tu découvres mon secret !!`,
-                  buttons: [{
-                    type: 'postback',
-                    title: "Jouer",
-                    payload: JSON.stringify({ type: 'SECRET' })
-                  }]
-                }
-              }
-            })
-          }
-        }), 40000)
-      } else {
-        setTimeout(() => co(function* () {
-          if (!context.secretFound) {
-            yield reply({
-              attachment: {
-                type: 'template',
-                payload: {
-                  template_type: 'button',
-                  text: `Allez, je te fais moi aussi un cadeau. Menlook te propose de gagner 100€ en bon d'achats si tu découvres mon secret !!`,
-                  buttons: [{
-                    type: 'postback',
-                    title: "Jouer",
-                    payload: JSON.stringify({ type: 'SECRET' })
-                  }]
-                }
-              }
-            })
-          }
-        }), 5000)
-      }
       return context
     }
 
@@ -1332,9 +1267,287 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
         page: context.page + 1
       })
 
-      yield replyMany(yield showProducts(newContext))
+      yield display(messenger, user, newContext)
 
       return newContext
+    }
+
+    case 'CHANGE_AGE': {
+      yield reply({
+        text: `Très bien, peux-tu me donner l'âge de cette personne?`
+      })
+      return Object.assign({}, context, {
+        _expect: context._expect.concat({
+          actionType: 'OK_AGE',
+          dataKey: 'age',
+          dataType: 'number'
+        })
+      }, action.data)
+    }
+
+    case 'OK_AGE': {
+      yield reply({
+        text: `Voici les super cadeaux que j'ai dénichés pour toi ${user.profile.firstName}!`
+      })
+
+      context = Object.assign({}, context, action.data, {
+        page: 0
+      })
+
+      yield display(messenger, user, context)
+
+      return context
+    }
+
+    case 'CHANGE_BUDGET': {
+      yield reply({
+        text: `Très bien, changeons de budget :)`,
+        quick_replies: [{
+          content_type: 'text',
+          title: '- de 50€',
+          payload: JSON.stringify({
+            type: 'OK_BUDGET',
+            data: {
+              priceRange: [0, 50]
+            }
+          })
+        }, {
+          content_type: 'text',
+          title: '50-100€',
+          payload: JSON.stringify({
+            type: 'OK_BUDGET',
+            data: {
+              priceRange: [50, 100]
+            }
+          })
+        }, {
+          content_type: 'text',
+          title: '100-200€',
+          payload: JSON.stringify({
+            type: 'OK_BUDGET',
+            data: {
+              priceRange: [100, 200]
+            }
+          })
+        }, {
+          content_type: 'text',
+          title: 'No limit',
+          payload: JSON.stringify({
+            type: 'OK_BUDGET',
+            data: {
+              priceRange: [0, Number.MAX_SAFE_INTEGER]
+            }
+          })
+        }]
+      })
+      return context
+    }
+
+    case 'OK_BUDGET': {
+      yield reply({
+        text: `Voici les super cadeaux que j'ai dénichés pour toi ${user.profile.firstName}!`
+      })
+
+      context = Object.assign({}, context, action.data, {
+        page: 0
+      })
+
+      yield display(messenger, user, context)
+
+      return context
+    }
+
+    case 'CHANGE_STYLE': {
+      yield reply({
+        text: `Quel style a ${{
+          father: 'ton père',
+          brother: 'ton frère',
+          friend_male: 'ton ami',
+          other_male: 'cette personne',
+          husband: 'ton amoureux',
+          mother: 'ta mère',
+          sister: 'ta sœur',
+          friend_female: 'ton amie',
+          wife: 'ton amoureuse',
+          other_female: 'cette personne'
+        }[context.personType]} ?`
+      })
+
+      if (context.gender === 'male') {
+        yield reply({
+          attachment: {
+            type: 'template',
+            payload: {
+              template_type: 'generic',
+              elements: [{
+                title: 'Casual',
+                subtitle: `Si simplicité rime avec efficacité`,
+                image_url: random([
+                  'https://media.giphy.com/media/l3vRo0x0MQ15dtNvO/giphy.gif',
+                  'https://media.giphy.com/media/wZwRL2iqmV5S0/giphy.gif'
+                ]),
+                buttons: [{
+                  type: 'postback',
+                  title: confirm(),
+                  payload: JSON.stringify({
+                    type: 'SELECT_STYLE',
+                    data: { style: 'casual' }
+                  })
+                }]
+              }, {
+                title: 'Business',
+                subtitle: `Si il est capable de porter un costume, même en jardinant.`,
+                image_url: random([
+                  'https://media.giphy.com/media/geXJ0CoZr9PyM/giphy.gif',
+                  'https://media.giphy.com/media/eu9wzTP9nrMHu/giphy.gif'
+                ]),
+                buttons: [{
+                  type: 'postback',
+                  title: confirm(),
+                  payload: JSON.stringify({
+                    type: 'SELECT_STYLE',
+                    data: { style: 'business' }
+                  })
+                }]
+              }, {
+                title: 'Créateur',
+                subtitle: `La mode, la mode, la mode !`,
+                image_url: random([
+                  'https://media.giphy.com/media/12npFVlmZoXN4Y/giphy.gif'
+                ]),
+                buttons: [{
+                  type: 'postback',
+                  title: confirm(),
+                  payload: JSON.stringify({
+                    type: 'SELECT_STYLE',
+                    data: { style: 'creator' }
+                  })
+                }]
+              }, {
+                title: 'Streetwear',
+                subtitle: `Si Chelsea est avant tout un club de Football et non une paire de boots`,
+                image_url: random([
+                  'https://media.giphy.com/media/MGEAxIetbbYIM/giphy.gif',
+                  'https://media.giphy.com/media/ThL1SeU0MWc6I/giphy.gif',
+                  'https://media.giphy.com/media/M8Oyl5kERXxv2/giphy.gif'
+                ]),
+                buttons: [{
+                  type: 'postback',
+                  title: confirm(),
+                  payload: JSON.stringify({
+                    type: 'SELECT_STYLE',
+                    data: { style: 'streetwear' }
+                  })
+                }]
+              }, {
+                title: 'Geek',
+                subtitle: `Sous titre : Si son ordinateur est son meilleur ami`,
+                image_url: random([
+                  'https://media.giphy.com/media/3osxYlcLL9cE1uqEms/giphy.gif',
+                  'https://media.giphy.com/media/lfA4pv18hwQGQ/giphy.gif'
+                ]),
+                buttons: [{
+                  type: 'postback',
+                  title: confirm(),
+                  payload: JSON.stringify({
+                    type: 'SELECT_STYLE',
+                    data: { style: 'geek' }
+                  })
+                }]
+              }]
+            }
+          }
+        })
+      }
+
+      if (context.gender === 'female') {
+        yield reply({
+          attachment: {
+            type: 'template',
+            payload: {
+              template_type: 'generic',
+              elements: [{
+                title: 'Classique',
+                subtitle: `Si simplicité rime avec efficacité`,
+                image_url: random([
+                  'https://media.giphy.com/media/qwULUwNPgj2Qo/giphy.gif',
+                  'https://media.giphy.com/media/AyyPXf1JCDFp6/giphy.gif',
+                  'https://media.giphy.com/media/K0QF5KNyEbPcA/giphy.gif'
+                ]),
+                buttons: [{
+                  type: 'postback',
+                  title: confirm(),
+                  payload: JSON.stringify({
+                    type: 'SELECT_STYLE',
+                    data: { style: 'classic' }
+                  })
+                }]
+              }, {
+                title: 'Luxe',
+                subtitle: `Diamonds are the girls best friends`,
+                image_url: random([
+                  'https://media.giphy.com/media/5cCsgiWcBI3Fm/giphy.gif',
+                  'https://media.giphy.com/media/11NyZoAHUafEHe/giphy.gif'
+                ]),
+                buttons: [{
+                  type: 'postback',
+                  title: confirm(),
+                  payload: JSON.stringify({
+                    type: 'SELECT_STYLE',
+                    data: { style: 'luxury' }
+                  })
+                }]
+              }, {
+                title: 'Streetwear',
+                subtitle: `Jamais sans mes baskets`,
+                image_url: random([
+                  'https://media.giphy.com/media/giOrHKMWzCE6I/giphy.gif',
+                  'https://media.giphy.com/media/3o6MbptiXgo6YBredG/giphy.gif',
+                  'https://media.giphy.com/media/l2SpYD0XxCIXaEGGI/giphy.gif',
+                  'https://media.giphy.com/media/KcskXXAir5TCE/giphy.gif'
+                ]),
+                buttons: [{
+                  type: 'postback',
+                  title: confirm(),
+                  payload: JSON.stringify({
+                    type: 'SELECT_STYLE',
+                    data: { style: 'streetwear' }
+                  })
+                }]
+              }, {
+                title: 'Geek',
+                subtitle: `Si son ordinateur est son meilleur ami`,
+                image_url: random([
+                  'https://media.giphy.com/media/HyQYsK9VHtSy4/giphy.gif'
+                ]),
+                buttons: [{
+                  type: 'postback',
+                  title: confirm(),
+                  payload: JSON.stringify({
+                    type: 'SELECT_STYLE',
+                    data: { style: 'geek' }
+                  })
+                }]
+              }]
+            }
+          }
+        })
+      }
+      return context
+    }
+
+    case 'OK_STYLE': {
+      yield reply({
+        text: `Voici les super cadeaux que j'ai dénichés pour toi ${user.profile.firstName}!`
+      })
+
+      context = Object.assign({}, context, action.data, {
+        page: 0
+      })
+
+      yield display(messenger, user, context)
+
+      return context
     }
 
     case 'NOOP':
@@ -1343,7 +1556,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
     case 'UNKNOWN':
     default:
       yield reply({
-        text:`Pardon je n'ai pas bien compris :( Pour être honnête avec toi, je ne suis qu'un robot avec un costume de renne. Peux-tu cliquer sur les choix que je t'ai présentés ou répondre à ce que je t'ai demandé? Merci :)`
+        text: `Pardon je n'ai pas bien compris :( Pour être honnête avec toi, je ne suis qu'un robot avec un costume de renne. Peux-tu cliquer sur les choix que je t'ai présentés ou répondre à ce que je t'ai demandé? Merci :)`
       })
 
       return context
@@ -1394,8 +1607,53 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
 //     .exec()
 // }
 
-function* showProducts (context) {
+function* selection (context) {
+  return Product
+    .find({
+      $and: [{
+        quantity: { $gt: 0 }
+      }, {
+        $or: [
+          { gender: { $eq: context.gender } },
+          { gender: { $eq: null } }
+        ]
+      }, {
+        $or: context.style === 'geek' ? [{
+          age: { $gte: 0 }
+        }] : [{
+          age: {
+            $eq: [25, 40, 60, 80].reverse().reduce((acc, age) => age >= context.age ? age : acc)
+          }
+        }, {
+          age: { $eq: 0 }
+        }]
+      }, {
+        style: {
+          $eq: {
+            geek: 'Geek',
+            business: 'Business',
+            casual: 'Casual',
+            creator: 'Créateur',
+            streetwear: 'Streetwear',
+            classic: 'Classic',
+            luxury: 'Luxe'
+          }[context.style]
+        }
+      }, {
+        price: context.style === 'geek' ? { $gte: 0 } : {
+          $gte: context.priceRange[0] * 100,
+          $lte: context.priceRange[1] * 100
+        }
+      }]
+    })
+    .exec()
+    .then(function (data) {
+      context.product_to_propose = shuffle(data)
+      return data
+    })
+}
 
+function* showProducts (context) {
   let products = context.product_to_propose.slice(context.page * 4 || 0, (context.page * 4 || 0) + 4)
 
   if (!products.length) {
@@ -1453,15 +1711,107 @@ function* showProducts (context) {
             url: product.link.replace(/^http:/i, 'https:'),
             messenger_extensions: false
           }]
-        })),
-        buttons: [{
-          type: 'postback',
-          title: 'Voir plus',
-          payload: JSON.stringify({
-            type: 'NEXT_PAGE'
-          })
-        }]
+        }))
       }
     }
   }]
 }
+
+const display = co.wrap(function* (messenger, user, context) {
+  const reply = messenger.sendMessage.bind(messenger, user.messenger.id)
+  const replyMany = messages => messages.reduce((p, m) => p.then(() => reply(m)), Promise.resolve())
+
+  yield selection(context)
+
+  yield replyMany(yield showProducts(context))
+
+  if ((context.page * 4 + 4) < context.product_to_propose.length) {
+    yield reply({
+      text: `J'espère que tu as apprécié cette sélection! Que souhaites-tu faire?`,
+      quick_replies: [{
+        content_type: 'text',
+        title: `🎁 Voir + de cadeaux`,
+        payload: JSON.stringify({
+          type: 'NEXT_PAGE'
+        })
+      }, {
+        content_type: 'text',
+        title: `🕙 Changer l'âge`,
+        payload: JSON.stringify({
+          type: 'CHANGE_AGE'
+        })
+      }, {
+        content_type: 'text',
+        title: '💸 Changer le budget',
+        payload: JSON.stringify({
+          type: 'CHANGE_BUDGET'
+        })
+      }, {
+        content_type: 'text',
+        title: '👕 Changer le style',
+        payload: JSON.stringify({
+          type: 'CHANGE_STYLE'
+        })
+      }, {
+        content_type: 'text',
+        title: '💶 Gagner 100€',
+        payload: JSON.stringify({
+          type: 'SECRET'
+        })
+      }, {
+        content_type: 'text',
+        title: 'Recommencer',
+        payload: JSON.stringify({
+          type: 'RESET'
+        })
+      }, {
+        content_type: 'text',
+        title: '✅ Terminer',
+        payload: JSON.stringify({
+          type: 'NOTER'
+        })
+      }]
+    })
+  } else if ((context.page * 4 + 4) >= context.product_to_propose.length) {
+    yield reply({
+      text: `J'espère que tu as apprécié cette sélection! Que souhaites-tu faire?`,
+      quick_replies: [{
+        content_type: 'text',
+        title: `🕙 Changer l'âge`,
+        payload: JSON.stringify({
+          type: 'CHANGE_AGE'
+        })
+      }, {
+        content_type: 'text',
+        title: '💸 Changer le budget',
+        payload: JSON.stringify({
+          type: 'CHANGE_BUDGET'
+        })
+      }, {
+        content_type: 'text',
+        title: '👕 Changer le style',
+        payload: JSON.stringify({
+          type: 'CHANGE_STYLE'
+        })
+      }, {
+        content_type: 'text',
+        title: '💶 Gagner 100€',
+        payload: JSON.stringify({
+          type: 'SECRET'
+        })
+      }, {
+        content_type: 'text',
+        title: '⬆️ Recommencer',
+        payload: JSON.stringify({
+          type: 'RESET'
+        })
+      }, {
+        content_type: 'text',
+        title: '✅ Terminer',
+        payload: JSON.stringify({
+          type: 'NOTER'
+        })
+      }]
+    })
+  }
+})
