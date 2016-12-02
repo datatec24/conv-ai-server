@@ -38,6 +38,7 @@ const defaultContext = {
       'est parti',
       'c parti',
       'nouvelle recherche',
+      'recherche',
       'go'
     ]
   }, {
@@ -557,16 +558,11 @@ const defaultContext = {
       `vieux tableau`,
       `vieux tromblon`,
       `vilain`,
-      `vilain comme une couvée de singe`,
-      `vioque`,
-      `vipère lubrique`,
       `voleur`,
       `vorace`,
       `voyou`,
       `vérole`,
       `wisigoth`,
-      `yéti baveux`,
-      `zigomar`,
       `zigoto`,
       `zonard`,
       `zouave`,
@@ -616,31 +612,132 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
   const replyMany = messages => messages.reduce((p, m) => p.then(() => reply(m)), Promise.resolve())
 
   switch (action.type) {
-    case 'START':
-    case 'RESET': {
+    case 'START':{
       yield reply({
         text: `🎄 Bonjour ${user.profile.firstName}, je m'appelle Rudolph. 🎄`
       })
 
+      yield delay(1000)
+
+      yield reply({
+        text: `Je peux t'aider à trouver les meilleurs cadeaux 🎁 de Noël pour tes proches ou te faire gagner des bons d'achat Menlook ;)`
+      })
+
+      yield reply({
+        text: `Que souhaites-tu faire ?`
+      })
+
+      yield reply({
+        attachment: {
+          type: 'template',
+          payload: {
+            template_type: 'generic',
+            elements: [{
+              title: `Trouver un cadeau 🎁`,
+              image_url: 'http://www.yogamag.info/dir/wp-content/uploads/2014/12/liste-cadeaux-noel.jpg',
+              buttons: [{
+                type: 'postback',
+                title: confirm(),
+                payload: JSON.stringify({
+                  type: 'START_PRESENT',
+                })
+              }]
+            }, {
+              title: 'Tenter de remporter des chèques cadeaux Menlook 💸',
+              image_url: 'http://www.benrun.fr/image/data/Produits/chequecadeau.jpg',
+              buttons: [{
+                type: 'postback',
+                title: confirm(),
+                payload: JSON.stringify({
+                  type: 'SECRET',
+                })
+              }]
+            }, {
+              title: 'Qui suis-je 🐑 ?',
+              image_url: 'https://scontent-cdg2-1.xx.fbcdn.net/v/t1.0-9/15181156_361857034168686_3768989194421828295_n.jpg?oh=a489ff4bf01a6bf4d7edc8c28210956a&oe=58B498FF',
+              buttons: [{
+                type: 'postback',
+                title: confirm(),
+                payload: JSON.stringify({
+                  type: 'PRESENTATION',
+                })
+              }]
+            }]
+          }
+        }
+      })
+
+
+      return Object.assign({}, defaultContext, {
+        secretFound: context.secretFound,
+        mail: context.mail,
+        registration: !context.registration ? new Date() : context.registration
+      })
+    }
+
+    case 'RESET': {
+      yield reply({
+        text: `Que souhaites-tu faire ?`
+      })
+
+      yield reply({
+        attachment: {
+          type: 'template',
+          payload: {
+            template_type: 'generic',
+            elements: [{
+              title: `Trouver un cadeau 🎁`,
+              image_url: 'http://www.yogamag.info/dir/wp-content/uploads/2014/12/liste-cadeaux-noel.jpg',
+              buttons: [{
+                type: 'postback',
+                title: confirm(),
+                payload: JSON.stringify({
+                  type: 'START_PRESENT',
+                })
+              }]
+            }, {
+              title: 'Tenter de remporter des chèques cadeaux Menlook 💸',
+              image_url: 'http://www.benrun.fr/image/data/Produits/chequecadeau.jpg',
+              buttons: [{
+                type: 'postback',
+                title: confirm(),
+                payload: JSON.stringify({
+                  type: 'SECRET',
+                })
+              }]
+            }, {
+              title: 'Qui suis-je 🐑 ?',
+              image_url: 'https://scontent-cdg2-1.xx.fbcdn.net/v/t1.0-9/15181156_361857034168686_3768989194421828295_n.jpg?oh=a489ff4bf01a6bf4d7edc8c28210956a&oe=58B498FF',
+              buttons: [{
+                type: 'postback',
+                title: confirm(),
+                payload: JSON.stringify({
+                  type: 'PRESENTATION',
+                })
+              }]
+            }]
+          }
+        }
+      })
+
+
+      return Object.assign({}, defaultContext, {
+        secretFound: context.secretFound,
+        mail: context.mail,
+        registration: !context.registration ? new Date() : context.registration
+      })
+    }
+
+    case 'START_PRESENT': {
+      yield reply({
+        text: `Je vais te poser quelques questions afin de t'orienter vers les meilleurs cadeaux 🎁 de Noël 😉\nTu peux lancer une nouvelle recherche à tout moment en écrivant "Nouvelle recherche" sur ton clavier.`
+      })
+
       yield delay(2000)
-
-      yield reply({
-        text: `Je vais te poser quelques questions afin de t'orienter vers les meilleurs cadeaux 🎁 de Noël ;)`
-      })
-
-      yield delay(4000)
-
-      yield reply({
-        text: `Par contre je ne suis qu'un jeune renne 🐑 : même si nous partageons la culture du cadeau dans ma famille 🎅, je suis toujours en plein apprentissage ! Il serait donc préférable que tu restes clair avec moi :). `
-      })
-
-      yield delay(6000)
 
       yield reply({
         text: 'Á qui ce cadeau est-il destiné ? '
       })
-
-      yield delay(2000)
 
       yield reply({
         attachment: {
@@ -683,12 +780,14 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
           }
         }
       })
+      return context
+    }
 
-      return Object.assign({}, defaultContext, {
-        secretFound: context.secretFound,
-        mail: context.mail,
-        registration: !context.registration ? new Date() : context.registration
+    case 'PRESENTATION':{
+      yield reply({
+        text: `Moi c'est Rudolph, le renne de Menlook + METTRE UNE PHRASE SUR MENLOOK + HISTOIRE MARRANTE OU LIEN MENLOOK`
       })
+      return context
     }
 
     case 'GREETINGS': {
@@ -982,7 +1081,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
 
     case 'NOTATION': {
       yield reply({
-        text: `Merci pour ton retour :). N'hésites pas à me demander une nouvelle selection en saisissant "C'est parti" et à parler de mes services autour de toi :).`
+        text: `Merci pour ton retour :). N'hésites pas à rédemarrer une nouvelle recherche en saisissant "C'est parti" et à parler de mes services autour de toi :).`
       })
 
       return Object.assign({}, context, {
@@ -1623,12 +1722,23 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
       if (products.length) {
         setTimeout(() => co(function* () {
           yield reply({
-            text: `J'espère que tu as apprécié cette sélection ! Tu peux nous donner ton adresse e-mail afin que nous te fassions parvenir d'autres sélections. Tu peux également écrire "Nouvelle Recherche" pour repartir de zéro. `
+            text: `J'espère que tu as apprécié cette sélection ! N'hésite pas à m'en demander une nouvelle en écrivant "C'est parti".`
           })
           if (!context.secretFound) {
-            yield delay(15000)
+            yield delay(5000)
             yield reply({
-              text: `En attendant, tu n'as toujours pas réussi à percer mon secret!`
+              attachment: {
+                type: 'template',
+                payload: {
+                  template_type: 'button',
+                  text: `Allez, je te fais moi aussi un cadeau. Menlook te propose de gagner 100€ en bon d'achats si tu découvres mon secret !!`,
+                  buttons: [{
+                    type: 'postback',
+                    title: "Jouer",
+                    payload: JSON.stringify({ type: 'SECRET' })
+                  }]
+                }
+              }
             })
           }
         }), 40000)
@@ -1636,10 +1746,21 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
         setTimeout(() => co(function* () {
           if (!context.secretFound) {
             yield reply({
-              text: `En attendant, tu n'as toujours pas réussi à percer mon secret!`
+              attachment: {
+                type: 'template',
+                payload: {
+                  template_type: 'button',
+                  text: `Allez, je te fais moi aussi un cadeau. Menlook te propose de gagner 100€ en bon d'achats si tu découvres mon secret !!`,
+                  buttons: [{
+                    type: 'postback',
+                    title: "Jouer",
+                    payload: JSON.stringify({ type: 'SECRET' })
+                  }]
+                }
+              }
             })
           }
-        }), 15000)
+        }), 5000)
       }
       return newContext
     }
@@ -1660,18 +1781,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
     case 'UNKNOWN':
     default:
       yield reply({
-        attachment: {
-          type: 'template',
-          payload: {
-            template_type: 'button',
-            text: `Je pense que tu m'as démasqué ! Pour être honnête avec toi, je ne suis qu'un robot avec un costume de renne. Je serai donc bien plus efficace dans ta recherche si nous restons clairs. Tu peux également repartir de zéro en cliquant sur le bouton suivant.`,
-            buttons: [{
-              type: 'postback',
-              title: "C'est parti!",
-              payload: JSON.stringify({ type: 'RESET' })
-            }]
-          }
-        }
+        text:`Pardon je n'ai pas bien compris :( Pour être honnête avec toi, je ne suis qu'un robot avec un costume de renne. Peux-tu cliquer sur les choix que je t'ai présentés ou répondre à ce que je t'ai demandé? Merci :)`
       })
 
       return context
