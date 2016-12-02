@@ -142,7 +142,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
       yield delay(1000)
 
       yield reply({
-        text: `Je vais te poser quelques questions afin de t'orienter vers les meilleurs cadeaux 🎁 de Noël 😉 et même t'en faire gagner!\nTu peux lancer une nouvelle recherche à tout moment en écrivant "recommencer" sur ton clavier.`
+        text: `Je vais te poser quelques questions afin de t'orienter vers les meilleurs cadeaux 🎁 de Noël 😉 et même t'en faire gagner!\nTu peux lancer une nouvelle recherche à tout moment en écrivant "Recommencer" sur ton clavier.`
       })
 
       yield delay(3000)
@@ -270,7 +270,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
             text: `Bonjour ! Pour profiter de mes conseils, il te suffit de cliquer sur le bouton çi-dessous !`,
             buttons: [{
               type: 'postback',
-              title: "C'est parti!",
+              title: "Recommencer!",
               payload: JSON.stringify({ type: 'RESET' })
             }]
           }
@@ -338,7 +338,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
             text: `N'hésites pas à rédemarrer une nouvelle recherche en cliquant sur le bouton ci-après`,
             buttons: [{
               type: 'postback',
-              title: "C'est parti!",
+              title: "Recommencer!",
               payload: JSON.stringify({ type: 'RESET' })
             }]
           }
@@ -378,7 +378,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
             text: `N'hésites pas à rédemarrer une nouvelle recherche en cliquant sur le bouton ci-après`,
             buttons: [{
               type: 'postback',
-              title: "C'est parti!",
+              title: "Recommencer!",
               payload: JSON.stringify({ type: 'RESET' })
             }]
           }
@@ -623,7 +623,7 @@ module.exports = co.wrap(function* (messenger, user, context = defaultContext, a
 
     case 'NOTATION': {
       yield reply({
-        text: `Merci pour ton retour :). N'hésites pas à rédemarrer une nouvelle recherche en saisissant "C'est parti" et à parler de mes services autour de toi :).`
+        text: `Merci pour ton retour :). N'hésites pas à rédemarrer une nouvelle recherche en saisissant "Recommencer" et à parler de mes services autour de toi :).`
       })
 
       return Object.assign({}, context, {
@@ -1662,10 +1662,10 @@ function* showProducts (context) {
         type: 'template',
         payload: {
           template_type: 'button',
-          text: `Je suis vraiment désolé, je n'ai plus aucun produit à te proposer pour ces critères. Si tu veux bien me donner ton adresse mail, je la transmets à mes équipes qui t'enverront une proposition personnalisée. Sinon, tu peux effectuer une nouvelle recherche avec d'autres critères en saisissant "C'est parti"`,
+          text: `Je suis vraiment désolé, je n'ai plus aucun produit à te proposer pour ces critères. Si tu veux bien me donner ton adresse mail, je la transmets à mes équipes qui t'enverront une proposition personnalisée. Sinon, tu peux effectuer une nouvelle recherche avec d'autres critères en saisissant "Recommencer"`,
           buttons: [{
             type: 'postback',
-            title: "C'est parti!",
+            title: "Recommencer!",
             payload: JSON.stringify({ type: 'RESET' })
           }]
         }
