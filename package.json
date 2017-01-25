@@ -15,12 +15,8 @@
     "type": "git",
     "url": "git+ssh://git@github.com/conv-ai/conv-ai-server.git"
   },
-  "author": "Samuel Hurel <samuel.hurel@gmail.com>",
+  "author": "Samuel Hurel <samuel.hurel@gmail.com>, Maxime Le Dantec <maximejledantec@gmail.com>",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/conv-ai/conv-ai-server/issues"
-  },
-  "homepage": "https://github.com/conv-ai/conv-ai-server#readme",
   "jest": {
     "testEnvironment": "node",
     "testPathDirs": [
